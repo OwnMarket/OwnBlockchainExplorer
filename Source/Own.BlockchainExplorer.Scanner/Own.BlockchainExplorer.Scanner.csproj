@@ -8,6 +8,8 @@
     <ItemGroup>
       <ProjectReference Include="..\Own.BlockchainExplorer.Common\Own.BlockchainExplorer.Common.csproj" />
       <ProjectReference Include="..\Own.BlockchainExplorer.Core\Own.BlockchainExplorer.Core.csproj" />
+      <ProjectReference Include="..\Own.BlockchainExplorer.Domain.DI\Own.BlockchainExplorer.Domain.DI.csproj" />
+      <ProjectReference Include="..\Own.BlockchainExplorer.Infrastructure.DI\Own.BlockchainExplorer.Infrastructure.DI.csproj" />
     </ItemGroup>
 
     <ItemGroup>
