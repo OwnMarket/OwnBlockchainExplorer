@@ -1,4 +1,5 @@
-﻿using Own.BlockchainExplorer.Core.Interfaces;
+﻿using System.IO;
+using Own.BlockchainExplorer.Core.Interfaces;
 
 namespace Own.BlockchainExplorer.Core
 {
@@ -11,5 +12,6 @@ namespace Own.BlockchainExplorer.Core
         }
 
         public static string DB => _provider.GetString("appSettings:DB");
+        public static string ContentRoot => Directory.GetCurrentDirectory();
     }
 }
