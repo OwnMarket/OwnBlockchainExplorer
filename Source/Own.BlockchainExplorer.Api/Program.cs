@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Globalization;
+using System.Threading;
 using Microsoft.AspNetCore.Hosting;
 using Own.BlockchainExplorer.Core;
 using Own.BlockchainExplorer.Infrastructure.DI;
@@ -15,6 +17,8 @@ namespace Own.BlockchainExplorer.Api
 
         private static void ConfigureApp()
         {
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+            Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
             Config.SetConfigurationProvider(DependencyResolver.GetConfigurationProvider());
         }
 

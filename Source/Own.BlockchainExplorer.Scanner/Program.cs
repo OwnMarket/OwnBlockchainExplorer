@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Globalization;
+using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Own.BlockchainExplorer.Core;
 using Own.BlockchainExplorer.Core.Interfaces;
@@ -17,6 +19,8 @@ namespace Own.BlockchainExplorer.Scanner
 
         private static void ConfigureApp()
         {
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+            Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
             Config.SetConfigurationProvider(DependencyResolver.GetConfigurationProvider());
         }
 
