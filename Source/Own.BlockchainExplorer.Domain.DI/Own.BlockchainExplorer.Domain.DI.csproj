@@ -5,13 +5,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Own.BlockchainExplorer.Common\Own.BlockchainExplorer.Common.csproj" />
-      <ProjectReference Include="..\Own.BlockchainExplorer.Core\Own.BlockchainExplorer.Core.csproj" />
-      <ProjectReference Include="..\Own.BlockchainExplorer.Domain\Own.BlockchainExplorer.Domain.csproj" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.2.0" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.2.0" />
+      <ProjectReference Include="..\Own.BlockchainExplorer.Common\Own.BlockchainExplorer.Common.csproj" />
+      <ProjectReference Include="..\Own.BlockchainExplorer.Core\Own.BlockchainExplorer.Core.csproj" />
+      <ProjectReference Include="..\Own.BlockchainExplorer.Domain\Own.BlockchainExplorer.Domain.csproj" />
     </ItemGroup>
 
 </Project>
