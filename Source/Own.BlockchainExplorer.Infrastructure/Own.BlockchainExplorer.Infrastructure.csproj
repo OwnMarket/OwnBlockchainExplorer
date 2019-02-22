@@ -5,8 +5,16 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Folder Include="Data\EF" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\Own.BlockchainExplorer.Common\Own.BlockchainExplorer.Common.csproj" />
       <ProjectReference Include="..\Own.BlockchainExplorer.Core\Own.BlockchainExplorer.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.0" />
     </ItemGroup>
 
 </Project>

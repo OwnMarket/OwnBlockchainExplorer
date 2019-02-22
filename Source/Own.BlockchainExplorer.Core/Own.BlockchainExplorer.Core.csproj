@@ -5,6 +5,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Folder Include="Models" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\Own.BlockchainExplorer.Common\Own.BlockchainExplorer.Common.csproj" />
     </ItemGroup>
 
