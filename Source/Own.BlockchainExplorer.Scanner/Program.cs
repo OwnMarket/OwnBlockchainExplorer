@@ -1,5 +1,4 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Own.BlockchainExplorer.Core;

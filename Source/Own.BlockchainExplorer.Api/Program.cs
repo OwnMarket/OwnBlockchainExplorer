@@ -1,5 +1,4 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Threading;
 using Microsoft.AspNetCore.Hosting;
 using Own.BlockchainExplorer.Core;

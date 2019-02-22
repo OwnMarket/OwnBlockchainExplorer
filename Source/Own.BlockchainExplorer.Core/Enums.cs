@@ -1,8 +1,11 @@
-﻿namespace Own.BlockchainExplorer.Core.Enums
+﻿namespace Own.BlockchainExplorer.Core
 {
-    public enum UnitOfWorkMode
+    namespace Enums
     {
-        ReadOnly,
-        Writable
+        public enum UnitOfWorkMode
+        {
+            ReadOnly,
+            Writable
+        }
     }
 }
