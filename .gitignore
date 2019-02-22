@@ -1,0 +1,14 @@
+# Tools & Environment
+.vs/
+.vscode/
+.idea/
+*.DS_Store
+*.suo
+*.userprefs
+*.user
+
+# Binaries
+[Oo]bj/
+[Bb]in/
+Build/Temp/
+Build/Output/

@@ -1,0 +1,76 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "App", "App", "{7F63CD87-BC83-4BDD-8003-7E34BF8ABD01}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Own.BlockchainExplorer.Scanner", "Own.BlockchainExplorer.Scanner\Own.BlockchainExplorer.Scanner.csproj", "{6625CBA5-9227-42DB-916C-36A810B2DD98}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Own.BlockchainExplorer.Api", "Own.BlockchainExplorer.Api\Own.BlockchainExplorer.Api.csproj", "{BCA925FE-7F83-4392-A7EF-E5005D940F2A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{A4D647EC-298E-4B13-96F3-19B2AF0D8774}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Own.BlockchainExplorer.Common", "Own.BlockchainExplorer.Common\Own.BlockchainExplorer.Common.csproj", "{925BDAB3-6156-42A3-97C4-85FA52A7967D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{0E0AEC01-A493-44A4-9A5A-8D44D966F3B7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Own.BlockchainExplorer.Core", "Own.BlockchainExplorer.Core\Own.BlockchainExplorer.Core.csproj", "{9D1873FC-3279-42FD-A373-8571ACB8C8DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Own.BlockchainExplorer.Domain", "Own.BlockchainExplorer.Domain\Own.BlockchainExplorer.Domain.csproj", "{D6B07E23-F0A1-486F-90E4-23F897CCA76C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Own.BlockchainExplorer.Domain.DI", "Own.BlockchainExplorer.Domain.DI\Own.BlockchainExplorer.Domain.DI.csproj", "{6592624A-A35D-45F9-A5A3-C53F29CB7077}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{C5BFAA1D-7DA8-4A86-97B7-FEBD491D60A1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Own.BlockchainExplorer.Infrastructure", "Own.BlockchainExplorer.Infrastructure\Own.BlockchainExplorer.Infrastructure.csproj", "{784AB3FE-8F73-4AB7-806D-3220FDF37608}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Own.BlockchainExplorer.Infrastructure.DI", "Own.BlockchainExplorer.Infrastructure.DI\Own.BlockchainExplorer.Infrastructure.DI.csproj", "{51C1EC0C-712C-46F6-83B0-74C99BC7D569}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6625CBA5-9227-42DB-916C-36A810B2DD98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6625CBA5-9227-42DB-916C-36A810B2DD98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6625CBA5-9227-42DB-916C-36A810B2DD98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6625CBA5-9227-42DB-916C-36A810B2DD98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCA925FE-7F83-4392-A7EF-E5005D940F2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCA925FE-7F83-4392-A7EF-E5005D940F2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCA925FE-7F83-4392-A7EF-E5005D940F2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCA925FE-7F83-4392-A7EF-E5005D940F2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{925BDAB3-6156-42A3-97C4-85FA52A7967D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{925BDAB3-6156-42A3-97C4-85FA52A7967D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{925BDAB3-6156-42A3-97C4-85FA52A7967D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{925BDAB3-6156-42A3-97C4-85FA52A7967D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D1873FC-3279-42FD-A373-8571ACB8C8DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D1873FC-3279-42FD-A373-8571ACB8C8DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D1873FC-3279-42FD-A373-8571ACB8C8DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D1873FC-3279-42FD-A373-8571ACB8C8DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6B07E23-F0A1-486F-90E4-23F897CCA76C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6B07E23-F0A1-486F-90E4-23F897CCA76C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6B07E23-F0A1-486F-90E4-23F897CCA76C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6B07E23-F0A1-486F-90E4-23F897CCA76C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6592624A-A35D-45F9-A5A3-C53F29CB7077}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6592624A-A35D-45F9-A5A3-C53F29CB7077}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6592624A-A35D-45F9-A5A3-C53F29CB7077}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6592624A-A35D-45F9-A5A3-C53F29CB7077}.Release|Any CPU.Build.0 = Release|Any CPU
+		{784AB3FE-8F73-4AB7-806D-3220FDF37608}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{784AB3FE-8F73-4AB7-806D-3220FDF37608}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{784AB3FE-8F73-4AB7-806D-3220FDF37608}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{784AB3FE-8F73-4AB7-806D-3220FDF37608}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51C1EC0C-712C-46F6-83B0-74C99BC7D569}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51C1EC0C-712C-46F6-83B0-74C99BC7D569}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51C1EC0C-712C-46F6-83B0-74C99BC7D569}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51C1EC0C-712C-46F6-83B0-74C99BC7D569}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{BCA925FE-7F83-4392-A7EF-E5005D940F2A} = {7F63CD87-BC83-4BDD-8003-7E34BF8ABD01}
+		{6625CBA5-9227-42DB-916C-36A810B2DD98} = {7F63CD87-BC83-4BDD-8003-7E34BF8ABD01}
+		{925BDAB3-6156-42A3-97C4-85FA52A7967D} = {A4D647EC-298E-4B13-96F3-19B2AF0D8774}
+		{9D1873FC-3279-42FD-A373-8571ACB8C8DD} = {0E0AEC01-A493-44A4-9A5A-8D44D966F3B7}
+		{D6B07E23-F0A1-486F-90E4-23F897CCA76C} = {0E0AEC01-A493-44A4-9A5A-8D44D966F3B7}
+		{6592624A-A35D-45F9-A5A3-C53F29CB7077} = {0E0AEC01-A493-44A4-9A5A-8D44D966F3B7}
+		{784AB3FE-8F73-4AB7-806D-3220FDF37608} = {C5BFAA1D-7DA8-4A86-97B7-FEBD491D60A1}
+		{51C1EC0C-712C-46F6-83B0-74C99BC7D569} = {C5BFAA1D-7DA8-4A86-97B7-FEBD491D60A1}
+	EndGlobalSection
+EndGlobal
