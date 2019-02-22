@@ -12,7 +12,7 @@ namespace Own.BlockchainExplorer.Infrastructure
         public AppSettingsConfigurationProvider()
         {
             _configuration = new ConfigurationBuilder()
-                .SetBasePath(Config.ContentRoot)
+                .SetBasePath(Config.ContentDir)
                 .AddJsonFile("appsettings.json")
                 .Build();
         }

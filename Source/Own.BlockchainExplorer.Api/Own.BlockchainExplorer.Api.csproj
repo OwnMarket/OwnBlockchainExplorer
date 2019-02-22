@@ -6,8 +6,15 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.2.0" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\Own.BlockchainExplorer.Common\Own.BlockchainExplorer.Common.csproj" />
       <ProjectReference Include="..\Own.BlockchainExplorer.Core\Own.BlockchainExplorer.Core.csproj" />
+      <ProjectReference Include="..\Own.BlockchainExplorer.Domain.DI\Own.BlockchainExplorer.Domain.DI.csproj" />
+      <ProjectReference Include="..\Own.BlockchainExplorer.Infrastructure.DI\Own.BlockchainExplorer.Infrastructure.DI.csproj" />
     </ItemGroup>
 
     <ItemGroup>

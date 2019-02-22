@@ -1,4 +1,7 @@
 ﻿using System;
+using Microsoft.AspNetCore.Hosting;
+using Own.BlockchainExplorer.Core;
+using Own.BlockchainExplorer.Infrastructure.DI;
 
 namespace Own.BlockchainExplorer.Api
 {
@@ -6,7 +9,25 @@ namespace Own.BlockchainExplorer.Api
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            ConfigureApp();
+            StartApi();
+        }
+
+        private static void ConfigureApp()
+        {
+            Config.SetConfigurationProvider(DependencyResolver.GetConfigurationProvider());
+        }
+
+        private static void StartApi()
+        {
+            var builder = new WebHostBuilder();
+            builder
+                .UseContentRoot(Config.ContentDir)
+                .UseUrls(Config.ApiUrls)
+                .UseKestrel()
+                .UseStartup<Startup>()
+                .Build()
+                .Run();
         }
     }
 }
