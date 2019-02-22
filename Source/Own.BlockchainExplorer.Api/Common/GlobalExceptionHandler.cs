@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Own.BlockchainExplorer.Common.Framework;
 
-namespace Own.BlockchainExplorer.Api.Middlewares
+namespace Own.BlockchainExplorer.Api.Common
 {
     public class GlobalExceptionHandler
     {

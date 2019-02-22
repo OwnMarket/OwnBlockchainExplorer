@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Converters;
-using Own.BlockchainExplorer.Api.Middlewares;
+using Own.BlockchainExplorer.Api.Common;
 using Own.BlockchainExplorer.Core;
 
 namespace Own.BlockchainExplorer.Api
