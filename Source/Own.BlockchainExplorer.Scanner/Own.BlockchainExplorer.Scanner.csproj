@@ -5,4 +5,9 @@
         <TargetFramework>netcoreapp2.1</TargetFramework>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Own.BlockchainExplorer.Common\Own.BlockchainExplorer.Common.csproj" />
+      <ProjectReference Include="..\Own.BlockchainExplorer.Core\Own.BlockchainExplorer.Core.csproj" />
+    </ItemGroup>
+
 </Project>
