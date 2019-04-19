@@ -10,12 +10,16 @@ namespace Own.BlockchainExplorer.Core.Models
     {
         public long AddressId { get; set; }
         public string BlockchainAddress { get; set; }
-        public decimal ChxBalance { get; set; }
         public long Nonce { get; set; }
+        public decimal StakedBalance { get; set; }
+        public decimal DepositBalance { get; set; }
+        public decimal AvailableBalance { get; set; }
+        
+        public virtual ICollection<BlockchainEvent> BlockchainEventsByAddressId { get; set; }
 
         public Address()
         {
-            
+            this.BlockchainEventsByAddressId = new HashSet<BlockchainEvent>();
         }
     }
 }
