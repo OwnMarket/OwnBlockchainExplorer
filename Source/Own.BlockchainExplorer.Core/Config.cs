@@ -22,5 +22,7 @@ namespace Own.BlockchainExplorer.Core
         public static string[] AccessControlAllowMethods => _provider.GetString("cors:allowMethods").Split(',', ';');
         public static string[] AccessControlAllowHeaders => _provider.GetString("cors:allowHeaders").Split(',', ';');
         public static string[] AccessControlExposeHeaders => _provider.GetString("cors:exposeHeaders").Split(',', ';');
+
+        public static string SwaggerXmlDocPath => _provider.GetString("swagger:xmlDocPath");
     }
 }

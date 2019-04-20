@@ -2,7 +2,9 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Own.BlockchainExplorer.Common.Extensions;
+using Own.BlockchainExplorer.Core.Interfaces;
 using Own.BlockchainExplorer.Domain.Common;
+using Own.BlockchainExplorer.Domain.Services;
 
 namespace Own.BlockchainExplorer.Domain.DI
 {
@@ -17,6 +19,8 @@ namespace Own.BlockchainExplorer.Domain.DI
                 .Each(implementationType =>
                     implementationType.GetInterfaces().Each(interfaceType =>
                         serviceCollection.AddTransient(interfaceType, implementationType)));
+
+            serviceCollection.AddTransient<IBlockchainInfoService, BlockchainMockService>();
         }
     }
 }

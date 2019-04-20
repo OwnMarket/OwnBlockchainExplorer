@@ -30,8 +30,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                     new Address
                     {
                         BlockchainAddress = addressDto.BlockchainAddress,
-                        Nonce = addressDto.Nonce,
-                        ChxBalance = addressDto.ChxBalance
+                        Nonce = addressDto.Nonce
                     };
 
                 addressRepo.Insert(address);
