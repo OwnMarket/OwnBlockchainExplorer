@@ -4,6 +4,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Converters;
 using Own.BlockchainExplorer.Api.Common;
 using Own.BlockchainExplorer.Core;
+using Swashbuckle.AspNetCore.Swagger;
+using System.Threading.Tasks;
 
 namespace Own.BlockchainExplorer.Api
 {
@@ -13,9 +15,21 @@ namespace Own.BlockchainExplorer.Api
         {
             ConfigureLogging(loggerFactory);
 
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Blockchain Explorer Api");
+            });
+
             app.UseMiddleware<GlobalExceptionHandler>()
                 .UseCors("Default")
                 .UseMvc();
+
+            app.Run(context =>
+            {
+                context.Response.Redirect("swagger");
+                return Task.CompletedTask;
+            });
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -40,6 +54,17 @@ namespace Own.BlockchainExplorer.Api
                 {
                     options.SerializerSettings.Converters.Add(new StringEnumConverter());
                     options.SerializerSettings.DateFormatString = "yyyy-MM-ddTHH:mm:ss";
+                });
+
+                services.AddSwaggerGen(c =>
+                {
+                    c.SwaggerDoc("v1", new Info
+                    {
+                        Version = "v1",
+                        Title = "Blockchain Explorer API",
+                        Description = "-- Add description --"
+                    });
+                    c.DescribeAllEnumsAsStrings();
                 });
         }
 
