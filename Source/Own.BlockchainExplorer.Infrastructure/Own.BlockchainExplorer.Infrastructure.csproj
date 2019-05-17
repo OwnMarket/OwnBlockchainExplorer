@@ -19,4 +19,35 @@
       <Folder Include="Data\EF" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Reference Include="FSharp.Core">
+        <HintPath>..\Libs\Blockchain\FSharp.Core.dll</HintPath>
+        <Private>true</Private>
+      </Reference>
+      <Reference Include="Own.Blockchain.Common">
+        <HintPath>..\Libs\Blockchain\Own.Blockchain.Common.dll</HintPath>
+        <Private>true</Private>
+      </Reference>
+      <Reference Include="Own.Blockchain.Public.Core">
+        <HintPath>..\Libs\Blockchain\Own.Blockchain.Public.Core.dll</HintPath>
+        <Private>true</Private>
+      </Reference>
+      <Reference Include="Own.Blockchain.Public.Crypto">
+        <HintPath>..\Libs\Blockchain\Own.Blockchain.Public.Crypto.dll</HintPath>
+        <Private>true</Private>
+      </Reference>
+      <Reference Include="Own.Common.FSharp">
+        <HintPath>..\Libs\Blockchain\Own.Common.FSharp.dll</HintPath>
+        <Private>true</Private>
+      </Reference>
+      <Reference Include="Secp256k1.Net">
+        <HintPath>..\Libs\Blockchain\Secp256k1.Net.dll</HintPath>
+        <Private>true</Private>
+      </Reference>
+      <Reference Include="SimpleBase">
+        <HintPath>..\Libs\Blockchain\SimpleBase.dll</HintPath>
+        <Private>true</Private>
+      </Reference>
+    </ItemGroup>
+
 </Project>

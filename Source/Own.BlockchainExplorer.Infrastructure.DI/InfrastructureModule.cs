@@ -2,6 +2,9 @@
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Own.BlockchainExplorer.Common.Extensions;
+using Own.BlockchainExplorer.Core;
+using Own.BlockchainExplorer.Core.Interfaces;
+using Own.BlockchainExplorer.Infrastructure.Blockchain;
 using Own.BlockchainExplorer.Infrastructure.Data;
 
 namespace Own.BlockchainExplorer.Infrastructure.DI
@@ -17,6 +20,9 @@ namespace Own.BlockchainExplorer.Infrastructure.DI
                 .Each(implementationType =>
                     implementationType.GetInterfaces().Each(interfaceType =>
                         serviceCollection.AddTransient(interfaceType, implementationType)));
+
+            serviceCollection.AddTransient<IBlockchainClient>(p => new BlockchainClient(Config.NodeApi));
+            serviceCollection.AddTransient<IBlockchainCryptoProvider, BlockchainCryptoProvider>();
         }
     }
 }
