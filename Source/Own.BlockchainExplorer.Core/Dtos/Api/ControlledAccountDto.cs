@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Own.BlockchainExplorer.Core.Dtos.Api
 {
@@ -8,5 +6,17 @@ namespace Own.BlockchainExplorer.Core.Dtos.Api
     {
         public string Hash { get; set; }
         public bool IsActive { get; set; }
+    }
+
+    public class ControlledAccountDtoEqualityComparer : IEqualityComparer<ControlledAccountDto>
+    {
+        public bool Equals(ControlledAccountDto x, ControlledAccountDto y)
+        {
+            return x.Hash == y.Hash;
+        }
+        public int GetHashCode(ControlledAccountDto obj)
+        {
+            return obj.Hash.GetHashCode();
+        }
     }
 }

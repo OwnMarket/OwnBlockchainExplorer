@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Own.BlockchainExplorer.Core.Dtos.Api
+﻿namespace Own.BlockchainExplorer.Core.Dtos.Api
 {
     public class HoldingDto
     {

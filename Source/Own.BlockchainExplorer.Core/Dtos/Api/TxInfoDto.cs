@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Own.BlockchainExplorer.Core.Models;
+using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Own.BlockchainExplorer.Core.Dtos.Api
 {
@@ -18,6 +18,21 @@ namespace Own.BlockchainExplorer.Core.Dtos.Api
         public short? FailedActionNumber { get; set; }
 
         public List<ActionDto> Actions { get; set; }
+
+        public static TxInfoDto FromDomainModel(Transaction tx)
+        {
+            return new TxInfoDto
+            {
+                Hash = tx.Hash,
+                Nonce = tx.Nonce,
+                Timestamp = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddMilliseconds(tx.Timestamp),
+                ExpirationTime = tx.ExpirationTime,
+                ActionFee = tx.ActionFee,
+                Status = tx.Status,
+                ErrorMessage = tx.ErrorMessage,
+                FailedActionNumber = tx.FailedActionNumber
+            };
+        }
     }
 
     public class TxInfoShortDto
@@ -27,5 +42,13 @@ namespace Own.BlockchainExplorer.Core.Dtos.Api
         public string SenderAddress { get; set; }
         public DateTime Timestamp { get; set; }
         public int NumberOfActions { get; set; }
+
+        public static TxInfoShortDto FromDomainModel(Transaction tx)
+        {
+            return new TxInfoShortDto
+            {
+                Hash = tx.Hash
+            };
+        }
     }
 }

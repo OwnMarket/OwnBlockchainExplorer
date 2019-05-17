@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Own.BlockchainExplorer.Core.Models;
+using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Own.BlockchainExplorer.Core.Dtos.Api
 {
@@ -26,6 +26,29 @@ namespace Own.BlockchainExplorer.Core.Dtos.Api
         public List<TxInfoShortDto> Transactions { get; set; }
         public List<EquivocationInfoShortDto> Equivocations { get; set; }
         public List<StakingRewardDto> StakingRewards { get; set; }
+
+        public static BlockInfoDto FromDomainModel(Block block)
+        {
+            return new BlockInfoDto
+            {
+                BlockNumber = block.BlockNumber,
+                Hash = block.Hash,
+                PreviousBlockHash = block.PreviousBlockHash,
+                ConfigurationBlockNumber = block.ConfigurationBlockNumber,
+                Timestamp = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddMilliseconds(block.Timestamp),
+                ValidatorAddress = block.Validator.BlockchainAddress,
+                TxSetRoot = block.TxSetRoot,
+                TxResultSetRoot = block.TxResultSetRoot,
+                EquivocationProofsRoot = block.EquivocationProofsRoot,
+                EquivocationProofResultsRoot = block.EquivocationProofResultsRoot,
+                StateRoot = block.StateRoot,
+                StakingRewardsRoot = block.StakingRewardsRoot,
+                ConfigurationRoot = block.ConfigurationRoot,
+                Configuration = block.Configuration,
+                ConsensusRound = block.ConsensusRound,
+                Signatures = block.Signatures
+            };
+        }
     }
 
     public class BlockInfoShortDto
