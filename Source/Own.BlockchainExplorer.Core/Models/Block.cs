@@ -11,7 +11,7 @@ namespace Own.BlockchainExplorer.Core.Models
         public long BlockId { get; set; }
         public long BlockNumber { get; set; }
         public string Hash { get; set; }
-        public long PreviousBlockId { get; set; }
+        public long? PreviousBlockId { get; set; }
         public string PreviousBlockHash { get; set; }
         public long ConfigurationBlockNumber { get; set; }
         public long Timestamp { get; set; }

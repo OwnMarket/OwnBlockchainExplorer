@@ -13,6 +13,7 @@ namespace Own.BlockchainExplorer.Core.Models
         public string NetworkAddress { get; set; }
         public decimal SharedRewardPercent { get; set; }
         public bool IsActive { get; set; }
+        public bool IsDeleted { get; set; }
         
         public virtual ICollection<Block> BlocksByValidatorId { get; set; }
 

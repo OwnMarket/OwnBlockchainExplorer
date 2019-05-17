@@ -11,7 +11,7 @@ namespace Own.BlockchainExplorer.Core.Models
         public long BlockchainEventId { get; set; }
         public string EventType { get; set; }
         public decimal? Amount { get; set; }
-        public string Fee { get; set; }
+        public decimal? Fee { get; set; }
         public long BlockId { get; set; }
         public long? TransactionId { get; set; }
         public long? EquivocationId { get; set; }

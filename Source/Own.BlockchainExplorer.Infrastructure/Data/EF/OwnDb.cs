@@ -92,11 +92,9 @@ namespace Own.BlockchainExplorer.Infrastructure.Data.EF
                 .HasColumnName("hash")
                 .IsRequired();
             block.Property(e => e.PreviousBlockId)
-                .HasColumnName("previous_block_id")
-                .IsRequired();
+                .HasColumnName("previous_block_id");
             block.Property(e => e.PreviousBlockHash)
-                .HasColumnName("previous_block_hash")
-                .IsRequired();
+                .HasColumnName("previous_block_hash");
             block.Property(e => e.ConfigurationBlockNumber)
                 .HasColumnName("configuration_block_number")
                 .IsRequired();
@@ -130,7 +128,6 @@ namespace Own.BlockchainExplorer.Infrastructure.Data.EF
                 .IsRequired();
             block.HasOne(e => e.PreviousBlock)
                 .WithMany(e => e.BlocksByPreviousBlockId)
-                .IsRequired()
                 .HasForeignKey(e => e.PreviousBlockId);
             block.HasOne(e => e.Validator)
                 .WithMany(e => e.BlocksByValidatorId)
@@ -322,6 +319,9 @@ namespace Own.BlockchainExplorer.Infrastructure.Data.EF
                 .IsRequired();
             validator.Property(e => e.IsActive)
                 .HasColumnName("is_active")
+                .IsRequired();
+            validator.Property(e => e.IsDeleted)
+                .HasColumnName("is_deleted")
                 .IsRequired();
         }
     }
