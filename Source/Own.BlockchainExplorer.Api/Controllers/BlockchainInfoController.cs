@@ -22,7 +22,7 @@ namespace Own.BlockchainExplorer.Api.Controllers
 
         [HttpGet]
         [Route("block/{blockNumber}")]
-        public IActionResult GetBlockInfo(int blockNumber)
+        public IActionResult GetBlockInfo(long blockNumber)
         {
             return ApiResult(_blockchainInfoService.GetBlockInfo(blockNumber), r => NotFound(r));
         }
@@ -66,14 +66,14 @@ namespace Own.BlockchainExplorer.Api.Controllers
         [Route("blocks")]
         public IActionResult GetBlocks([FromQuery] int page = 1, [FromQuery] int limit = 50)
         {
-            return ApiResult(_blockchainInfoService.GetBlocks(page, limit), r => NotFound(r));
+            return ApiResult(_blockchainInfoService.GetBlocks(limit, page), r => NotFound(r));
         }
 
         [HttpGet]
         [Route("txs")]
         public IActionResult GetTransactions([FromQuery] int page = 1, [FromQuery] int limit = 50)
         {
-            return ApiResult(_blockchainInfoService.GetTxs(page, limit), r => NotFound(r));
+            return ApiResult(_blockchainInfoService.GetTxs(limit, page), r => NotFound(r));
         }
 
         [HttpGet]
@@ -81,6 +81,13 @@ namespace Own.BlockchainExplorer.Api.Controllers
         public IActionResult GetValidators()
         {
             return ApiResult(_blockchainInfoService.GetValidators(), r => NotFound(r));
+        }
+
+        [HttpGet]
+        [Route("search/{hash}")]
+        public IActionResult Search(string hash)
+        {
+            return ApiResult(_blockchainInfoService.Search(hash), r => NotFound(r));
         }
     }
 }
