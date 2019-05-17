@@ -132,7 +132,68 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
             Expression<Func<T, TInclude2>> includeProperty2,
             Expression<Func<T, TInclude3>> includeProperty3)
         {
-            return this.GetQuery(whereCondition, includeProperty1, includeProperty2, includeProperty3)
+            return this.Get<TInclude1, TInclude2, TInclude3, object>(
+                whereCondition, 
+                includeProperty1, 
+                includeProperty2, 
+                includeProperty3, 
+                null)
+                .ToList();
+        }
+
+        public IEnumerable<T> Get<TInclude1, TInclude2, TInclude3, TInclude4>(
+            Expression<Func<T, bool>> whereCondition,
+            Expression<Func<T, TInclude1>> includeProperty1,
+            Expression<Func<T, TInclude2>> includeProperty2,
+            Expression<Func<T, TInclude3>> includeProperty3,
+            Expression<Func<T, TInclude4>> includeProperty4)
+        {
+            return this.Get<TInclude1, TInclude2, TInclude3, TInclude4, object>(
+                whereCondition,
+                includeProperty1,
+                includeProperty2,
+                includeProperty3,
+                includeProperty4,
+                null)
+                .ToList();
+        }
+
+        public IEnumerable<T> Get<TInclude1, TInclude2, TInclude3, TInclude4, TInclude5>(
+            Expression<Func<T, bool>> whereCondition,
+            Expression<Func<T, TInclude1>> includeProperty1,
+            Expression<Func<T, TInclude2>> includeProperty2,
+            Expression<Func<T, TInclude3>> includeProperty3,
+            Expression<Func<T, TInclude4>> includeProperty4,
+            Expression<Func<T, TInclude5>> includeProperty5)
+        {
+            return this.Get<TInclude1, TInclude2, TInclude3, TInclude4, TInclude5, object>(
+                whereCondition,
+                includeProperty1,
+                includeProperty2,
+                includeProperty3,
+                includeProperty4,
+                includeProperty5,
+                null)
+                .ToList();
+        }
+
+        public IEnumerable<T> Get<TInclude1, TInclude2, TInclude3, TInclude4, TInclude5, TInclude6>(
+            Expression<Func<T, bool>> whereCondition,
+            Expression<Func<T, TInclude1>> includeProperty1,
+            Expression<Func<T, TInclude2>> includeProperty2,
+            Expression<Func<T, TInclude3>> includeProperty3,
+            Expression<Func<T, TInclude4>> includeProperty4,
+            Expression<Func<T, TInclude5>> includeProperty5,
+            Expression<Func<T, TInclude6>> includeProperty6)
+        {
+            return this.GetQuery(
+                whereCondition, 
+                includeProperty1, 
+                includeProperty2, 
+                includeProperty3, 
+                includeProperty4, 
+                includeProperty5, 
+                includeProperty6)
                 .ToList();
         }
 
@@ -166,12 +227,44 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                 .ToList();
         }
 
+        public IEnumerable<TOutput> GetLastAs<TOutput>(
+            Expression<Func<T, bool>> whereCondition,
+            Expression<Func<T, TOutput>> mapFunction,
+            int count)
+        {
+            return _db.Set<T>()
+                .Where(whereCondition)
+                .OrderByDescending(mapFunction)
+                .Take(count)
+                .Select(mapFunction)
+                .ToList();
+        }
+
+        public IEnumerable<TOutput> GetLastAs<TOutput>(
+            Expression<Func<T, bool>> whereCondition,
+            Expression<Func<T, TOutput>> orderFunction,
+            Expression<Func<T, TOutput>> mapFunction,
+            int takeCount,
+            int skipCount)
+        {
+            return _db.Set<T>()
+                .Where(whereCondition)
+                .OrderByDescending(orderFunction)
+                .Skip(skipCount)
+                .Take(takeCount)
+                .Select(mapFunction)
+                .ToList();
+        }
+
         // Breadth traversal of navigation properties
-        private IQueryable<T> GetQuery<TInclude1, TInclude2, TInclude3>(
+        private IQueryable<T> GetQuery<TInclude1, TInclude2, TInclude3, TInclude4, TInclude5, TInclude6>(
             Expression<Func<T, bool>> whereCondition,
             Expression<Func<T, TInclude1>> includeProperty1,
             Expression<Func<T, TInclude2>> includeProperty2,
-            Expression<Func<T, TInclude3>> includeProperty3)
+            Expression<Func<T, TInclude3>> includeProperty3,
+            Expression<Func<T, TInclude4>> includeProperty4,
+            Expression<Func<T, TInclude5>> includeProperty5,
+            Expression<Func<T, TInclude6>> includeProperty6)
         {
             var query = _db.Set<T>().AsQueryable();
 
@@ -181,6 +274,12 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                 query = query.Include(includeProperty2);
             if (includeProperty3 != null)
                 query = query.Include(includeProperty3);
+            if (includeProperty4 != null)
+                query = query.Include(includeProperty4);
+            if (includeProperty5 != null)
+                query = query.Include(includeProperty5);
+            if (includeProperty6 != null)
+                query = query.Include(includeProperty6);
 
             if (whereCondition != null)
                 query = query.Where(whereCondition);

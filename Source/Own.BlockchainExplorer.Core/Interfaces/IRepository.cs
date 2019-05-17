@@ -62,6 +62,30 @@ namespace Own.BlockchainExplorer.Core.Interfaces
             Expression<Func<T, TInclude2>> includeProperty2,
             Expression<Func<T, TInclude3>> includeProperty3);
 
+        IEnumerable<T> Get<TInclude1, TInclude2, TInclude3, TInclude4>(
+            Expression<Func<T, bool>> whereCondition,
+            Expression<Func<T, TInclude1>> includeProperty1,
+            Expression<Func<T, TInclude2>> includeProperty2,
+            Expression<Func<T, TInclude3>> includeProperty3,
+            Expression<Func<T, TInclude4>> includeProperty4);
+
+        IEnumerable<T> Get<TInclude1, TInclude2, TInclude3, TInclude4, TInclude5>(
+            Expression<Func<T, bool>> whereCondition,
+            Expression<Func<T, TInclude1>> includeProperty1,
+            Expression<Func<T, TInclude2>> includeProperty2,
+            Expression<Func<T, TInclude3>> includeProperty3,
+            Expression<Func<T, TInclude4>> includeProperty4,
+            Expression<Func<T, TInclude5>> includeProperty5);
+
+        IEnumerable<T> Get<TInclude1, TInclude2, TInclude3, TInclude4, TInclude5, TInclude6>(
+            Expression<Func<T, bool>> whereCondition,
+            Expression<Func<T, TInclude1>> includeProperty1,
+            Expression<Func<T, TInclude2>> includeProperty2,
+            Expression<Func<T, TInclude3>> includeProperty3,
+            Expression<Func<T, TInclude4>> includeProperty4,
+            Expression<Func<T, TInclude5>> includeProperty5,
+            Expression<Func<T, TInclude6>> includeProperty6);
+
         IEnumerable<T> GetDeep<TInclude1, TInclude2>(
             Expression<Func<T, bool>> whereCondition,
             Expression<Func<T, ICollection<TInclude1>>> includeProperty1,
@@ -78,5 +102,17 @@ namespace Own.BlockchainExplorer.Core.Interfaces
         IEnumerable<TOutput> GetAs<TOutput>(
             Expression<Func<T, bool>> whereCondition,
             Expression<Func<T, TOutput>> mapFunction);
+
+        IEnumerable<TOutput> GetLastAs<TOutput>(
+            Expression<Func<T, bool>> whereCondition,
+            Expression<Func<T, TOutput>> mapFunction,
+            int count);
+
+        IEnumerable<TOutput> GetLastAs<TOutput>(
+            Expression<Func<T, bool>> whereCondition,
+            Expression<Func<T, TOutput>> orderFunction,
+            Expression<Func<T, TOutput>> mapFunction,
+            int takeCount,
+            int skipCount);
     }
 }
