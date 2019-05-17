@@ -4,6 +4,6 @@ namespace Own.BlockchainExplorer.Core.Dtos.Scanning
     {
         public string BlockchainAddress { get; set; }
         public long Nonce { get; set; }
-        public decimal ChxBalance { get; set; }
+        public ChxBalanceDto Balance { get; set; }
     }
 }
