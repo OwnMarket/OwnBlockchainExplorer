@@ -143,7 +143,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             });
         }
 
-        public Result<BlockInfoDto> GetBlockInfo(int blockNumber)
+        public Result<BlockInfoDto> GetBlockInfo(long blockNumber)
         {
             return Result.Success(new BlockInfoDto() {
                 BlockNumber = 121,
@@ -486,6 +486,11 @@ namespace Own.BlockchainExplorer.Domain.Services
                     IsActive = true
                 },
             }.AsEnumerable());
+        }
+
+        public Result<object> Search(string hash)
+        {
+            throw new NotImplementedException();
         }
     }
 }

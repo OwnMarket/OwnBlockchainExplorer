@@ -7,7 +7,7 @@ namespace Own.BlockchainExplorer.Core.Interfaces
     public interface IBlockchainInfoService
     {
         Result<AddressInfoDto> GetAddressInfo(string blockchainAddress);
-        Result<BlockInfoDto> GetBlockInfo(int blockNumber);
+        Result<BlockInfoDto> GetBlockInfo(long blockNumber);
         Result<TxInfoDto> GetTxInfo(string txHash);
         Result<EquivocationInfoDto> GetEquivocationInfo(string EquivocationProofHash);
         Result<AccountInfoDto> GetAccountInfo(string accountHash);
@@ -17,5 +17,7 @@ namespace Own.BlockchainExplorer.Core.Interfaces
         Result<IEnumerable<TxInfoShortDto>> GetTxs(int limit, int page);
         Result<IEnumerable<BlockInfoShortDto>> GetBlocks(int limit, int page);
         Result<IEnumerable<ValidatorInfoShortDto>> GetValidators();
+
+        Result<object> Search(string hash);
     }
 }
