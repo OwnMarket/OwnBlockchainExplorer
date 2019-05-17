@@ -16,6 +16,13 @@ namespace Own.BlockchainExplorer.Core
         public static string ContentDir => Directory.GetCurrentDirectory();
         public static string DB => _provider.GetString("appSettings:DB");
 
+        //blockchain
+        public static string NodeApi => _provider.GetString("nodeApiUrl");
+        public static string GenesisAddress => _provider.GetString("genesisAddress");
+        public static decimal? GenesisChxSupply => _provider.GetDecimal("genesisChxSupply");
+        public static string[] GenesisValidators => _provider.GetString("genesisValidators").Split(',', ';');
+        public static string FakeValidator => _provider.GetString("fakeValidator");
+
         // API
         public static string[] ApiUrls => _provider.GetString("server.urls")?.Split(',', ';');
         public static string[] AccessControlAllowOrigins => _provider.GetString("cors:allowOrigins").Split(',', ';');

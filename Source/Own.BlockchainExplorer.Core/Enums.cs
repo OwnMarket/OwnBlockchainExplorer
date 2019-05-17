@@ -7,5 +7,43 @@
             ReadOnly,
             Writable
         }
+
+        public enum EventType
+        {
+            ValidatorReward,
+            StakingReward,
+            DepositTaken,
+            DepositGiven,
+            Action
+        }
+
+        public enum TxStatus
+        {
+            Success,
+            Failure,
+            Pending
+        }
+
+        public enum ActionType
+        {
+            TransferChx,
+            DelegateStake,
+            ConfigureValidator,
+            RemoveValidator,
+            TransferAsset,
+            CreateAssetEmission,
+            CreateAsset,
+            SetAssetCode,
+            SetAssetController,
+            CreateAccount,
+            SetAccountController,
+            SubmitVote,
+            SubmitVoteWeight,
+            SetAccountEligibility,
+            SetAssetEligibility,
+            ChangeKycControllerAddress,
+            AddKycProvider,
+            RemoveKycProvider
+        }
     }
 }
