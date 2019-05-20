@@ -19,4 +19,10 @@
     <ProjectReference Include="..\Own.BlockchainExplorer.Infrastructure.DI\Own.BlockchainExplorer.Infrastructure.DI.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
