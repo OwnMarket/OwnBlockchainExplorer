@@ -56,7 +56,8 @@ namespace Own.BlockchainExplorer.Tests.Common
 
         public void Dispose()
         {
-            _serviceProvider.Dispose();
+            if (_serviceProvider != null)
+                _serviceProvider.Dispose();
         }
 
     }
