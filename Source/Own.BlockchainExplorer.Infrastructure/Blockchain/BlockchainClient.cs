@@ -3,7 +3,6 @@ using Own.BlockchainExplorer.Common.Framework;
 using Own.BlockchainExplorer.Core.Dtos.Scanning;
 using Own.BlockchainExplorer.Core.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;

@@ -1,9 +1,7 @@
 ﻿using Own.Blockchain.Common;
 using Own.Blockchain.Public.Crypto;
 using Own.BlockchainExplorer.Core.Interfaces;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Own.BlockchainExplorer.Infrastructure.Blockchain
 {

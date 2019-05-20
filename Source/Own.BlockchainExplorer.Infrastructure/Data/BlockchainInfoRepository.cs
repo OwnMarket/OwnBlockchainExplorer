@@ -2,11 +2,8 @@
 using Own.BlockchainExplorer.Infrastructure.Data.EF;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
-using Own.BlockchainExplorer.Core.Models;
 using Own.BlockchainExplorer.Core.Interfaces;
 
 namespace Own.BlockchainExplorer.Infrastructure.Data

@@ -1,7 +1,5 @@
 ﻿using Own.BlockchainExplorer.Core.Dtos.Api;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Own.BlockchainExplorer.Core.Interfaces
 {

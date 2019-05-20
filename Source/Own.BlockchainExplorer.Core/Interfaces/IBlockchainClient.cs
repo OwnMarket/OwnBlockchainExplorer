@@ -1,8 +1,5 @@
 ﻿using Own.BlockchainExplorer.Common.Framework;
 using Own.BlockchainExplorer.Core.Dtos.Scanning;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Own.BlockchainExplorer.Core.Interfaces

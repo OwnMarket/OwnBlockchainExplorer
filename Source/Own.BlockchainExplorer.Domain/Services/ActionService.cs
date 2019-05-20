@@ -1,15 +1,12 @@
 ﻿using Own.BlockchainExplorer.Common.Extensions;
 using Own.BlockchainExplorer.Common.Framework;
 using Own.BlockchainExplorer.Core.Dtos.ActionData;
-using Own.BlockchainExplorer.Core.Dtos.Scanning;
 using Own.BlockchainExplorer.Core.Enums;
 using Own.BlockchainExplorer.Core.Interfaces;
 using Own.BlockchainExplorer.Core.Models;
 using Own.BlockchainExplorer.Domain.Common;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Own.BlockchainExplorer.Domain.Services
 {

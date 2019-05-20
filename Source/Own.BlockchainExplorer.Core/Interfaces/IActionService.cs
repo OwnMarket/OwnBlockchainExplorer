@@ -1,9 +1,7 @@
 ﻿using Own.BlockchainExplorer.Common.Framework;
 using Own.BlockchainExplorer.Core.Dtos.ActionData;
 using Own.BlockchainExplorer.Core.Models;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Own.BlockchainExplorer.Core.Interfaces
 {

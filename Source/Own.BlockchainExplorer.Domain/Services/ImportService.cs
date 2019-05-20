@@ -8,10 +8,8 @@ using Own.BlockchainExplorer.Core.Enums;
 using Own.BlockchainExplorer.Core.Interfaces;
 using Own.BlockchainExplorer.Core.Models;
 using Own.BlockchainExplorer.Domain.Common;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Own.BlockchainExplorer.Domain.Services
 {
