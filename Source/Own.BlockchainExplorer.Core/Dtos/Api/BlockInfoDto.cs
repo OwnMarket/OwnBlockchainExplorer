@@ -23,10 +23,6 @@ namespace Own.BlockchainExplorer.Core.Dtos.Api
         public int? ConsensusRound { get; set; }
         public string Signatures { get; set; }
 
-        public List<TxInfoShortDto> Transactions { get; set; }
-        public List<EquivocationInfoShortDto> Equivocations { get; set; }
-        public List<StakingRewardDto> StakingRewards { get; set; }
-
         public static BlockInfoDto FromDomainModel(Block block)
         {
             return new BlockInfoDto
