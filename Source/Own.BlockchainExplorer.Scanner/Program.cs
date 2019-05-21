@@ -8,6 +8,7 @@ using Own.BlockchainExplorer.Domain.DI;
 using Own.BlockchainExplorer.Infrastructure.DI;
 using System;
 using System.Linq;
+using Own.BlockchainExplorer.Common;
 
 namespace Own.BlockchainExplorer.Scanner
 {
@@ -21,7 +22,9 @@ namespace Own.BlockchainExplorer.Scanner
             var serviceProvider = ConfigureServices();
             _scannerService = serviceProvider.GetService<IScannerService>();
 
-            RunCycle().GetAwaiter().GetResult();
+            TaskScheduler.Run(RunCycle, 1);
+
+            WaitForCancellation();
         }
 
         private static void ConfigureApp()
@@ -29,6 +32,7 @@ namespace Own.BlockchainExplorer.Scanner
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
             Config.SetConfigurationProvider(DependencyResolver.GetConfigurationProvider());
+            Log.Initialize($"scanner_{DateTime.UtcNow.ToShortDateString()}.log");
         }
 
         private static ServiceProvider ConfigureServices()
@@ -41,12 +45,21 @@ namespace Own.BlockchainExplorer.Scanner
             return serviceCollection.BuildServiceProvider();
         }
 
-        private static async Task RunCycle()
+        private static void WaitForCancellation()
+        {
+            var cancellationTokenSource = new CancellationTokenSource();
+            AppDomain.CurrentDomain.ProcessExit += (s, e) => cancellationTokenSource.Cancel();
+            Console.CancelKeyPress += (s, e) => cancellationTokenSource.Cancel();
+            while (!cancellationTokenSource.Token.IsCancellationRequested)
+                Thread.Sleep(5000);
+        }
+
+        private static void RunCycle()
         {
             _scannerService.InitialBlockchainConfiguration();
-            var result = await _scannerService.CheckNewBlocks();
+            var result = _scannerService.CheckNewBlocks().Result;
             if (result.Failed)
-                Console.WriteLine(string.Join(";", result.Alerts.Select(a => a.Message))); 
+                Log.Error(string.Join(";", result.Alerts.Select(a => a.Message))); 
         }
     }
 }
