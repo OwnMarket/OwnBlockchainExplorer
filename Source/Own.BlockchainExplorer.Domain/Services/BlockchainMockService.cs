@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Own.BlockchainExplorer.Domain.Services
 {
-    public class BlockchainMockService : IBlockchainInfoService
+    public class BlockchainMockService 
     {
         public Result<AddressInfoDto> GetAddressInfo(string blockchainAddress)
         {
@@ -22,122 +22,6 @@ namespace Own.BlockchainExplorer.Domain.Services
                     AvailableBalance = 1399.993M,
                     DelegatedStakes = 100,
                     ValidatorDeposit = 0
-                },
-                Accounts = new List<ControlledAccountDto>()
-                {
-                    new ControlledAccountDto()
-                    {
-                        Hash = "wcpUPec7pNUKys9pkvPfhjkezekZ99GHpXavbS6M1R4",
-                        IsActive = true
-                    },
-                    new ControlledAccountDto()
-                    {
-                        Hash = "Fr5HoamTv7W598duwGQT3p9pqK5oHYjxWqWwycaeg1YC",
-                        IsActive = false
-                    }
-                },
-                Assets = new List<ControlledAssetDto>()
-                {
-                    new ControlledAssetDto()
-                    {
-                        Hash = "FnrfMcvwghb4qws7evxSTHdJ43aShxdRXWu3hZ8HX9wU",
-                        AssetCode = "ASD",
-                        IsActive = true
-                    }
-                },
-                DelegatedStakes = new List<StakeDto>()
-                {
-                    new StakeDto
-                    {
-                        StakerAddress = "CHVegEXVwUhK2gbrqnMsYyNSVC7CLTM7qmQ",
-                        ValidatorAddress = "CHMf4inrS8hnPNEgJVZPRHFhsDPCHSHZfAJ",
-                        Amount = 100
-                    }
-                },
-                ReceivedStakes = new List<StakeDto>()
-                {
-                    new StakeDto
-                    {
-                        StakerAddress = "CHMf4inrS8hnPNEgJVZPRHFhsDPCHSHZfAJ",
-                        ValidatorAddress = "CHVegEXVwUhK2gbrqnMsYyNSVC7CLTM7qmQ",
-                        Amount = 500
-                    }
-                },
-                Actions = new List<ActionDto>()
-                {
-                    new ActionDto()
-                    {
-                        ActionType = "CreateAccount",
-                        ActionNumber = 1,
-                        TxHash = "6XTowWarMR1UjzAVfiMYs7hsKK9hPBagR7JtFn7nxgfK"
-                    },
-                    new ActionDto()
-                    {
-                        ActionType = "CreateAsset",
-                        ActionNumber = 2,
-                        TxHash = "6XTowWarMR1UjzAVfiMYs7hsKK9hPBagR7JtFn7nxgfK"
-                    },
-                    new ActionDto()
-                    {
-                        ActionType = "CreateAssetEmission",
-                        ActionNumber = 3,
-                        ActionData = "{\"emissionAccountHash\" : \"wcpUPec7pNUKys9pkvPfhjkezekZ99GHpXavbS6M1R4\", \"assetHash\" : \"FnrfMcvwghb4qws7evxSTHdJ43aShxdRXWu3hZ8HX9wU\", \"amount\" : 1000}",
-                        TxHash = "6XTowWarMR1UjzAVfiMYs7hsKK9hPBagR7JtFn7nxgfK"
-                    },
-                    new ActionDto()
-                    {
-                        ActionNumber = 1,
-                        ActionType = "TransferChx",
-                        ActionData = "{\"recipientAddress\": \"CHfDeuB1y1eJnWd6aWfYaRvpS9Qgrh1eqe7\", \"amount\": 100}",
-                        TxHash = "CRjqV3DLh7jyCKZqj2pCdfw3s3ynXxEf5JMVm1rCYjmp"
-                    }
-                },
-                ValidatorRewards = new List<ValidatorRewardDto>()
-                {
-                    new ValidatorRewardDto()
-                    {
-                        Amount = 0.03M    
-                    },
-                    new ValidatorRewardDto()
-                    {
-                        Amount = 0.01M
-                    },
-                    new ValidatorRewardDto()
-                    {
-                        Amount = 0.03M
-                    }
-                },
-                StakingRewards = new List<StakingRewardDto>()
-                {
-                    new StakingRewardDto()
-                    {
-                        StakerAddress = "CHVegEXVwUhK2gbrqnMsYyNSVC7CLTM7qmQ",
-                        Amount = 0.005125M
-                    }
-                },
-                TakenDeposits = new List<DepositDto>()
-                {
-                    new DepositDto()
-                    {
-                        Amount = 5000,
-                        BlockchainAddress = "CHVegEXVwUhK2gbrqnMsYyNSVC7CLTM7qmQ",
-                        EquivocationProofHash = "BTXVBwuTXWTpPtJC71FPGaeC17NVhu9mS6JavqZqHbYH"
-                    }
-                },
-                GivenDeposits = new List<DepositDto>()
-                {
-                    new DepositDto()
-                    {
-                        Amount = 1000,
-                        BlockchainAddress = "CHVegEXVwUhK2gbrqnMsYyNSVC7CLTM7qmQ",
-                        EquivocationProofHash = "G9Fz3L8xn7zjyk1ZuHNNnvYeMJFqZpnaELQ95rUGcVNR"
-                    },
-                    new DepositDto()
-                    {
-                        Amount = 1000,
-                        BlockchainAddress = "CHVegEXVwUhK2gbrqnMsYyNSVC7CLTM7qmQ",
-                        EquivocationProofHash = "6rYDAZNZE5dhii3JNHvcpxk6uiuWfUHr7qwbwN9qYDx4"
-                    }
                 }
             });
         }
@@ -159,60 +43,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 StakingRewardsRoot = "Ey9qZK4J4G2PK68ZFzyteP8dcUWCjcBiMZ46D7nH11pY",
                 ConfigurationRoot = "8J9eC9A3jzmwCxg8VhjT84xAts8tVVm6RwzLKBhMd3D8",
                 ConsensusRound = 0,
-                Signatures = "GBfbNB8xQUaLoZDFDGtpAH3EYks2uFdaBErPJKAzR37DBkKDL4HEFNRYLPapbQuZ5JgDzUSXgU7iGJqy4sSJx4775;64y6JNqpeDqS927rgbCKbdqysAkeEfLC4KS5pAeDpuPL2SR1gsqFFMr5YmrcrPhk75dXeihWovUqctYPrDHjCejiP;664ZaikasKTrtp9BMnoJgEtFuVAgdEq56D9FJKvF1jsq7pFAEXmJu7Nt4FmWjfT8ncXQTCxhakUGgFiDHPjnE4xLG",
-
-                Transactions = new List<TxInfoShortDto>()
-                {
-                    new TxInfoShortDto()
-                    {
-                        Hash = "6XTowWarMR1UjzAVfiMYs7hsKK9hPBagR7JtFn7nxgfK",
-                        NumberOfActions = 3,
-                        SenderAddress = "CHVegEXVwUhK2gbrqnMsYyNSVC7CLTM7qmQ",
-                        BlockNumber = 121,
-                        Timestamp = DateTime.UtcNow
-                    },
-                    new TxInfoShortDto()
-                    {
-                        Hash = "8ZVF1R9vLkV2QGMJxGGffgPqMKv41kemFfVGTzmPfKyg",
-                        NumberOfActions = 1,
-                        SenderAddress = "CHVegEXVwUhK2gbrqnMsYyNSVC7CLTM7qmQ",
-                        BlockNumber = 121,
-                        Timestamp = DateTime.UtcNow
-                    }
-                },
-
-                Equivocations = new List<EquivocationInfoShortDto>()
-                {
-                    new EquivocationInfoShortDto()
-                    {
-                        EquivocationProofHash = "6rYDAZNZE5dhii3JNHvcpxk6uiuWfUHr7qwbwN9qYDx4",
-                        TakenDeposit = new DepositDto()
-                        {
-                            Amount = 5000,
-                            EquivocationProofHash = "6rYDAZNZE5dhii3JNHvcpxk6uiuWfUHr7qwbwN9qYDx4",
-                            BlockchainAddress = "CHVegEXVwUhK2gbrqnMsYyNSVC7CLTM7qmQ"
-                        }
-                    }
-                },
-
-                StakingRewards = new List<StakingRewardDto>()
-                {
-                    new StakingRewardDto()
-                    {
-                        StakerAddress = "CHGeQC23WjThKoDoSbKRuUKvq1EGkBaA5Gg",
-                        Amount = 0.0128125M
-                    },
-                    new StakingRewardDto()
-                    {
-                        StakerAddress = "CHJQ8noahag1Cwg6tUW6Y9ESdiCFFBwyQ5C",
-                        Amount = 0.005125M
-                    },
-                    new StakingRewardDto()
-                    {
-                        StakerAddress = "CHXSesNUw6PdUCY6u3N9B8orHYNQMWHREdZ",
-                        Amount = 0.0025625M
-                    }
-                }             
+                Signatures = "GBfbNB8xQUaLoZDFDGtpAH3EYks2uFdaBErPJKAzR37DBkKDL4HEFNRYLPapbQuZ5JgDzUSXgU7iGJqy4sSJx4775;64y6JNqpeDqS927rgbCKbdqysAkeEfLC4KS5pAeDpuPL2SR1gsqFFMr5YmrcrPhk75dXeihWovUqctYPrDHjCejiP;664ZaikasKTrtp9BMnoJgEtFuVAgdEq56D9FJKvF1jsq7pFAEXmJu7Nt4FmWjfT8ncXQTCxhakUGgFiDHPjnE4xLG"           
             });
         }
 
@@ -226,30 +57,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 Nonce = 12,
                 ExpirationTime = DateTime.UtcNow.AddSeconds(10),
                 ActionFee = 0.01M,
-                Status = "Success",
-
-                Actions = new List<ActionDto>()
-                {
-                    new ActionDto()
-                    {
-                        ActionType = "CreateAccount",
-                        ActionNumber = 1,
-                        TxHash = "6XTowWarMR1UjzAVfiMYs7hsKK9hPBagR7JtFn7nxgfK"
-                    },
-                    new ActionDto()
-                    {
-                        ActionType = "CreateAsset",
-                        ActionNumber = 2,
-                        TxHash = "6XTowWarMR1UjzAVfiMYs7hsKK9hPBagR7JtFn7nxgfK"
-                    },
-                    new ActionDto()
-                    {
-                        ActionType = "CreateAssetEmission",
-                        ActionNumber = 3,
-                        ActionData = "{\"EmissionAccountHash\" : \"wcpUPec7pNUKys9pkvPfhjkezekZ99GHpXavbS6M1R4\", \"AssetHash\" : \"FnrfMcvwghb4qws7evxSTHdJ43aShxdRXWu3hZ8HX9wU\", \"Amount\" : 1000}",
-                        TxHash = "6XTowWarMR1UjzAVfiMYs7hsKK9hPBagR7JtFn7nxgfK"
-                    }
-                }
+                Status = "Success"
             });
         }
 

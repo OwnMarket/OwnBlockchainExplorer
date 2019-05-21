@@ -14,27 +14,6 @@ namespace Own.BlockchainExplorer.Api.Controllers
         }
 
         [HttpGet]
-        [Route("address/{blockchainAddress}")]
-        public IActionResult GetAddressInfo(string blockchainAddress)
-        {
-            return ApiResult(_blockchainInfoService.GetAddressInfo(blockchainAddress), r => NotFound(r));
-        }
-
-        [HttpGet]
-        [Route("block/{blockNumber}")]
-        public IActionResult GetBlockInfo(long blockNumber)
-        {
-            return ApiResult(_blockchainInfoService.GetBlockInfo(blockNumber), r => NotFound(r));
-        }
-
-        [HttpGet]
-        [Route("tx/{txHash}")]
-        public IActionResult GetTxInfo(string txHash)
-        {
-            return ApiResult(_blockchainInfoService.GetTxInfo(txHash), r => NotFound(r));
-        }
-
-        [HttpGet]
         [Route("equivocation/{equivocationProofHash}")]
         public IActionResult GetEquivocationInfo(string equivocationProofHash)
         {

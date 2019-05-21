@@ -14,205 +14,23 @@ namespace Own.BlockchainExplorer.Domain.Services
     public class BlockchainInfoService : DataService, IBlockchainInfoService
     {
         private readonly IBlockchainInfoRepositoryFactory _blockchainInfoRepositoryFactory;
+        private readonly IAddressInfoService _addressInfoService;
+        private readonly IBlockInfoService _blockInfoService;
+        private readonly ITxInfoService _txInfoService;
 
         public BlockchainInfoService(
             IUnitOfWorkFactory unitOfWorkFactory,
             IRepositoryFactory repositoryFactory,
-            IBlockchainInfoRepositoryFactory blockchainInfoRepositoryFactory)
+            IBlockchainInfoRepositoryFactory blockchainInfoRepositoryFactory,
+            IAddressInfoService addressInfoService,
+            IBlockInfoService blockInfoService,
+            ITxInfoService txInfoService)
             : base(unitOfWorkFactory, repositoryFactory)
         {
             _blockchainInfoRepositoryFactory = blockchainInfoRepositoryFactory;
-        }
-
-        public Result<AddressInfoDto> GetAddressInfo(string blockchainAddress)
-        {
-            using (var uow = NewUnitOfWork())
-            {
-                var eventRepo = NewRepository<BlockchainEvent>(uow);
-                var events = eventRepo.Get(
-                    e => e.Address.BlockchainAddress == blockchainAddress,
-                    e => e.Account,
-                    e => e.Asset,
-                    e => e.Address,
-                    e => e.TxAction,
-                    e => e.Equivocation,
-                    e => e.Transaction);
-
-                if (!events.Any())
-                    return Result.Failure<AddressInfoDto>("Address {0} does not exist.".F(blockchainAddress));
-
-                var address = events.First().Address;
-
-                var addressDto = AddressInfoDto.FromDomainModel(address);
-
-                addressDto.Accounts = events
-                    .Where(e => (e.TxAction.ActionType == ActionType.CreateAccount.ToString()
-                        || e.TxAction.ActionType == ActionType.SetAccountController.ToString())
-                        && e.Transaction.Status == TxStatus.Success.ToString())
-                    .Select(e => new ControlledAccountDto {
-                        Hash = e.Account.Hash,
-                        IsActive = e.Account.ControllerAddress == address.BlockchainAddress})
-                    .Distinct(new ControlledAccountDtoEqualityComparer())
-                    .ToList();
-
-                addressDto.Assets = events
-                    .Where(e => (e.TxAction.ActionType == ActionType.CreateAsset.ToString()
-                        || e.TxAction.ActionType == ActionType.SetAccountController.ToString())
-                        && e.Transaction.Status == TxStatus.Success.ToString())
-                    .Select(e => new ControlledAssetDto {
-                        Hash = e.Asset.Hash,
-                        AssetCode = e.Asset.AssetCode,
-                        IsActive = e.Asset.ControllerAddress == address.BlockchainAddress })
-                    .Distinct(new ControlledAssetDtoEqualityComparer())
-                    .ToList();
-
-                var delegateStakeIds = events
-                    .Where(e => e.TxAction.ActionType == ActionType.DelegateStake.ToString() && e.Amount < 0)
-                    .Select(e => e.TxActionId);
-
-                addressDto.DelegatedStakes = eventRepo
-                    .Get(e => delegateStakeIds.Contains(e.TxActionId) && e.Amount > 0, e => e.Address)
-                    .Select(e => new StakeDto {
-                        ValidatorAddress = e.Address.BlockchainAddress,
-                        Amount = e.Amount.Value,
-                        StakerAddress = address.BlockchainAddress })
-                    .ToList();
-
-                var receivedStakeIds = events
-                    .Where(e => e.TxAction.ActionType == ActionType.DelegateStake.ToString() && e.Amount > 0)
-                    .Select(e => e.TxActionId);
-
-                addressDto.ReceivedStakes = eventRepo
-                    .Get(e => receivedStakeIds.Contains(e.TxActionId) && e.Amount < 0, e => e.Address)
-                    .Select(e => new StakeDto {
-                        StakerAddress = e.Address.BlockchainAddress,
-                        Amount = e.Amount.Value * -1,
-                        ValidatorAddress = address.BlockchainAddress })
-                    .ToList();
-
-                addressDto.StakingRewards = events
-                    .Where(e => e.EventType == EventType.StakingReward.ToString())
-                    .Select(e => new StakingRewardDto
-                    {
-                        StakerAddress = address.BlockchainAddress,
-                        Amount = e.Amount.Value
-                    })
-                    .ToList();
-
-                addressDto.ValidatorRewards = events
-                    .Where(e => e.EventType == EventType.ValidatorReward.ToString())
-                    .Select(e => new ValidatorRewardDto
-                    {
-                        Amount = e.Amount.Value
-                    })
-                    .ToList();
-
-                addressDto.TakenDeposits = events
-                    .Where(e => e.EventType == EventType.DepositTaken.ToString())
-                    .Select(e => new DepositDto
-                    {
-                        BlockchainAddress = address.BlockchainAddress,
-                        EquivocationProofHash = e.Equivocation.EquivocationProofHash,
-                        Amount = e.Amount.Value * -1
-                    })
-                    .ToList();
-
-                addressDto.GivenDeposits = events
-                    .Where(e => e.EventType == EventType.DepositGiven.ToString())
-                    .Select(e => new DepositDto
-                    {
-                        BlockchainAddress = address.BlockchainAddress,
-                        EquivocationProofHash = e.Equivocation.EquivocationProofHash,
-                        Amount = e.Amount.Value
-                    })
-                    .ToList();
-
-                addressDto.Actions = events
-                    .Where(e => e.EventType == EventType.Action.ToString())
-                    .Select(e => new ActionDto
-                    {
-                        ActionNumber = e.TxAction.ActionNumber,
-                        ActionType = e.TxAction.ActionType,
-                        ActionData = e.TxAction.ActionData,
-                        TxHash = e.Transaction.Hash
-                    })
-                    .Distinct(new ActionDtoEqualityComparer())
-                    .ToList();
-
-                return Result.Success(addressDto);
-            }
-        }
-
-        public Result<BlockInfoDto> GetBlockInfo(long blockNumber)
-        {
-            using (var uow = NewUnitOfWork())
-            {
-                var events = NewRepository<BlockchainEvent>(uow).Get(
-                    e => e.Block.BlockNumber == blockNumber, 
-                    e => e.Equivocation, 
-                    e => e.Address, 
-                    e => e.Block.Validator, 
-                    e => e.Transaction);
-                if (!events.Any())
-                    return Result.Failure<BlockInfoDto>("Block {0} does not exist.".F(blockNumber));
-
-                var blockDto = BlockInfoDto.FromDomainModel(events.First().Block);
-                blockDto.Equivocations = events
-                    .Where(e => e.EventType == EventType.DepositTaken.ToString())
-                    .Select(e => new EquivocationInfoShortDto
-                    {
-                        EquivocationProofHash = e.Equivocation.EquivocationProofHash,
-                        TakenDeposit = new DepositDto {
-                            BlockchainAddress = e.Address.BlockchainAddress,
-                            Amount = e.Amount.Value * -1,
-                            EquivocationProofHash = e.Equivocation.EquivocationProofHash}
-                    }).ToList();
-
-                blockDto.StakingRewards = events
-                    .Where(e => e.EventType == EventType.StakingReward.ToString())
-                    .Select(e => new StakingRewardDto {
-                        StakerAddress = e.Address.BlockchainAddress,
-                        Amount = e.Amount.Value })
-                    .ToList();
-
-                blockDto.Transactions = events
-                    .Where(e => e.EventType == EventType.Action.ToString())
-                    .GroupBy(e => e.Transaction)
-                    .Select(g => new TxInfoShortDto {
-                        Hash = g.Key.Hash,
-                        NumberOfActions = g.Select(e => e.TxActionId).Distinct().Count(),
-                        SenderAddress = g.First().Address.BlockchainAddress,
-                        Timestamp = blockDto.Timestamp,
-                        BlockNumber = blockDto.BlockNumber
-                    })   
-                    .ToList();
-
-                return Result.Success(blockDto);
-            }
-        }
-
-        public Result<TxInfoDto> GetTxInfo(string txHash)
-        {
-            using (var uow = NewUnitOfWork())
-            {
-                var events = NewRepository<BlockchainEvent>(uow).Get(
-                    e => e.Transaction.Hash == txHash, 
-                    e => e.Transaction, 
-                    e => e.TxAction, 
-                    e => e.Block, 
-                    e => e.Address);
-                if (!events.Any())
-                    return Result.Failure<TxInfoDto>("Transaction {0} does not exist.".F(txHash));
-
-                var txDto = TxInfoDto.FromDomainModel(events.FirstOrDefault().Transaction);
-                txDto.Actions = events
-                    .GroupBy(e => e.TxActionId)
-                    .Select(g => ActionDto.FromDomainModel(g.First().TxAction)).ToList();
-                txDto.BlockNumber = events.FirstOrDefault().Block.BlockNumber;
-                txDto.SenderAddress = events.FirstOrDefault().Address.BlockchainAddress;
-
-                return Result.Success(txDto);
-            }
+            _addressInfoService = addressInfoService;
+            _blockInfoService = blockInfoService;
+            _txInfoService = txInfoService;
         }
 
         public Result<EquivocationInfoDto> GetEquivocationInfo(string equivocationProofHash)
@@ -389,13 +207,13 @@ namespace Own.BlockchainExplorer.Domain.Services
             using (var uow = NewUnitOfWork())
             {
                 if (NewRepository<Address>(uow).Exists(a => a.BlockchainAddress == hash))
-                    return ProcessSearchResult(GetAddressInfo(hash));
+                    return ProcessSearchResult(_addressInfoService.GetAddressInfo(hash));
                 else if (NewRepository<Account>(uow).Exists(a => a.Hash == hash))
                     return ProcessSearchResult(GetAccountInfo(hash));
                 else if (NewRepository<Asset>(uow).Exists(a => a.Hash == hash))
                     return ProcessSearchResult(GetAssetInfo(hash));
                 else if (NewRepository<Transaction>(uow).Exists(t => t.Hash == hash))
-                    return ProcessSearchResult(GetTxInfo(hash));
+                    return ProcessSearchResult(_txInfoService.GetTxInfo(hash));
                 else if (NewRepository<Equivocation>(uow).Exists(e => e.EquivocationProofHash == hash))
                     return ProcessSearchResult(GetEquivocationInfo(hash));
                 else
@@ -403,7 +221,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                     if (long.TryParse(hash, out long number))
                     {
                         if(NewRepository<Block>(uow).Exists(a => a.BlockNumber == number))
-                            return ProcessSearchResult(GetBlockInfo(number));
+                            return ProcessSearchResult(_blockInfoService.GetBlockInfo(number));
                     }
                 }
 

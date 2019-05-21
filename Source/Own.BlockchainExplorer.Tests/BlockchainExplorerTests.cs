@@ -12,7 +12,7 @@ namespace Own.BlockchainExplorer.Tests
         [Fact]
         public async Task CompareAddressBalances()
         {
-            IBlockchainInfoService blockchainInfoService = Instantiate<IBlockchainInfoService>();
+            IAddressInfoService addressInfoService = Instantiate<IAddressInfoService>();
             IBlockchainClient blockchainClient = Instantiate<IBlockchainClient>();
 
             IEnumerable<string> addresses = new List<string>();
@@ -24,7 +24,7 @@ namespace Own.BlockchainExplorer.Tests
 
             foreach (var address in addresses)
             {
-                var databaseResult = blockchainInfoService.GetAddressInfo(address);
+                var databaseResult = addressInfoService.GetAddressInfo(address);
                 Assert.True(databaseResult.Successful, $"Retrieving address {address} from database failed.");
 
                 var blockchainResult = await blockchainClient.GetAddressInfo(address);

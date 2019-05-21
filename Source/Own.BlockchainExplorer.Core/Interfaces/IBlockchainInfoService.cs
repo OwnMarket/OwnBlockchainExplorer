@@ -6,9 +6,6 @@ namespace Own.BlockchainExplorer.Core.Interfaces
 {
     public interface IBlockchainInfoService
     {
-        Result<AddressInfoDto> GetAddressInfo(string blockchainAddress);
-        Result<BlockInfoDto> GetBlockInfo(long blockNumber);
-        Result<TxInfoDto> GetTxInfo(string txHash);
         Result<EquivocationInfoDto> GetEquivocationInfo(string EquivocationProofHash);
         Result<AccountInfoDto> GetAccountInfo(string accountHash);
         Result<AssetInfoDto> GetAssetInfo(string assetHash);
