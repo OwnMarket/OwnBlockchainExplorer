@@ -1,6 +1,5 @@
 ﻿using Own.BlockchainExplorer.Core.Models;
 using System;
-using System.Collections.Generic;
 
 namespace Own.BlockchainExplorer.Core.Dtos.Api
 {
@@ -16,8 +15,6 @@ namespace Own.BlockchainExplorer.Core.Dtos.Api
         public string Status { get; set; }
         public string ErrorMessage { get; set; }
         public short? FailedActionNumber { get; set; }
-
-        public List<ActionDto> Actions { get; set; }
 
         public static TxInfoDto FromDomainModel(Transaction tx)
         {
