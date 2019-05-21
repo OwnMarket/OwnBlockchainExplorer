@@ -9,17 +9,6 @@ namespace Own.BlockchainExplorer.Core.Dtos.Api
         public long Nonce { get; set; }
         public ChxBalanceInfoDto ChxBalanceInfo { get; set; }
 
-        public List<ControlledAssetDto> Assets { get; set; }
-        public List<ControlledAccountDto> Accounts { get; set; }
-        public List<StakeDto> DelegatedStakes { get; set; }
-        public List<StakeDto> ReceivedStakes { get; set; }
-
-        public List<ActionDto> Actions { get; set; }
-        public List<ValidatorRewardDto> ValidatorRewards { get; set; }
-        public List<StakingRewardDto> StakingRewards { get; set; }
-        public List<DepositDto> TakenDeposits { get; set; }
-        public List<DepositDto> GivenDeposits { get; set; }
-
         public static AddressInfoDto FromDomainModel(Address model)
         {
             return new AddressInfoDto
