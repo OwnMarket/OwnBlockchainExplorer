@@ -235,7 +235,7 @@ namespace Own.BlockchainExplorer.Domain.Services
         {
             using (var uow = NewUnitOfWork(UnitOfWorkMode.Writable))
             {
-                var eventRepo = NewRepository<BlockchainEvent>(uow);
+                var addressRepo = NewRepository<Address>(uow);
 
                 var depositTakenEvent = new BlockchainEvent
                 {
@@ -244,15 +244,29 @@ namespace Own.BlockchainExplorer.Domain.Services
                     EquivocationId = equivocationId,
                     BlockId = blockId
                 };
-                var addressId = NewRepository<Address>(uow)
-                    .GetAs(a => a.BlockchainAddress == equivocationDto.ValidatorAddress, a => a.AddressId)
+
+                var address = addressRepo
+                    .Get(a => a.BlockchainAddress == equivocationDto.ValidatorAddress)
                     .SingleOrDefault();
 
-                if (addressId == default(long))
-                    return Result.Failure<BlockchainEvent>("Address {0} does not exist.".F(equivocationDto.ValidatorAddress));
-                depositTakenEvent.AddressId = addressId;
+                if (address is null) return Result.Failure<BlockchainEvent>(
+                        "Address {0} does not exist.".F(equivocationDto.ValidatorAddress));
 
-                eventRepo.Insert(depositTakenEvent);
+                depositTakenEvent.AddressId = address.AddressId;
+
+                address.DepositBalance -= equivocationDto.DepositTaken;
+                var newDepositAmount = 10000 - address.DepositBalance;
+
+                var amountToDeduce = address.AvailableBalance > newDepositAmount 
+                    ? newDepositAmount 
+                    : address.AvailableBalance;
+
+                address.DepositBalance += amountToDeduce;
+                address.AvailableBalance -= amountToDeduce;
+
+                addressRepo.Update(address);
+
+                NewRepository<BlockchainEvent>(uow).Insert(depositTakenEvent);
                 uow.Commit();
 
                 return Result.Success(depositTakenEvent);

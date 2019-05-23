@@ -80,7 +80,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             var addressRepo = NewRepository<Address>(uow);
 
             firstEvent.Amount = actionData.Amount * -1;
-            senderAddress.DepositBalance += actionData.Amount;
+            senderAddress.StakedBalance += actionData.Amount;
             senderAddress.AvailableBalance -= actionData.Amount;
 
             var validatorAddress = addressRepo.Get(a => a.BlockchainAddress == actionData.ValidatorAddress).SingleOrDefault();
@@ -97,7 +97,6 @@ namespace Own.BlockchainExplorer.Domain.Services
                     DepositBalance = 0
                 };
             }
-            validatorAddress.StakedBalance += actionData.Amount;
 
             events.Add(new BlockchainEvent
             {
@@ -146,12 +145,18 @@ namespace Own.BlockchainExplorer.Domain.Services
                 validatorRepo.Update(validator);
             }
 
+            var depositAmount = 10000 - senderAddress.DepositBalance;
+            senderAddress.DepositBalance += depositAmount;
+            senderAddress.AvailableBalance -= depositAmount;
+
             return Result.Success();   
         }
 
         public Result RemoveValidator(List<BlockchainEvent> events, IUnitOfWork uow, Address senderAddress)
         {
             var validatorRepo = NewRepository<Validator>(uow);
+            var eventRepo = NewRepository<BlockchainEvent>(uow);
+            var addressRepo = NewRepository<Address>(uow);
 
             var validator = validatorRepo
                 .Get(v => v.BlockchainAddress == senderAddress.BlockchainAddress)
@@ -161,6 +166,41 @@ namespace Own.BlockchainExplorer.Domain.Services
 
             validator.IsDeleted = true;
             validatorRepo.Update(validator);
+
+            senderAddress.AvailableBalance += senderAddress.DepositBalance;
+            senderAddress.DepositBalance = 0;
+
+            var firstEvent = events.First();
+            var delegateStakeIds = eventRepo.GetAs(
+                e => e.EventType == EventType.Action.ToString()
+                && e.AddressId == senderAddress.AddressId
+                && e.TxAction.ActionType == ActionType.DelegateStake.ToString()
+                && e.Amount > 0,
+                e => e.TxActionId);
+
+            var delegateStakeEvents = eventRepo.Get(
+                e => delegateStakeIds.Contains(e.TxActionId) && e.Amount < 0,
+                e => e.Address).GroupBy(e => e.Address);
+
+            foreach(var group in delegateStakeEvents)
+            {
+                var address = group.Key;
+                var stakedAmount = group.Sum(g => g.Amount ?? 0) * -1;
+
+                events.Add(new BlockchainEvent {
+                    AddressId = address.AddressId,
+                    Amount = stakedAmount,
+                    BlockId = firstEvent.BlockId,
+                    TransactionId = firstEvent.TransactionId,
+                    TxActionId = firstEvent.TxActionId,
+                    EventType = EventType.StakeReturned.ToString()
+                });
+
+                address.StakedBalance -= stakedAmount;
+                address.AvailableBalance += stakedAmount;
+
+                addressRepo.Update(address);
+            }
 
             return Result.Success();
         }

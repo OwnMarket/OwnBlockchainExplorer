@@ -14,7 +14,8 @@
             StakingReward,
             DepositTaken,
             DepositGiven,
-            Action
+            Action,
+            StakeReturned
         }
 
         public enum TxStatus
