@@ -10,5 +10,6 @@ namespace Own.BlockchainExplorer.Core.Interfaces
         Task<Result<BlockDto>> GetBlockInfo(long blockNumber);
         Task<Result<TxDto>> GetTxInfo(string txHash);
         Task<Result<EquivocationDto>> GetEquivocationInfo(string equivocationProofHash);
+        Task<Result<AccountDto>> GetAccountInfo(string accountHash, string assetHash = null);
     }
 }

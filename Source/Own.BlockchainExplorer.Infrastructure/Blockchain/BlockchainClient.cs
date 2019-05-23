@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using Own.BlockchainExplorer.Common;
+using Own.BlockchainExplorer.Common.Extensions;
 using Own.BlockchainExplorer.Common.Framework;
 using Own.BlockchainExplorer.Core.Dtos.Scanning;
 using Own.BlockchainExplorer.Core.Interfaces;
@@ -37,13 +39,13 @@ namespace Own.BlockchainExplorer.Infrastructure.Blockchain
         {
             if (!responseMessage.IsSuccessStatusCode)
             {
-                /*Log.Error(
+                Log.Error(
                     "{0} {1} [{2}] {3}".F(
                         responseMessage.RequestMessage?.Method,
                         responseMessage.RequestMessage?.RequestUri,
                         (int)responseMessage.StatusCode,
                         responseMessage.ReasonPhrase)
-                    .Trim());*/
+                    .Trim());
             }
 
             responseMessage.EnsureSuccessStatusCode();
@@ -54,7 +56,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Blockchain
             {
                 return Result.Success(JsonConvert.DeserializeObject<T>(json));
             }
-            catch (Exception err)
+            catch (Exception)
             {
                 var error = JsonConvert.DeserializeObject<ErrorResponseDto>(json);
                 var alerts = error.Errors?.Select(e => Alert.Error(e));
@@ -75,12 +77,12 @@ namespace Own.BlockchainExplorer.Infrastructure.Blockchain
             return await HandleBlockChainResponse<AddressDto>(result);
         }
 
-       /* public async Task<Result<AccountInfo>> GetAccountInfo(string accountHash, string assetHash = null)
+        public async Task<Result<AccountDto>> GetAccountInfo(string accountHash, string assetHash = null)
         {
             var url = string.Concat($"{_nodeApiUrl}/account/{accountHash}", !string.IsNullOrEmpty(assetHash) ? $"?asset={assetHash}" : "");
             var result = await HttpClient.GetAsync(url);
-            return await HandleBlockChainResponse<AccountInfo>(result);
-        }*/
+            return await HandleBlockChainResponse<AccountDto>(result);
+        }
 
         public async Task<Result<BlockDto>> GetBlockInfo(long blockNumber)
         {
