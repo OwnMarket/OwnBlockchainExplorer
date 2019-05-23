@@ -74,6 +74,16 @@ namespace Own.BlockchainExplorer.Domain.Services
                 }
 
                 var fakeValidator = Config.FakeValidator.Split("@");
+
+                addresses.Add(new Address
+                {
+                    BlockchainAddress = fakeValidator[0],
+                    AvailableBalance = 0,
+                    StakedBalance = 0,
+                    DepositBalance = 0,
+                    Nonce = 0
+                });
+
                 validators.Add(new Validator
                 {
                     BlockchainAddress = fakeValidator[0],
@@ -263,7 +273,7 @@ namespace Own.BlockchainExplorer.Domain.Services
         private async Task<BlockDto> GetBlock(long blockNumber)
         {
             var result = await _blockchainClient.GetBlockInfo(blockNumber);
-            if (!result.Successful)
+            if (!result.Successful || result.Data.Hash is null)
                 return null;
 
             return result.Data;
