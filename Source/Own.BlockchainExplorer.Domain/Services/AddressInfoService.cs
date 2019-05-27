@@ -146,71 +146,21 @@ namespace Own.BlockchainExplorer.Domain.Services
             }
         }
 
-        public Result<EventsDto> GetEventsInfo(string blockchainAddress)
+        public Result<IEnumerable<EventDto>> GetEventsInfo(string blockchainAddress)
         {
             using (var uow = NewUnitOfWork())
             {
-                var eventRepo = NewRepository<BlockchainEvent>(uow);
-                var events = eventRepo.Get(
-                    e => e.Address.BlockchainAddress == blockchainAddress,
-                    e => e.Address,
-                    e => e.TxAction,
-                    e => e.Equivocation,
-                    e => e.Transaction);
-
-                var eventsDto = new EventsDto
-                {
-                    StakingRewards = events
-                    .Where(e => e.EventType == EventType.StakingReward.ToString())
-                    .Select(e => new StakingRewardDto
-                    {
-                        StakerAddress = blockchainAddress,
-                        Amount = e.Amount.Value
-                    })
-                    .ToList(),
-
-                    ValidatorRewards = events
-                    .Where(e => e.EventType == EventType.ValidatorReward.ToString())
-                    .Select(e => new ValidatorRewardDto
-                    {
-                        Amount = e.Amount.Value
-                    })
-                    .ToList(),
-
-                    TakenDeposits = events
-                    .Where(e => e.EventType == EventType.DepositTaken.ToString())
-                    .Select(e => new DepositDto
-                    {
-                        BlockchainAddress = blockchainAddress,
-                        EquivocationProofHash = e.Equivocation.EquivocationProofHash,
-                        Amount = e.Amount.Value * -1
-                    })
-                    .ToList(),
-
-                    GivenDeposits = events
-                    .Where(e => e.EventType == EventType.DepositGiven.ToString())
-                    .Select(e => new DepositDto
-                    {
-                        BlockchainAddress = blockchainAddress,
-                        EquivocationProofHash = e.Equivocation.EquivocationProofHash,
-                        Amount = e.Amount.Value
-                    })
-                    .ToList(),
-
-                    Actions = events
-                    .Where(e => e.EventType == EventType.Action.ToString())
-                    .Select(e => new ActionDto
-                    {
-                        ActionNumber = e.TxAction.ActionNumber,
-                        ActionType = e.TxAction.ActionType,
-                        ActionData = e.TxAction.ActionData,
-                        TxHash = e.Transaction.Hash
-                    })
-                    .Distinct(new ActionDtoEqualityComparer())
-                    .ToList()
-                };
-
-                return Result.Success(eventsDto);
+                return Result.Success(
+                    NewRepository<BlockchainEvent>(uow)
+                    .Get(
+                        e => e.Address.BlockchainAddress == blockchainAddress,
+                        e => e.TxAction,
+                        e => e.Equivocation,
+                        e => e.Transaction,
+                        e => e.Block)
+                    .OrderByDescending(e => e.BlockchainEventId)
+                    .Select(e => EventDto.FromDomainModel(e))
+                );
             }
         }
 

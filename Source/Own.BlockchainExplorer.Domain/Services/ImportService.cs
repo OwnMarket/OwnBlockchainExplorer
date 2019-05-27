@@ -169,7 +169,7 @@ namespace Own.BlockchainExplorer.Domain.Services
         {
             using (var uow = NewUnitOfWork(UnitOfWorkMode.Writable))
             {
-                var eventRepo = NewRepository<BlockchainEvent>(uow);
+                var addressRepo = NewRepository<Address>(uow);
 
                 var blockchainEvent =
                     new BlockchainEvent
@@ -179,16 +179,18 @@ namespace Own.BlockchainExplorer.Domain.Services
                         EventType = EventType.StakingReward.ToString()
                     };
 
-                var addressId = NewRepository<Address>(uow)
-                    .GetAs(a => a.BlockchainAddress == stakingRewardDto.StakerAddress, a => a.AddressId)
+                var address = addressRepo
+                    .Get(a => a.BlockchainAddress == stakingRewardDto.StakerAddress)
                     .SingleOrDefault();
 
-                if (addressId == default(long))
+                if (address is null)
                     return Result.Failure<BlockchainEvent>("Address {0} does not exist.".F(stakingRewardDto.StakerAddress));
 
-                blockchainEvent.AddressId = addressId;
+                blockchainEvent.AddressId = address.AddressId;
+                address.AvailableBalance += stakingRewardDto.Amount;
 
-                eventRepo.Insert(blockchainEvent);
+                addressRepo.Update(address);
+                NewRepository<BlockchainEvent>(uow).Insert(blockchainEvent);
                 uow.Commit();
 
                 return Result.Success(blockchainEvent);
@@ -202,7 +204,7 @@ namespace Own.BlockchainExplorer.Domain.Services
         {
             using (var uow = NewUnitOfWork(UnitOfWorkMode.Writable))
             {
-                var eventRepo = NewRepository<BlockchainEvent>(uow);
+                var addressRepo = NewRepository<Address>(uow);
 
                 var blockchainEvent =
                     new BlockchainEvent
@@ -212,16 +214,19 @@ namespace Own.BlockchainExplorer.Domain.Services
                         EventType = EventType.ValidatorReward.ToString()
                     };
 
-                var addressId = NewRepository<Address>(uow)
-                    .GetAs(a => a.BlockchainAddress == blockchainAddress, a => a.AddressId)
+                var address = addressRepo
+                    .Get(a => a.BlockchainAddress == blockchainAddress)
                     .SingleOrDefault();
 
-                if (addressId == default(long))
+                if (address is null)
                     return Result.Failure<BlockchainEvent>("Address {0} does not exist.".F(blockchainAddress));
 
-                blockchainEvent.AddressId = addressId;
+                address.AvailableBalance += reward;
 
-                eventRepo.Insert(blockchainEvent);
+                blockchainEvent.AddressId = address.AddressId;
+
+                addressRepo.Update(address);
+                NewRepository<BlockchainEvent>(uow).Insert(blockchainEvent);
                 uow.Commit();
 
                 return Result.Success(blockchainEvent);
@@ -295,13 +300,18 @@ namespace Own.BlockchainExplorer.Domain.Services
                         BlockId = blockId
                     };
 
-                    var addressId = addressRepo
-                        .GetAs(a => a.BlockchainAddress == depositDto.ValidatorAddress, a => a.AddressId)
+                    var address = addressRepo
+                        .Get(a => a.BlockchainAddress == depositDto.ValidatorAddress)
                         .SingleOrDefault();
 
-                    if (addressId == default(long))
-                        return Result.Failure<IEnumerable<BlockchainEvent>>("Address {0} does not exist.".F(depositDto.ValidatorAddress));
-                    depositGivenEvent.AddressId = addressId;
+                    if (address is null)
+                        return Result.Failure<IEnumerable<BlockchainEvent>>(
+                            "Address {0} does not exist.".F(depositDto.ValidatorAddress));
+
+                    depositGivenEvent.AddressId = address.AddressId;
+
+                    address.AvailableBalance += depositDto.Amount;
+                    addressRepo.Update(address);
                 }
 
                 eventRepo.Insert(events);

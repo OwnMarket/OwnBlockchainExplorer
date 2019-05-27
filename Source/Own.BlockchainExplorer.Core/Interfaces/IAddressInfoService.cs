@@ -10,7 +10,7 @@ namespace Own.BlockchainExplorer.Core.Interfaces
         Result<IEnumerable<ControlledAssetDto>> GetAssetsInfo(string blockchainAddress);
         Result<IEnumerable<StakeDto>> GetDelegatedStakesInfo(string blockchainAddress);
         Result<IEnumerable<StakeDto>> GetReceivedStakesInfo(string blockchainAddress);
-        Result<EventsDto> GetEventsInfo(string blockchainAddress);
+        Result<IEnumerable<EventDto>> GetEventsInfo(string blockchainAddress);
         Result<AddressInfoDto> GetAddressInfo(string blockchainAddress);
     }
 }
