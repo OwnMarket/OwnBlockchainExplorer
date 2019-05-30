@@ -175,11 +175,11 @@ namespace Own.BlockchainExplorer.Domain.Services
                 e => e.EventType == EventType.Action.ToString()
                 && e.AddressId == senderAddress.AddressId
                 && e.TxAction.ActionType == ActionType.DelegateStake.ToString()
-                && e.Amount > 0,
+                && e.Fee == null,
                 e => e.TxActionId);
 
             var delegateStakeEvents = eventRepo.Get(
-                e => delegateStakeIds.Contains(e.TxActionId) && e.Amount < 0,
+                e => delegateStakeIds.Contains(e.TxActionId) && e.Fee != null,
                 e => e.Address).GroupBy(e => e.Address);
 
             foreach(var group in delegateStakeEvents)
