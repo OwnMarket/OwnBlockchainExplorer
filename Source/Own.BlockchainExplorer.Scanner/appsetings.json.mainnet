@@ -1,0 +1,10 @@
+{
+  "appSettings": {
+    "DB": "server=localhost;database=own_blockchain_explorer;user id=own_blockchain_explorer_scanner;password=testpass1;searchpath=own"
+  },
+  "nodeApiUrl": "http://platform-client.mainnet.weown.com:10717",
+  "genesisAddress": "CHXGEzcvxLFDTnS4L5pETLXxLsp3heH6KK1",
+  "genesisChxSupply": "168956522.0930844",
+  "genesisValidators": "CHXV1i4NmCENFPFzqEk1ANb7BgBEiF9GHyT@val01.mainnet.weown.com:25718,CHXV2wFEyFie38RUWmEev8UJwhzMj5mPwmn@val02.mainnet.weown.com:25718,CHXV3e3pjQnk2YuCaTt8GYQJgELASiy57kh@val03.mainnet.weown.com:25718,CHXV4vyfhtXjwP9navSG5NVk2mvCZqhnMZa@val04.mainnet.weown.com:25718",
+  "fakeValidator": "11111111111111111111111111@null"
+}
