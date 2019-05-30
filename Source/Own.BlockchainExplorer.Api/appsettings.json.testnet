@@ -1,0 +1,16 @@
+{
+  "appSettings": {
+    "DB": "server=localhost;database=own_blockchain_explorer;user id=own_blockchain_explorer_api;password=testpass1;searchpath=own"
+  },
+  "server.urls": "http://*:9090",
+  "cors": {
+    "allowOrigins": "*",
+    "allowMethods": "*",
+    "allowHeaders": "*",
+    "exposeHeaders": "Access-Control-Allow-Origin"
+  },
+
+  "swagger": {
+    "xmlDocPath": "ADD ONLY IF XML DOC IS OUTSIDE THE RUNNING ASSEMBLY LOCATION"
+  }
+}
