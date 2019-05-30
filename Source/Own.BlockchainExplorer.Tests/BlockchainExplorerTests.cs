@@ -23,7 +23,7 @@ namespace Own.BlockchainExplorer.Tests
                 addresses = NewRepository<Address>(uow).GetAs(a => true, a => a.BlockchainAddress);
             }
 
-            var failedAddresses = new List<string>();
+            //var failedAddresses = new List<string>();
 
             foreach (var address in addresses)
             {
@@ -36,27 +36,17 @@ namespace Own.BlockchainExplorer.Tests
                 var addressInfoDto = databaseResult.Data;
                 var addressBlockchainDto = blockchainResult.Data;
 
-                if (addressBlockchainDto.Balance.Available != addressInfoDto.ChxBalanceInfo.AvailableBalance
+                /*if (addressBlockchainDto.Balance.Available != addressInfoDto.ChxBalanceInfo.AvailableBalance
                     || addressBlockchainDto.Balance.Deposit != addressInfoDto.ChxBalanceInfo.ValidatorDeposit
                     || addressBlockchainDto.Balance.Staked != addressInfoDto.ChxBalanceInfo.DelegatedStakes)
-                    failedAddresses.Add(address);
+                    failedAddresses.Add(address);*/
 
-                //Assert.True(addressBlockchainDto.Balance.Available == addressInfoDto.ChxBalanceInfo.AvailableBalance, $"Available CHX for {address} does not match.");
-                //Assert.True(addressBlockchainDto.Balance.Deposit == addressInfoDto.ChxBalanceInfo.ValidatorDeposit, $"Deposited CHX for {address} does not match.");
-                //Assert.True(addressBlockchainDto.Balance.Staked == addressInfoDto.ChxBalanceInfo.DelegatedStakes, $"Staked CHX for {address} does not match.");
+                Assert.True(addressBlockchainDto.Balance.Available == addressInfoDto.ChxBalanceInfo.AvailableBalance, $"Available CHX for {address} does not match.");
+                Assert.True(addressBlockchainDto.Balance.Deposit == addressInfoDto.ChxBalanceInfo.ValidatorDeposit, $"Deposited CHX for {address} does not match.");
+                Assert.True(addressBlockchainDto.Balance.Staked == addressInfoDto.ChxBalanceInfo.DelegatedStakes, $"Staked CHX for {address} does not match.");
             }
 
-            var reallyFailed = new List<string>();
-            using (var uow = NewUnitOfWork())
-            {
-                var valdiatorRepo = NewRepository<Validator>(uow);
-                foreach(var failed in failedAddresses)
-                {
-                    if (!valdiatorRepo.Exists(v => v.BlockchainAddress == failed))
-                        reallyFailed.Add(failed);
-                }
-            }
-            Assert.True(failedAddresses.Any());
+            //Assert.True(!failedAddresses.Any());
         }
 
         [Fact]
