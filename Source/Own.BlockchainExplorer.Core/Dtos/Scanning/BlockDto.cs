@@ -6,7 +6,7 @@ namespace Own.BlockchainExplorer.Core.Dtos.Scanning
     {
         public long Number { get; set; }
         public string Hash { get; set; }
-        public string PreviousBlockHash { get; set; }
+        public string PreviousHash { get; set; }
         public long ConfigurationBlockNumber { get; set; }
         public long Timestamp { get; set; }
         public string ProposerAddress { get; set; }

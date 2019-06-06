@@ -73,7 +73,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 {
                     BlockNumber = blockDto.Number,
                     Hash = blockDto.Hash,
-                    PreviousBlockHash = blockDto.PreviousBlockHash,
+                    PreviousBlockHash = blockDto.PreviousHash,
                     ConfigurationBlockNumber = blockDto.ConfigurationBlockNumber,
                     Timestamp = blockDto.Timestamp,
                     TxSetRoot = blockDto.TxSetRoot,
@@ -89,7 +89,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 };
 
                 var previousBlockId = blockRepo
-                    .GetAs(b => b.Hash == blockDto.PreviousBlockHash, b => b.BlockId)
+                    .GetAs(b => b.Hash == blockDto.PreviousHash, b => b.BlockId)
                     .SingleOrDefault();
 
                 if (previousBlockId != default(long))
