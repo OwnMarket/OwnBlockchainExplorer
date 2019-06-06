@@ -15,6 +15,6 @@ namespace Own.BlockchainExplorer.Core.Interfaces
         Result<IEnumerable<BlockInfoShortDto>> GetBlocks(int limit, int page);
         Result<IEnumerable<ValidatorInfoShortDto>> GetValidators();
 
-        Result<object> Search(string hash);
+        Result<string> Search(string hash);
     }
 }

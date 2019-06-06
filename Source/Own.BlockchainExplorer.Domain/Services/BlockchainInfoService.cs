@@ -202,7 +202,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             }
         }
 
-        public Result<object> Search(string hash)
+        /*public Result<object> Search(string hash)
         {
             using (var uow = NewUnitOfWork())
             {
@@ -226,6 +226,33 @@ namespace Own.BlockchainExplorer.Domain.Services
                 }
 
                 return Result.Failure<object>("Not found.");
+            }
+        }*/
+
+        public Result<string> Search(string hash)
+        {
+            using (var uow = NewUnitOfWork())
+            {
+                if (NewRepository<Address>(uow).Exists(a => a.BlockchainAddress == hash))
+                    return Result.Success(SearchType.Address.ToString());
+                else if (NewRepository<Account>(uow).Exists(a => a.Hash == hash))
+                    return Result.Success(SearchType.Account.ToString());
+                else if (NewRepository<Asset>(uow).Exists(a => a.Hash == hash))
+                    return Result.Success(SearchType.Asset.ToString());
+                else if (NewRepository<Transaction>(uow).Exists(t => t.Hash == hash))
+                    return Result.Success(SearchType.Transaction.ToString());
+                else if (NewRepository<Equivocation>(uow).Exists(e => e.EquivocationProofHash == hash))
+                    return Result.Success(SearchType.Equivocation.ToString());
+                else
+                {
+                    if (long.TryParse(hash, out long number))
+                    {
+                        if (NewRepository<Block>(uow).Exists(a => a.BlockNumber == number))
+                            return Result.Success(SearchType.Block.ToString());
+                    }
+                }
+
+                return Result.Failure<string>("Not found.");
             }
         }
 

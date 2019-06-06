@@ -46,5 +46,15 @@
             AddKycProvider,
             RemoveKycProvider
         }
+
+        public enum SearchType
+        {
+            Address,
+            Account,
+            Asset,
+            Transaction,
+            Equivocation,
+            Block
+        }
     }
 }
