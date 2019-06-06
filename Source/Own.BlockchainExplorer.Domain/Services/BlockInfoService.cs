@@ -21,7 +21,9 @@ namespace Own.BlockchainExplorer.Domain.Services
 
         }
 
-        public Result<IEnumerable<EquivocationInfoShortDto>> GetEquivocationsInfo(long blockNumber)
+        public Result<IEnumerable<EquivocationInfoShortDto>> GetEquivocationsInfo(long blockNumber, 
+            int page, 
+            int limit)
         {
             using (var uow = NewUnitOfWork())
             {
@@ -41,11 +43,12 @@ namespace Own.BlockchainExplorer.Domain.Services
                             EquivocationProofHash = e.Equivocation.EquivocationProofHash
                         }
                     })
+                    .Skip(page-1).Take(limit)
                 );
             }
         }
 
-        public Result<IEnumerable<TxInfoShortDto>> GetTransactionsInfo(long blockNumber)
+        public Result<IEnumerable<TxInfoShortDto>> GetTransactionsInfo(long blockNumber, int page, int limit)
         {
             using (var uow = NewUnitOfWork())
             {
@@ -56,18 +59,19 @@ namespace Own.BlockchainExplorer.Domain.Services
                          e => e.Transaction,
                          e => e.Address)
                     .GroupBy(e => e.Transaction)
+                    .Skip(page - 1).Take(limit)
                     .Select(g => new TxInfoShortDto
                     {
                         Hash = g.Key.Hash,
                         NumberOfActions = g.Select(e => e.TxActionId).Distinct().Count(),
                         SenderAddress = g.First().Address.BlockchainAddress,
                         BlockNumber = blockNumber
-                    })
+                    })                   
                  );
             }
         }
 
-        public Result<IEnumerable<StakingRewardDto>> GetStakingRewardInfo(long blockNumber)
+        public Result<IEnumerable<StakingRewardDto>> GetStakingRewardInfo(long blockNumber, int page, int limit)
         {
             using (var uow = NewUnitOfWork())
             {
@@ -76,6 +80,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                      .Get(
                          e => e.Block.BlockNumber == blockNumber && e.EventType == EventType.StakingReward.ToString(),
                          e => e.Address)
+                    .Skip(page - 1).Take(limit)
                     .Select(e => new StakingRewardDto
                     {
                         StakerAddress = e.Address.BlockchainAddress,

@@ -40,7 +40,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             }
         }
 
-        public Result<IEnumerable<ActionDto>> GetActionsInfo(string txHash)
+        public Result<IEnumerable<ActionDto>> GetActionsInfo(string txHash, int page, int limit)
         {
             using (var uow = NewUnitOfWork())
             {
@@ -51,7 +51,8 @@ namespace Own.BlockchainExplorer.Domain.Services
                             e => e.Transaction,
                             e => e.TxAction)
                         .GroupBy(e => e.TxActionId)
-                        .Select(g => ActionDto.FromDomainModel(g.First().TxAction))
+                        .Skip(page - 1).Take(limit)
+                        .Select(g => ActionDto.FromDomainModel(g.First().TxAction))     
                 );
             }
         }

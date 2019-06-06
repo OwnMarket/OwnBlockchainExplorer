@@ -19,7 +19,7 @@ namespace Own.BlockchainExplorer.Domain.Services
         {
         }
 
-        public Result<IEnumerable<ControlledAccountDto>> GetAccountsInfo(string blockchainAddress)
+        public Result<IEnumerable<ControlledAccountDto>> GetAccountsInfo(string blockchainAddress, int page, int limit)
         {
             using (var uow = NewUnitOfWork())
             {
@@ -46,11 +46,14 @@ namespace Own.BlockchainExplorer.Domain.Services
                         IsActive = e.Account.ControllerAddress == events.First().Address.BlockchainAddress
                     })
                     .Distinct(new ControlledAccountDtoEqualityComparer())
+                    .Skip(page - 1).Take(limit)
                 );
             }
         }
 
-        public Result<IEnumerable<ControlledAssetDto>> GetAssetsInfo(string blockchainAddress)
+        public Result<IEnumerable<ControlledAssetDto>> GetAssetsInfo(string blockchainAddress, 
+            int page, 
+            int limit)
         {
             using (var uow = NewUnitOfWork())
             {
@@ -78,11 +81,14 @@ namespace Own.BlockchainExplorer.Domain.Services
                         IsActive = e.Asset.ControllerAddress == events.First().Address.BlockchainAddress
                     })
                     .Distinct(new ControlledAssetDtoEqualityComparer())
+                    .Skip(page - 1).Take(limit)
                 );
             }
         }
 
-        public Result<IEnumerable<StakeDto>> GetDelegatedStakesInfo(string blockchainAddress)
+        public Result<IEnumerable<StakeDto>> GetDelegatedStakesInfo(string blockchainAddress, 
+            int page, 
+            int limit)
         {
             using (var uow = NewUnitOfWork())
             {
@@ -105,6 +111,7 @@ namespace Own.BlockchainExplorer.Domain.Services
 
                 return Result.Success(eventRepo
                     .Get(e => delegateStakeIds.Contains(e.TxActionId) && e.Amount > 0, e => e.Address)
+                    .Skip(page - 1).Take(limit)
                     .Select(e => new StakeDto
                     {
                         ValidatorAddress = e.Address.BlockchainAddress,
@@ -114,7 +121,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             }
         }
 
-        public Result<IEnumerable<StakeDto>> GetReceivedStakesInfo(string blockchainAddress)
+        public Result<IEnumerable<StakeDto>> GetReceivedStakesInfo(string blockchainAddress, int page, int limit)
         {
             using (var uow = NewUnitOfWork())
             {
@@ -137,6 +144,7 @@ namespace Own.BlockchainExplorer.Domain.Services
 
                 return Result.Success(eventRepo
                     .Get(e => receivedStakeIds.Contains(e.TxActionId) && e.Amount < 0, e => e.Address)
+                    .Skip(page - 1).Take(limit)
                     .Select(e => new StakeDto
                     {
                         StakerAddress = e.Address.BlockchainAddress,
@@ -146,7 +154,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             }
         }
 
-        public Result<IEnumerable<EventDto>> GetEventsInfo(string blockchainAddress)
+        public Result<IEnumerable<EventDto>> GetEventsInfo(string blockchainAddress, int page, int limit)
         {
             using (var uow = NewUnitOfWork())
             {
@@ -159,6 +167,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                         e => e.Transaction,
                         e => e.Block)
                     .OrderByDescending(e => e.BlockchainEventId)
+                    .Skip(page - 1).Take(limit)
                     .Select(e => EventDto.FromDomainModel(e))
                 );
             }

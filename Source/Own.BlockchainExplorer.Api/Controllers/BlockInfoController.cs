@@ -22,23 +22,29 @@ namespace Own.BlockchainExplorer.Api.Controllers
 
         [HttpGet]
         [Route("block/{blockNumber}/transactions")]
-        public IActionResult GetTransactionsInfo(long blockNumber)
+        public IActionResult GetTransactionsInfo(long blockNumber,
+            [FromQuery] int page = 1,
+            [FromQuery] int limit = 50)
         {
-            return ApiResult(_blockInfoService.GetTransactionsInfo(blockNumber), r => NotFound(r));
+            return ApiResult(_blockInfoService.GetTransactionsInfo(blockNumber, page, limit), r => NotFound(r));
         }
 
         [HttpGet]
         [Route("block/{blockNumber}/equivocations")]
-        public IActionResult GetEquivocationsInfo(long blockNumber)
+        public IActionResult GetEquivocationsInfo(long blockNumber,
+            [FromQuery] int page = 1,
+            [FromQuery] int limit = 50)
         {
-            return ApiResult(_blockInfoService.GetEquivocationsInfo(blockNumber), r => NotFound(r));
+            return ApiResult(_blockInfoService.GetEquivocationsInfo(blockNumber, page, limit), r => NotFound(r));
         }
 
         [HttpGet]
         [Route("block/{blockNumber}/staking-rewards")]
-        public IActionResult GetStakingRewardInfo(long blockNumber)
+        public IActionResult GetStakingRewardInfo(long blockNumber,
+            [FromQuery] int page = 1,
+            [FromQuery] int limit = 50)
         {
-            return ApiResult(_blockInfoService.GetStakingRewardInfo(blockNumber), r => NotFound(r));
+            return ApiResult(_blockInfoService.GetStakingRewardInfo(blockNumber, page, limit), r => NotFound(r));
         }
     }
 }

@@ -22,37 +22,49 @@ namespace Own.BlockchainExplorer.Api.Controllers
 
         [HttpGet]
         [Route("address/{blockchainAddress}/accounts")]
-        public IActionResult GetAccountsInfo(string blockchainAddress)
+        public IActionResult GetAccountsInfo(string blockchainAddress, 
+            [FromQuery] int page = 1, 
+            [FromQuery] int limit = 50)
         {
-            return ApiResult(_addressInfoService.GetAccountsInfo(blockchainAddress), r => NotFound(r));
+            return ApiResult(_addressInfoService.GetAccountsInfo(blockchainAddress, page, limit), r => NotFound(r));
         }
 
         [HttpGet]
         [Route("address/{blockchainAddress}/assets")]
-        public IActionResult GetAssetsInfo(string blockchainAddress)
+        public IActionResult GetAssetsInfo(string blockchainAddress, 
+            [FromQuery] int page = 1, 
+            [FromQuery] int limit = 50)
         {
-            return ApiResult(_addressInfoService.GetAssetsInfo(blockchainAddress), r => NotFound(r));
+            return ApiResult(_addressInfoService.GetAssetsInfo(blockchainAddress, page, limit), r => NotFound(r));
         }
 
         [HttpGet]
         [Route("address/{blockchainAddress}/delegated-stakes")]
-        public IActionResult GetDelegatedStakesInfo(string blockchainAddress)
+        public IActionResult GetDelegatedStakesInfo(string blockchainAddress, 
+            [FromQuery] int page = 1, 
+            [FromQuery] int limit = 50)
         {
-            return ApiResult(_addressInfoService.GetDelegatedStakesInfo(blockchainAddress), r => NotFound(r));
+            return ApiResult(_addressInfoService.GetDelegatedStakesInfo(blockchainAddress, page, limit), 
+                r => NotFound(r));
         }
 
         [HttpGet]
         [Route("address/{blockchainAddress}/received-stakes")]
-        public IActionResult GetReceivedStakesInfo(string blockchainAddress)
+        public IActionResult GetReceivedStakesInfo(string blockchainAddress, 
+            [FromQuery] int page = 1, 
+            [FromQuery] int limit = 50)
         {
-            return ApiResult(_addressInfoService.GetReceivedStakesInfo(blockchainAddress), r => NotFound(r));
+            return ApiResult(_addressInfoService.GetReceivedStakesInfo(blockchainAddress, page, limit), 
+                r => NotFound(r));
         }
 
         [HttpGet]
         [Route("address/{blockchainAddress}/events")]
-        public IActionResult GetEventsInfo(string blockchainAddress)
+        public IActionResult GetEventsInfo(string blockchainAddress,
+            [FromQuery] int page = 1, 
+            [FromQuery] int limit = 50)
         {
-            return ApiResult(_addressInfoService.GetEventsInfo(blockchainAddress), r => NotFound(r));
+            return ApiResult(_addressInfoService.GetEventsInfo(blockchainAddress, page, limit), r => NotFound(r));
         }
     }
 }
