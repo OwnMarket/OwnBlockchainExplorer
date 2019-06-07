@@ -181,7 +181,25 @@ namespace Own.BlockchainExplorer.Domain.Services
         {
             using (var uow = NewUnitOfWork())
             {
-                return Result.Success(_blockchainInfoRepositoryFactory.Create(uow).GetTxs(limit, page));
+                var txs = _blockchainInfoRepositoryFactory.Create(uow).GetTxs(limit, page);
+                var txIds = txs.Select(t => t.TransactionId);
+
+                var events = NewRepository<BlockchainEvent>(uow).Get(
+                    e => e.TransactionId.HasValue && txIds.Contains(e.TransactionId.Value),
+                    e => e.Block,
+                    e => e.Address);
+
+                return Result.Success(txs.Select(tx => new TxInfoShortDto
+                {
+                    Hash = tx.Hash,
+                    Timestamp = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddMilliseconds(tx.Timestamp),
+                    Status = tx.Status,
+                    NumberOfActions = events
+                        .Where(e => e.TransactionId == tx.TransactionId).GroupBy(e => e.TxActionId).Count(),
+                    SenderAddress = events
+                        .Where(e => e.TransactionId == tx.TransactionId).First().Address.BlockchainAddress,
+                    BlockNumber = events.Where(e => e.TransactionId == tx.TransactionId).First().Block.BlockNumber
+                }));
             }
         }
 
