@@ -39,13 +39,6 @@ namespace Own.BlockchainExplorer.Core.Dtos.Api
         public string SenderAddress { get; set; }
         public DateTime Timestamp { get; set; }
         public int NumberOfActions { get; set; }
-
-        public static TxInfoShortDto FromDomainModel(Transaction tx)
-        {
-            return new TxInfoShortDto
-            {
-                Hash = tx.Hash
-            };
-        }
+        public string Status { get; set; }
     }
 }

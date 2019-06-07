@@ -65,7 +65,8 @@ namespace Own.BlockchainExplorer.Domain.Services
                         Hash = g.Key.Hash,
                         NumberOfActions = g.Select(e => e.TxActionId).Distinct().Count(),
                         SenderAddress = g.First().Address.BlockchainAddress,
-                        BlockNumber = blockNumber
+                        BlockNumber = blockNumber,
+                        Status = g.Key.Status
                     })                   
                  );
             }
