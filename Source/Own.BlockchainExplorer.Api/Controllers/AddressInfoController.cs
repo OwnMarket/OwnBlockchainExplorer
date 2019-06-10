@@ -24,18 +24,24 @@ namespace Own.BlockchainExplorer.Api.Controllers
         [Route("address/{blockchainAddress}/accounts")]
         public IActionResult GetAccountsInfo(string blockchainAddress, 
             [FromQuery] int page = 1, 
-            [FromQuery] int limit = 50)
+            [FromQuery] int limit = 50,
+            [FromQuery] bool? isActive = null)
         {
-            return ApiResult(_addressInfoService.GetAccountsInfo(blockchainAddress, page, limit), r => NotFound(r));
+            return ApiResult(
+                _addressInfoService.GetAccountsInfo(blockchainAddress, page, limit, isActive), 
+                r => NotFound(r));
         }
 
         [HttpGet]
         [Route("address/{blockchainAddress}/assets")]
-        public IActionResult GetAssetsInfo(string blockchainAddress, 
+        public IActionResult GetAssetsInfo(string blockchainAddress,
             [FromQuery] int page = 1, 
-            [FromQuery] int limit = 50)
+            [FromQuery] int limit = 50,
+            [FromQuery] bool? isActive = null)
         {
-            return ApiResult(_addressInfoService.GetAssetsInfo(blockchainAddress, page, limit), r => NotFound(r));
+            return ApiResult(
+                _addressInfoService.GetAssetsInfo(blockchainAddress, page, limit, isActive), 
+                r => NotFound(r));
         }
 
         [HttpGet]

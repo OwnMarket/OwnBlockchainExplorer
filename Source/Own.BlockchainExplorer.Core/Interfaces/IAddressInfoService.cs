@@ -6,8 +6,14 @@ namespace Own.BlockchainExplorer.Core.Interfaces
 {
     public interface IAddressInfoService
     {
-        Result<IEnumerable<ControlledAccountDto>> GetAccountsInfo(string blockchainAddress, int page, int limit);
-        Result<IEnumerable<ControlledAssetDto>> GetAssetsInfo(string blockchainAddress, int page, int limit);
+        Result<IEnumerable<ControlledAccountDto>> GetAccountsInfo(string blockchainAddress, 
+            int page, 
+            int limit, 
+            bool? isActive);
+        Result<IEnumerable<ControlledAssetDto>> GetAssetsInfo(string blockchainAddress, 
+            int page, 
+            int limit, 
+            bool? isActive);
         Result<IEnumerable<StakeDto>> GetDelegatedStakesInfo(string blockchainAddress, int page, int limit);
         Result<IEnumerable<StakeDto>> GetReceivedStakesInfo(string blockchainAddress, int page, int limit);
         Result<IEnumerable<EventDto>> GetEventsInfo(string blockchainAddress, int page, int limit);

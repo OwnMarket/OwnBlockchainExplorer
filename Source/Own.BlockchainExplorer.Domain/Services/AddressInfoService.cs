@@ -19,7 +19,10 @@ namespace Own.BlockchainExplorer.Domain.Services
         {
         }
 
-        public Result<IEnumerable<ControlledAccountDto>> GetAccountsInfo(string blockchainAddress, int page, int limit)
+        public Result<IEnumerable<ControlledAccountDto>> GetAccountsInfo(string blockchainAddress, 
+            int page, 
+            int limit, 
+            bool? isActive)
         {
             using (var uow = NewUnitOfWork())
             {
@@ -46,6 +49,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                         IsActive = e.Account.ControllerAddress == events.First().Address.BlockchainAddress
                     })
                     .Distinct(new ControlledAccountDtoEqualityComparer())
+                    .Where(e => isActive.HasValue ? e.IsActive == isActive : true)
                     .Skip(page - 1).Take(limit)
                 );
             }
@@ -53,7 +57,8 @@ namespace Own.BlockchainExplorer.Domain.Services
 
         public Result<IEnumerable<ControlledAssetDto>> GetAssetsInfo(string blockchainAddress, 
             int page, 
-            int limit)
+            int limit,
+            bool? isActive)
         {
             using (var uow = NewUnitOfWork())
             {
@@ -81,6 +86,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                         IsActive = e.Asset.ControllerAddress == events.First().Address.BlockchainAddress
                     })
                     .Distinct(new ControlledAssetDtoEqualityComparer())
+                    .Where(e => isActive.HasValue ? e.IsActive == isActive : true)
                     .Skip(page - 1).Take(limit)
                 );
             }
