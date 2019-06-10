@@ -11,6 +11,7 @@ namespace Own.BlockchainExplorer.Core.Dtos.Api
         public long Nonce { get; set; }
         public DateTime Timestamp { get; set; }
         public DateTime? ExpirationTime { get; set; }
+        public int NumberOfActions { get; set; }
         public decimal ActionFee { get; set; }
         public string Status { get; set; }
         public string ErrorMessage { get; set; }
