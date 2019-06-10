@@ -8,6 +8,7 @@ namespace Own.BlockchainExplorer.Core.Dtos.Api
     {
         public long BlockNumber { get; set; }
         public string Hash { get; set; }
+        public long? PreviousBlockNumber { get; set; }
         public string PreviousBlockHash { get; set; }
         public long ConfigurationBlockNumber { get; set; }
         public DateTime Timestamp { get; set; }
@@ -30,6 +31,7 @@ namespace Own.BlockchainExplorer.Core.Dtos.Api
                 BlockNumber = block.BlockNumber,
                 Hash = block.Hash,
                 PreviousBlockHash = block.PreviousBlockHash,
+                PreviousBlockNumber = block.PreviousBlock?.BlockNumber,
                 ConfigurationBlockNumber = block.ConfigurationBlockNumber,
                 Timestamp = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddMilliseconds(block.Timestamp),
                 ValidatorAddress = block.Validator.BlockchainAddress,

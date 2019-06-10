@@ -96,7 +96,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             using (var uow = NewUnitOfWork())
             {
                 var block = NewRepository<Block>(uow)
-                    .Get(b => b.BlockNumber == blockNumber, b => b.Validator)
+                    .Get(b => b.BlockNumber == blockNumber, b => b.Validator, b => b.PreviousBlock)
                     .SingleOrDefault();
 
                 if (block is null)
