@@ -35,7 +35,12 @@ namespace Own.BlockchainExplorer.Domain.Services
             firstEvent.Amount = actionData.Amount * -1;
             senderAddress.AvailableBalance -= actionData.Amount;
 
-            var recipientAddress = addressRepo.Get(a => a.BlockchainAddress == actionData.RecipientAddress).SingleOrDefault();
+            var sameAddress = senderAddress.BlockchainAddress == actionData.RecipientAddress;
+
+            var recipientAddress = sameAddress 
+                ? senderAddress 
+                : addressRepo.Get(a => a.BlockchainAddress == actionData.RecipientAddress).SingleOrDefault();
+
             var newAddress = recipientAddress == null;
 
             if (newAddress)
@@ -61,10 +66,13 @@ namespace Own.BlockchainExplorer.Domain.Services
                 EventType = EventType.Action.ToString()
             });
 
-            if (newAddress)
-                addressRepo.Insert(recipientAddress);
-            else 
-                addressRepo.Update(recipientAddress);
+            if (!sameAddress)
+            {
+                if (newAddress)
+                    addressRepo.Insert(recipientAddress);
+                else
+                    addressRepo.Update(recipientAddress);
+            }
 
             return Result.Success();
         }

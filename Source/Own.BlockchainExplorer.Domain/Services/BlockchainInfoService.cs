@@ -197,7 +197,8 @@ namespace Own.BlockchainExplorer.Domain.Services
                     NumberOfActions = events
                         .Where(e => e.TransactionId == tx.TransactionId).GroupBy(e => e.TxActionId).Count(),
                     SenderAddress = events
-                        .Where(e => e.TransactionId == tx.TransactionId).First().Address.BlockchainAddress,
+                        .Where(e => e.TransactionId == tx.TransactionId && e.Fee.HasValue)
+                        .First().Address.BlockchainAddress,
                     BlockNumber = events.Where(e => e.TransactionId == tx.TransactionId).First().Block.BlockNumber
                 }));
             }
