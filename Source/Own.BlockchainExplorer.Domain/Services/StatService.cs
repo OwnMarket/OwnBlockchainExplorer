@@ -21,11 +21,25 @@ namespace Own.BlockchainExplorer.Domain.Services
         {
             using (var uow = NewUnitOfWork())
             {
-                var minDate = DateTime.UtcNow.Date.AddDays(-1 * numberOfDays);
-                return Result.Success(NewRepository<Transaction>(uow)
-                    .Get(t => GetDate(t.Timestamp) >= minDate)
+                var currentDate = DateTime.UtcNow.Date;
+                var minDate = currentDate.AddDays(-1 * numberOfDays);
+
+                var result = NewRepository<Transaction>(uow)
+                    .Get(t => GetDate(t.Timestamp) > minDate)
                     .GroupBy(t => GetDate(t.Timestamp))
                     .Select(g => new KeyValuePair<DateTime, int>(g.Key, g.Count()))
+                    .ToList();
+
+                var tempDate = minDate.AddDays(1);
+
+                while (tempDate <= currentDate)
+                {
+                    if (!result.Exists(p => p.Key == tempDate))
+                        result.Add(new KeyValuePair<DateTime, int>(tempDate, 0));
+                    tempDate = tempDate.AddDays(1);
+                }
+
+                return Result.Success(result
                     .OrderByDescending(p => p.Key)
                     .AsEnumerable());
             }
