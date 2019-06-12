@@ -91,7 +91,12 @@ namespace Own.BlockchainExplorer.Domain.Services
             senderAddress.StakedBalance += actionData.Amount;
             senderAddress.AvailableBalance -= actionData.Amount;
 
-            var validatorAddress = addressRepo.Get(a => a.BlockchainAddress == actionData.ValidatorAddress).SingleOrDefault();
+            var sameAddress = senderAddress.BlockchainAddress == actionData.ValidatorAddress;
+
+            var validatorAddress = sameAddress
+                ? senderAddress
+                : addressRepo.Get(a => a.BlockchainAddress == actionData.ValidatorAddress).SingleOrDefault();
+
             var newAddress = validatorAddress == null;
 
             if (newAddress)
@@ -116,10 +121,13 @@ namespace Own.BlockchainExplorer.Domain.Services
                 EventType = EventType.Action.ToString()
             });
 
-            if (newAddress)
-                addressRepo.Insert(validatorAddress);
-            else
-                addressRepo.Update(validatorAddress);
+            if (!sameAddress)
+            {
+                if (newAddress)
+                    addressRepo.Insert(validatorAddress);
+                else
+                    addressRepo.Update(validatorAddress);
+            }
 
             return Result.Success();
         }
@@ -192,7 +200,9 @@ namespace Own.BlockchainExplorer.Domain.Services
 
             foreach(var group in delegateStakeEvents)
             {
-                var address = group.Key;
+                var sameAddress = senderAddress.AddressId == group.Key.AddressId;
+
+                var address = sameAddress ? senderAddress : group.Key;
                 var stakedAmount = group.Sum(g => g.Amount ?? 0) * -1;
 
                 events.Add(new BlockchainEvent {
@@ -207,7 +217,8 @@ namespace Own.BlockchainExplorer.Domain.Services
                 address.StakedBalance -= stakedAmount;
                 address.AvailableBalance += stakedAmount;
 
-                addressRepo.Update(address);
+                if (!sameAddress)
+                    addressRepo.Update(address);
             }
 
             return Result.Success();
