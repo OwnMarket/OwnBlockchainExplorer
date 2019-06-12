@@ -116,12 +116,14 @@ namespace Own.BlockchainExplorer.Domain.Services
 
             while (newBlock != null)
             {
+                Console.WriteLine($"Importing block {newBlock.Number} started.");
                 var blockResult = await ProcessBlock(newBlock);
                 if (blockResult.Failed)
                     return Result.Failure(blockResult.Alerts);
 
                 lastBlockNumber = newBlock.Number;
                 newBlock = await GetBlock(lastBlockNumber + 1);
+                Console.WriteLine($"Importing block {newBlock.Number} finished.");
             }
 
             if (newBlock is null)
