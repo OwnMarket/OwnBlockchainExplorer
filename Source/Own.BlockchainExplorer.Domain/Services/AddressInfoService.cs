@@ -104,7 +104,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                         e => e.EventType == EventType.Action.ToString()
                         && e.Address.BlockchainAddress == blockchainAddress
                         && e.TxAction.ActionType == ActionType.DelegateStake.ToString()
-                        && e.Amount < 0
+                        && e.Fee != null
                         && e.Transaction.Status == TxStatus.Success.ToString(),
                         e => e.Account,
                         e => e.Address,
@@ -116,7 +116,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                     return Result.Success(new List<StakeDto>().AsEnumerable());
 
                 return Result.Success(eventRepo
-                    .Get(e => delegateStakeIds.Contains(e.TxActionId) && e.Amount > 0, e => e.Address)
+                    .Get(e => delegateStakeIds.Contains(e.TxActionId) && e.Fee == null, e => e.Address)
                     .Skip(page - 1).Take(limit)
                     .Select(e => new StakeDto
                     {
@@ -137,7 +137,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                         e => e.EventType == EventType.Action.ToString()
                         && e.Address.BlockchainAddress == blockchainAddress
                         && e.TxAction.ActionType == ActionType.DelegateStake.ToString()
-                        && e.Amount > 0
+                        && e.Fee == null
                         && e.Transaction.Status == TxStatus.Success.ToString(),
                         e => e.Account,
                         e => e.Address,
@@ -149,7 +149,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                     return Result.Success(new List<StakeDto>().AsEnumerable());
 
                 return Result.Success(eventRepo
-                    .Get(e => receivedStakeIds.Contains(e.TxActionId) && e.Amount < 0, e => e.Address)
+                    .Get(e => receivedStakeIds.Contains(e.TxActionId) && e.Fee != null, e => e.Address)
                     .Skip(page - 1).Take(limit)
                     .Select(e => new StakeDto
                     {
