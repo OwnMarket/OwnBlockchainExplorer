@@ -117,11 +117,14 @@ namespace Own.BlockchainExplorer.Domain.Services
 
                 return Result.Success(eventRepo
                     .Get(e => delegateStakeIds.Contains(e.TxActionId) && e.Fee == null, e => e.Address)
+                    .OrderByDescending(e => e.BlockchainEventId)
+                    .GroupBy(e => e.Address)
+                    .Where(g => g.Sum(e => e.Amount.Value) != 0)
                     .Skip(page - 1).Take(limit)
-                    .Select(e => new StakeDto
+                    .Select(g => new StakeDto
                     {
-                        ValidatorAddress = e.Address.BlockchainAddress,
-                        Amount = e.Amount.Value,
+                        ValidatorAddress = g.Key.BlockchainAddress,
+                        Amount = g.Sum(e => e.Amount.Value),
                         StakerAddress = blockchainAddress
                     }));
             }
@@ -150,11 +153,14 @@ namespace Own.BlockchainExplorer.Domain.Services
 
                 return Result.Success(eventRepo
                     .Get(e => receivedStakeIds.Contains(e.TxActionId) && e.Fee != null, e => e.Address)
+                    .OrderByDescending(e => e.BlockchainEventId)
+                    .GroupBy(e => e.Address)
+                    .Where (g => g.Sum(e => e.Amount.Value) != 0)
                     .Skip(page - 1).Take(limit)
-                    .Select(e => new StakeDto
+                    .Select(g => new StakeDto
                     {
-                        StakerAddress = e.Address.BlockchainAddress,
-                        Amount = e.Amount.Value * -1,
+                        StakerAddress = g.Key.BlockchainAddress,
+                        Amount = g.Sum(e => e.Amount.Value) * -1,
                         ValidatorAddress = blockchainAddress
                     }));
             }
@@ -167,7 +173,11 @@ namespace Own.BlockchainExplorer.Domain.Services
                 return Result.Success(
                     NewRepository<BlockchainEvent>(uow)
                     .Get(
-                        e => e.Address.BlockchainAddress == blockchainAddress,
+                        e => 
+                            e.Address.BlockchainAddress == blockchainAddress
+                            && !((e.EventType == EventType.ValidatorReward.ToString()
+                            || e.EventType == EventType.StakingReward.ToString())
+                            && e.Amount == 0),
                         e => e.TxAction,
                         e => e.Equivocation,
                         e => e.Transaction,
