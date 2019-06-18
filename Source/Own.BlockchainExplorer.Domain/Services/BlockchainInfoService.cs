@@ -149,34 +149,6 @@ namespace Own.BlockchainExplorer.Domain.Services
             }
         }
 
-        public Result<ValidatorInfoDto> GetValidatorInfo(string blockchainAddress)
-        {
-            using (var uow = NewUnitOfWork())
-            {
-                var eventRepo = NewRepository<BlockchainEvent>(uow);
-                var validator = NewRepository<Validator>(uow)
-                    .Get(v => v.BlockchainAddress == blockchainAddress && !v.IsDeleted)
-                    .SingleOrDefault();
-
-                if (validator is null)
-                    return Result.Failure<ValidatorInfoDto>("Validator {0} does not exist.".F(blockchainAddress));
-
-                var validatorDto = ValidatorInfoDto.FromDomainModel(validator);
-
-                var stakeActionIds = eventRepo.GetAs(
-                    e => e.Address.BlockchainAddress == blockchainAddress
-                    && e.TxAction.ActionType == ActionType.DelegateStake.ToString()
-                    && e.Amount > 0, e => e.TxActionId);
-
-                validatorDto.Stakes = eventRepo
-                    .Get(e => stakeActionIds.Contains(e.TxActionId) && e.Amount < 0, e => e.Address)
-                    .Select(e => new StakeDto { StakerAddress = e.Address.BlockchainAddress, Amount = e.Amount.Value * -1 })
-                    .ToList();
-
-                return Result.Success(validatorDto);
-            }
-        }
-
         public Result<IEnumerable<TxInfoShortDto>> GetTxs(int limit, int page)
         {
             using (var uow = NewUnitOfWork())
@@ -209,15 +181,6 @@ namespace Own.BlockchainExplorer.Domain.Services
             using (var uow = NewUnitOfWork())
             {
                 return Result.Success(_blockchainInfoRepositoryFactory.Create(uow).GetBlocks(limit, page));
-            }
-        }
-        public Result<IEnumerable<ValidatorInfoShortDto>> GetValidators()
-        {
-            using (var uow = NewUnitOfWork())
-            {
-                return Result.Success(NewRepository<Validator>(uow).GetAs(
-                    v => !v.IsDeleted,
-                    v => new ValidatorInfoShortDto {BlockchainAddress = v.BlockchainAddress, IsActive = v.IsActive}));
             }
         }
 
