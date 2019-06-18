@@ -35,13 +35,6 @@ namespace Own.BlockchainExplorer.Api.Controllers
         }
 
         [HttpGet]
-        [Route("validator/{blockchainAddress}")]
-        public IActionResult GetValidatorInfo(string blockchainAddress)
-        {
-            return ApiResult(_blockchainInfoService.GetValidatorInfo(blockchainAddress), r => NotFound(r));
-        }
-
-        [HttpGet]
         [Route("blocks")]
         public IActionResult GetBlocks([FromQuery] int page = 1, [FromQuery] int limit = 50)
         {
@@ -53,13 +46,6 @@ namespace Own.BlockchainExplorer.Api.Controllers
         public IActionResult GetTransactions([FromQuery] int page = 1, [FromQuery] int limit = 50)
         {
             return ApiResult(_blockchainInfoService.GetTxs(limit, page), r => NotFound(r));
-        }
-
-        [HttpGet]
-        [Route("validators")]
-        public IActionResult GetValidators()
-        {
-            return ApiResult(_blockchainInfoService.GetValidators(), r => NotFound(r));
         }
 
         [HttpGet]

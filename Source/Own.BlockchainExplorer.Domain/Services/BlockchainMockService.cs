@@ -212,23 +212,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 BlockchainAddress = "CHMf4inrS8hnPNEgJVZPRHFhsDPCHSHZfAJ",
                 NetworkAddress = "localhost:25701",
                 SharedRewardPercent = 0,
-                IsActive = true,
-
-                Stakes = new List<StakeDto>()
-                {
-                    new StakeDto()
-                    {
-                        StakerAddress = "CHVegEXVwUhK2gbrqnMsYyNSVC7CLTM7qmQ",
-                        ValidatorAddress = "CHMf4inrS8hnPNEgJVZPRHFhsDPCHSHZfAJ",
-                        Amount = 500
-                    },
-                    new StakeDto()
-                    {
-                        StakerAddress = "CHStDQ5ZFeFW9rbMhw83f7FXg19okxQD9E7",
-                        ValidatorAddress = "CHMf4inrS8hnPNEgJVZPRHFhsDPCHSHZfAJ",
-                        Amount = 500
-                    }
-                }
+                IsActive = true
             });
         }
 

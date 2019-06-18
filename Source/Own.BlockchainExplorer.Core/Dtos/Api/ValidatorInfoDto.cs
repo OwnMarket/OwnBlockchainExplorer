@@ -10,8 +10,6 @@ namespace Own.BlockchainExplorer.Core.Dtos.Api
         public decimal SharedRewardPercent { get; set; }
         public bool IsActive { get; set; }
 
-        public List<StakeDto> Stakes { get; set; }
-
         public static ValidatorInfoDto FromDomainModel(Validator validator)
         {
             return new ValidatorInfoDto
@@ -28,5 +26,7 @@ namespace Own.BlockchainExplorer.Core.Dtos.Api
     {
         public string BlockchainAddress { get; set; }
         public bool IsActive { get; set; }
+        public int NumberOfStakers { get; set; }
+        public decimal TotalStake { get; set; }
     }
 }
