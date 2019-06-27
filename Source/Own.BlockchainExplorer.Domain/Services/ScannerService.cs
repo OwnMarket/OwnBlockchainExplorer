@@ -171,8 +171,10 @@ namespace Own.BlockchainExplorer.Domain.Services
                     return Result.Failure(importResult.Alerts);
             }
 
+            var totalStakingRewards = blockDto.StakingRewards.Sum(s => s.Amount);
+
             var validatorRewardResult = _importService.ImportValidatorRewardEvent(
-                validatorReward, 
+                validatorReward - totalStakingRewards, 
                 blockImportResult.Data.BlockId, 
                 blockDto.ProposerAddress);
 
@@ -204,6 +206,8 @@ namespace Own.BlockchainExplorer.Domain.Services
                     validator.IsActive = false;
                     validatorRepo.Update(validator);
                 }
+
+                uow.Commit();
             }
 
             return Result.Success();

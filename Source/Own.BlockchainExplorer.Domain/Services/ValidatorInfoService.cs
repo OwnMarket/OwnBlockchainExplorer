@@ -77,6 +77,7 @@ namespace Own.BlockchainExplorer.Domain.Services
         {
             using (var uow = NewUnitOfWork())
             {
+                var numberOfDays = 7;
                 var validatorDtos = new List<ValidatorInfoShortDto>();
 
                 var eventRepo = NewRepository<BlockchainEvent>(uow);
@@ -117,6 +118,8 @@ namespace Own.BlockchainExplorer.Domain.Services
                         .Distinct()
                         .Count();
 
+                    var blocksProposed = NewRepository<Block>(uow).Get(b => b.ValidatorId == validator.ValidatorId);
+
                     validatorDtos.Add(new ValidatorInfoShortDto
                     {
                         BlockchainAddress = validator.BlockchainAddress,
@@ -128,6 +131,16 @@ namespace Own.BlockchainExplorer.Domain.Services
 
                 return Result.Success(validatorDtos.OrderByDescending(v => v.TotalStake).Skip(page - 1).Take(limit));
             }
+        }
+        public Result GetBlocksProcessed(string blockchainAddress, int numberOfDays)
+        {
+            using (var uow = NewUnitOfWork())
+            {
+                /*var validator = NewRepository<Validator>(uow).Get
+                NewRepository<BlockchainEvent>(uow).Get(e => e.Block.ValidatorId ==)*/
+            }
+
+            return Result.Success();
         }
     }
 }

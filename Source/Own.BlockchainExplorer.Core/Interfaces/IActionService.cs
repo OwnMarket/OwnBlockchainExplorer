@@ -32,12 +32,14 @@ namespace Own.BlockchainExplorer.Core.Interfaces
         Result SetAssetController(
             List<BlockchainEvent> events,
             SetAssetControllerData actionData,
-            IUnitOfWork uow);
+            IUnitOfWork uow,
+            Address senderAddress);
 
         Result SetAccountController(
             List<BlockchainEvent> events,
             SetAccountControllerData actionData,
-            IUnitOfWork uow);
+            IUnitOfWork uow,
+            Address senderAddress);
 
         Result TransferAsset(List<BlockchainEvent> events, TransferAssetData actionData, IUnitOfWork uow);
 
@@ -73,16 +75,19 @@ namespace Own.BlockchainExplorer.Core.Interfaces
         Result ChangeKycControllerAddress(
             List<BlockchainEvent> events,
             ChangeKycControllerAddressData actionData,
-            IUnitOfWork uow);
+            IUnitOfWork uow,
+            Address senderAddress);
 
         Result AddKycProvider(
             List<BlockchainEvent> events,
             AddKycProviderData actionData,
-            IUnitOfWork uow);
+            IUnitOfWork uow,
+            Address senderAddress);
 
         Result RemoveKycProvider(
             List<BlockchainEvent> events,
             RemoveKycProviderData actionData,
-            IUnitOfWork uow);
+            IUnitOfWork uow,
+            Address senderAddress);
     }
 }

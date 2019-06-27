@@ -402,13 +402,15 @@ namespace Own.BlockchainExplorer.Domain.Services
                             result = _actionService.SetAssetController(
                                 events,
                                 actionDataObj.ToObject<SetAssetControllerData>(),
-                                uow);
+                                uow,
+                                senderAddress);
                             break;
                         case ActionType.SetAccountController:
                             result = _actionService.SetAccountController(
                                 events,
                                 actionDataObj.ToObject<SetAccountControllerData>(),
-                                uow);
+                                uow,
+                                senderAddress);
                             break;
                         case ActionType.TransferAsset:
                             result = _actionService.TransferAsset(
@@ -453,19 +455,22 @@ namespace Own.BlockchainExplorer.Domain.Services
                             result = _actionService.ChangeKycControllerAddress(
                                 events,
                                 actionDataObj.ToObject<ChangeKycControllerAddressData>(),
-                                uow);
+                                uow,
+                                senderAddress);
                             break;
                         case ActionType.AddKycProvider:
                             result = _actionService.AddKycProvider(
                                 events, 
                                 actionDataObj.ToObject<AddKycProviderData>(), 
-                                uow);
+                                uow,
+                                senderAddress);
                             break;
                         case ActionType.RemoveKycProvider:
                             result = _actionService.RemoveKycProvider(
                                 events, 
                                 actionDataObj.ToObject<RemoveKycProviderData>(), 
-                                uow);
+                                uow,
+                                senderAddress);
                             break;
                         default:
                             result = Result.Failure("Unsupported action type.");

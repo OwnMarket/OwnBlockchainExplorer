@@ -28,5 +28,6 @@ namespace Own.BlockchainExplorer.Core.Dtos.Api
         public bool IsActive { get; set; }
         public int NumberOfStakers { get; set; }
         public decimal TotalStake { get; set; }
+        public int BlocksProposed { get; set; }
     }
 }
