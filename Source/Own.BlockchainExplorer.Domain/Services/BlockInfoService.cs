@@ -43,7 +43,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                             EquivocationProofHash = e.Equivocation.EquivocationProofHash
                         }
                     })
-                    .Skip(page-1).Take(limit)
+                    .Skip((page-1)*limit).Take(limit)
                 );
             }
         }
@@ -59,7 +59,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                          e => e.Transaction,
                          e => e.Address)
                     .GroupBy(e => e.Transaction)
-                    .Skip(page - 1).Take(limit)
+                    .Skip((page - 1)*limit).Take(limit)
                     .Select(g => new TxInfoShortDto
                     {
                         Hash = g.Key.Hash,
@@ -81,7 +81,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                      .Get(
                          e => e.Block.BlockNumber == blockNumber && e.EventType == EventType.StakingReward.ToString(),
                          e => e.Address)
-                    .Skip(page - 1).Take(limit)
+                    .Skip((page - 1)*limit).Take(limit)
                     .Select(e => new StakingRewardDto
                     {
                         StakerAddress = e.Address.BlockchainAddress,

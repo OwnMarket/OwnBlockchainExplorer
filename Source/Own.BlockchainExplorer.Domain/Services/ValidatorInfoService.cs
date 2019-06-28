@@ -68,7 +68,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                         ValidatorAddress = blockchainAddress
                     })
                     .OrderByDescending(s => s.Amount)
-                    .Skip(page - 1).Take(limit)
+                    .Skip((page - 1) * limit).Take(limit)
                 );
             }
         }
@@ -129,7 +129,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                     });
                 }
 
-                return Result.Success(validatorDtos.OrderByDescending(v => v.TotalStake).Skip(page - 1).Take(limit));
+                return Result.Success(validatorDtos.OrderByDescending(v => v.TotalStake).Skip((page - 1) * limit).Take(limit));
             }
         }
         public Result GetBlocksProcessed(string blockchainAddress, int numberOfDays)

@@ -50,7 +50,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                     })
                     .Distinct(new ControlledAccountDtoEqualityComparer())
                     .Where(e => isActive.HasValue ? e.IsActive == isActive : true)
-                    .Skip(page - 1).Take(limit)
+                    .Skip((page - 1) * limit).Take(limit)
                 );
             }
         }
@@ -87,7 +87,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                     })
                     .Distinct(new ControlledAssetDtoEqualityComparer())
                     .Where(e => isActive.HasValue ? e.IsActive == isActive : true)
-                    .Skip(page - 1).Take(limit)
+                    .Skip((page - 1) * limit).Take(limit)
                 );
             }
         }
@@ -120,7 +120,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                     .OrderByDescending(e => e.BlockchainEventId)
                     .GroupBy(e => e.Address)
                     .Where(g => g.Sum(e => e.Amount.Value) != 0)
-                    .Skip(page - 1).Take(limit)
+                    .Skip((page - 1) * limit).Take(limit)
                     .Select(g => new StakeDto
                     {
                         ValidatorAddress = g.Key.BlockchainAddress,
@@ -156,7 +156,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                     .OrderByDescending(e => e.BlockchainEventId)
                     .GroupBy(e => e.Address)
                     .Where (g => g.Sum(e => e.Amount.Value) != 0)
-                    .Skip(page - 1).Take(limit)
+                    .Skip((page - 1) * limit).Take(limit)
                     .Select(g => new StakeDto
                     {
                         StakerAddress = g.Key.BlockchainAddress,
@@ -183,7 +183,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                         e => e.Transaction,
                         e => e.Block)
                     .OrderByDescending(e => e.BlockchainEventId)
-                    .Skip(page - 1).Take(limit)
+                    .Skip((page - 1) * limit).Take(limit)
                     .Select(e => EventDto.FromDomainModel(e))
                 );
             }

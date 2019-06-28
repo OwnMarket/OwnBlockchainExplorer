@@ -20,7 +20,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
 
         public IEnumerable<Transaction> GetTxs(int limit, int page)
         {
-            return _db.Transactions.OrderByDescending(t => t.Timestamp).Skip(page - 1).Take(limit).ToList();
+            return _db.Transactions.OrderByDescending(t => t.Timestamp).Skip((page - 1) * limit).Take(limit).ToList();
         }
 
         public IEnumerable<BlockInfoShortDto> GetBlocks(int limit, int page)

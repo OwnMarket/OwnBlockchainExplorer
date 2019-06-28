@@ -55,7 +55,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                             e => e.Transaction,
                             e => e.TxAction)
                         .GroupBy(e => e.TxActionId)
-                        .Skip(page - 1).Take(limit)
+                        .Skip((page - 1) * limit).Take(limit)
                         .Select(g => ActionDto.FromDomainModel(g.First().TxAction))     
                 );
             }

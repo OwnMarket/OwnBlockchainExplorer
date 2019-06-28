@@ -184,33 +184,6 @@ namespace Own.BlockchainExplorer.Domain.Services
             }
         }
 
-        /*public Result<object> Search(string hash)
-        {
-            using (var uow = NewUnitOfWork())
-            {
-                if (NewRepository<Address>(uow).Exists(a => a.BlockchainAddress == hash))
-                    return ProcessSearchResult(_addressInfoService.GetAddressInfo(hash));
-                else if (NewRepository<Account>(uow).Exists(a => a.Hash == hash))
-                    return ProcessSearchResult(GetAccountInfo(hash));
-                else if (NewRepository<Asset>(uow).Exists(a => a.Hash == hash))
-                    return ProcessSearchResult(GetAssetInfo(hash));
-                else if (NewRepository<Transaction>(uow).Exists(t => t.Hash == hash))
-                    return ProcessSearchResult(_txInfoService.GetTxInfo(hash));
-                else if (NewRepository<Equivocation>(uow).Exists(e => e.EquivocationProofHash == hash))
-                    return ProcessSearchResult(GetEquivocationInfo(hash));
-                else
-                {
-                    if (long.TryParse(hash, out long number))
-                    {
-                        if(NewRepository<Block>(uow).Exists(a => a.BlockNumber == number))
-                            return ProcessSearchResult(_blockInfoService.GetBlockInfo(number));
-                    }
-                }
-
-                return Result.Failure<object>("Not found.");
-            }
-        }*/
-
         public Result<string> Search(string hash)
         {
             using (var uow = NewUnitOfWork())
@@ -237,13 +210,5 @@ namespace Own.BlockchainExplorer.Domain.Services
                 return Result.Failure<string>("Not found.");
             }
         }
-
-        private Result<object> ProcessSearchResult<T>(Result<T> result)
-        {
-            if (result.Successful)
-                return Result.Success((object)result.Data);
-            else
-                return Result.Failure<object>(result.Alerts);  
-        } 
     }
 }
