@@ -59,7 +59,12 @@ namespace Own.BlockchainExplorer.Scanner
             _scannerService.InitialBlockchainConfiguration();
             var result = _scannerService.CheckNewBlocks().Result;
             if (result.Failed)
-                Log.Error(string.Join(";", result.Alerts.Select(a => a.Message))); 
+            {
+                var message = string.Join(";", result.Alerts.Select(a => a.Message));
+                Log.Error(message);
+                Console.WriteLine(message);
+            }
+                
         }
     }
 }

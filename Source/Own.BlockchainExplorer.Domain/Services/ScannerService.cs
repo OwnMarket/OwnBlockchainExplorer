@@ -104,32 +104,40 @@ namespace Own.BlockchainExplorer.Domain.Services
 
         public async Task<Result> CheckNewBlocks()
         {
-            long lastBlockNumber = 0;
-            using (var uow = NewUnitOfWork())
+            try
             {
-                lastBlockNumber = NewRepository<Block>(uow)
-                    .GetLastAs(b => true, b => b.BlockNumber, 1)
-                    .SingleOrDefault();
-                if (lastBlockNumber == 0) lastBlockNumber = -1;
-            }
-            var newBlock = await GetBlock(lastBlockNumber + 1);
+                long lastBlockNumber = 0;
+                using (var uow = NewUnitOfWork())
+                {
+                    lastBlockNumber = NewRepository<Block>(uow)
+                        .GetLastAs(b => true, b => b.BlockNumber, 1)
+                        .SingleOrDefault();
+                    if (lastBlockNumber == 0) lastBlockNumber = -1;
+                }
+                var newBlock = await GetBlock(lastBlockNumber + 1);
 
-            while (newBlock != null)
-            {
-                Console.WriteLine($"Importing block {newBlock.Number} started.");
-                var blockResult = await ProcessBlock(newBlock);
-                if (blockResult.Failed)
-                    return Result.Failure(blockResult.Alerts);
+                while (newBlock != null)
+                {
+                    Console.WriteLine($"Importing block {newBlock.Number} started.");
+                    var blockResult = await ProcessBlock(newBlock);
+                    if (blockResult.Failed)
+                        return Result.Failure(blockResult.Alerts);
 
-                lastBlockNumber = newBlock.Number;
-                newBlock = await GetBlock(lastBlockNumber + 1);
-                Console.WriteLine($"Importing block {newBlock.Number} finished.");
-            }
+                    lastBlockNumber = newBlock.Number;
+                    newBlock = await GetBlock(lastBlockNumber + 1);
+                    Console.WriteLine($"Importing block {newBlock.Number} finished.");
+                }
 
-            if (newBlock is null)
+                if (newBlock is null)
+                    return Result.Success();
+
                 return Result.Success();
+            }
+            catch (Exception e)
+            {
+                return Result.Failure(e.Message);
+            }
 
-            return Result.Success();
         }
 
         private async Task<Result> ProcessBlock(BlockDto blockDto)
