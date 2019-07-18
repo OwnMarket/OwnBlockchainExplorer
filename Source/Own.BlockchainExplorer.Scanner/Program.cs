@@ -61,7 +61,6 @@ namespace Own.BlockchainExplorer.Scanner
             if (result.Failed)
             {
                 var message = string.Join(";", result.Alerts.Select(a => a.Message));
-                Log.Error(message);
                 Console.WriteLine(message);
             }
                 

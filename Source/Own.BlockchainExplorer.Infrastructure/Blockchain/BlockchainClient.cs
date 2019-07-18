@@ -39,13 +39,13 @@ namespace Own.BlockchainExplorer.Infrastructure.Blockchain
         {
             if (!responseMessage.IsSuccessStatusCode)
             {
-                Log.Error(
+                /*Log.Error(
                     "{0} {1} [{2}] {3}".F(
                         responseMessage.RequestMessage?.Method,
                         responseMessage.RequestMessage?.RequestUri,
                         (int)responseMessage.StatusCode,
                         responseMessage.ReasonPhrase)
-                    .Trim());
+                    .Trim());*/
             }
 
             responseMessage.EnsureSuccessStatusCode();
