@@ -11,7 +11,7 @@ namespace Own.BlockchainExplorer.Common
 
         public static void Initialize(string fileName)
         {
-            _log = new LoggerConfiguration().WriteTo.File(fileName).CreateLogger();
+            _log = new LoggerConfiguration().WriteTo.Console().CreateLogger();
         }
 
         public static void Debug(string format, params object[] args)
