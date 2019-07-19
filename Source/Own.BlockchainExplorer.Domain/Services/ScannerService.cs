@@ -117,10 +117,13 @@ namespace Own.BlockchainExplorer.Domain.Services
                 long lastBlockNumber = 0;
                 using (var uow = NewUnitOfWork())
                 {
-                    lastBlockNumber = NewRepository<Block>(uow)
-                        .GetLastAs(b => true, b => b.BlockNumber, 1)
-                        .SingleOrDefault();
-                    //if (lastBlockNumber == 0) lastBlockNumber = -1;
+                    var lastBlockNumbers = NewRepository<Block>(uow)
+                        .GetLastAs(b => true, b => b.BlockNumber, 1);
+
+                    lastBlockNumber = lastBlockNumbers.Any() 
+                        ? lastBlockNumbers.SingleOrDefault() 
+                        : -1;
+
                 }
                 var newBlock = await GetBlock(lastBlockNumber + 1);
 
