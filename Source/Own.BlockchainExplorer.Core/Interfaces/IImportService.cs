@@ -8,25 +8,35 @@ namespace Own.BlockchainExplorer.Core.Interfaces
 {
     public interface IImportService
     {
-        Result<Address> ImportAddress(string blockchainAddress, long nonce);
-        Result<Block> ImportBlock(BlockDto blockDto);
-        Result<Transaction> ImportTx(TxDto txDto, long timestamp);
-        Result<Equivocation> ImportEquivocation(EquivocationDto equivocationDto, long blockId);
+        Result<Address> ImportAddress(string blockchainAddress, long nonce, IUnitOfWork uow);
+        Result<Block> ImportBlock(BlockDto blockDto, IUnitOfWork uow);
+        Result<Transaction> ImportTx(TxDto txDto, long timestamp, IUnitOfWork uow);
+        Result<Equivocation> ImportEquivocation(EquivocationDto equivocationDto, long blockId, IUnitOfWork uow);
 
-        Result<BlockchainEvent> ImportStakingRewardEvent(StakingRewardDto stakingRewardDto, long blockId);
-        Result<BlockchainEvent> ImportValidatorRewardEvent(decimal reward, long blockId, string blockchainAddress);
-        Result<BlockchainEvent> ImportDepositTakenEvent(EquivocationDto equivocationDto, long blockId, long equivocationId);
+        Result<BlockchainEvent> ImportStakingRewardEvent(StakingRewardDto stakingRewardDto, 
+            long blockId, 
+            IUnitOfWork uow);
+        Result<BlockchainEvent> ImportValidatorRewardEvent(decimal reward, 
+            long blockId, 
+            string blockchainAddress, 
+            IUnitOfWork uow);
+        Result<BlockchainEvent> ImportDepositTakenEvent(EquivocationDto equivocationDto, 
+            long blockId, 
+            long equivocationId, 
+            IUnitOfWork uow);
         Result<IEnumerable<BlockchainEvent>> ImportDepositGivenEvents(
             EquivocationDto equivocationDto,
             long blockId,
-            long equivocationId);
+            long equivocationId, 
+            IUnitOfWork uow);
 
-        Result<TxAction> ImportAction(ActionDto actionDto, int actionNumber);
+        Result<TxAction> ImportAction(ActionDto actionDto, int actionNumber, IUnitOfWork uow);
         Result<IEnumerable<BlockchainEvent>> ImportEvents(
             TxAction action,
             Address senderAddress,
             Block block,
             Transaction tx,
-            JObject actionDataObj);
+            JObject actionDataObj, 
+            IUnitOfWork uow);
     }
 }

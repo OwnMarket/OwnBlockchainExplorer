@@ -31,33 +31,55 @@ namespace Own.BlockchainExplorer.Domain.Services
 
         public Result InitialBlockchainConfiguration()
         {
-            using (var uow = NewUnitOfWork(UnitOfWorkMode.Writable))
+            try
             {
-                var addressRepo = NewRepository<Address>(uow);
-                var validatorRepo = NewRepository<Validator>(uow);
-
-                if(addressRepo.Exists(a => true)) 
-                    return Result.Success();
-
-                var addresses = new List<Address>();
-                var validators = new List<Validator>();
-
-                addresses.Add(new Address
+                using (var uow = NewUnitOfWork(UnitOfWorkMode.Writable))
                 {
-                    BlockchainAddress = Config.GenesisAddress,
-                    AvailableBalance = Config.GenesisChxSupply.Value,
-                    StakedBalance = 0,
-                    DepositBalance = 0,
-                    Nonce = 0
-                });
+                    var addressRepo = NewRepository<Address>(uow);
+                    var validatorRepo = NewRepository<Validator>(uow);
 
-                foreach(var validatorString in Config.GenesisValidators)
-                {
-                    var validatorValues = validatorString.Split("@");
+                    if (addressRepo.Exists(a => true))
+                        return Result.Success();
+
+                    var addresses = new List<Address>();
+                    var validators = new List<Validator>();
 
                     addresses.Add(new Address
                     {
-                        BlockchainAddress = validatorValues[0],
+                        BlockchainAddress = Config.GenesisAddress,
+                        AvailableBalance = Config.GenesisChxSupply.Value,
+                        StakedBalance = 0,
+                        DepositBalance = 0,
+                        Nonce = 0
+                    });
+
+                    foreach (var validatorString in Config.GenesisValidators)
+                    {
+                        var validatorValues = validatorString.Split("@");
+
+                        addresses.Add(new Address
+                        {
+                            BlockchainAddress = validatorValues[0],
+                            AvailableBalance = 0,
+                            StakedBalance = 0,
+                            DepositBalance = 0,
+                            Nonce = 0
+                        });
+
+                        validators.Add(new Validator
+                        {
+                            BlockchainAddress = validatorValues[0],
+                            NetworkAddress = "http://" + validatorValues[1],
+                            IsActive = true,
+                            SharedRewardPercent = 0
+                        });
+                    }
+
+                    var fakeValidator = Config.FakeValidator.Split("@");
+
+                    addresses.Add(new Address
+                    {
+                        BlockchainAddress = fakeValidator[0],
                         AvailableBalance = 0,
                         StakedBalance = 0,
                         DepositBalance = 0,
@@ -66,40 +88,26 @@ namespace Own.BlockchainExplorer.Domain.Services
 
                     validators.Add(new Validator
                     {
-                        BlockchainAddress = validatorValues[0],
-                        NetworkAddress = "http://" + validatorValues[1],
-                        IsActive = true,
+                        BlockchainAddress = fakeValidator[0],
+                        NetworkAddress = fakeValidator[1],
+                        IsActive = false,
+                        IsDeleted = true,
                         SharedRewardPercent = 0
                     });
+
+                    addressRepo.Insert(addresses);
+                    validatorRepo.Insert(validators);
+
+                    uow.Commit();
                 }
-
-                var fakeValidator = Config.FakeValidator.Split("@");
-
-                addresses.Add(new Address
-                {
-                    BlockchainAddress = fakeValidator[0],
-                    AvailableBalance = 0,
-                    StakedBalance = 0,
-                    DepositBalance = 0,
-                    Nonce = 0
-                });
-
-                validators.Add(new Validator
-                {
-                    BlockchainAddress = fakeValidator[0],
-                    NetworkAddress = fakeValidator[1],
-                    IsActive = false,
-                    IsDeleted = true,
-                    SharedRewardPercent = 0
-                });
-
-                addressRepo.Insert(addresses);
-                validatorRepo.Insert(validators);
-
-                uow.Commit();
-
-                return Result.Success();
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+            return Result.Success();
+            
         }
 
         public async Task<Result> CheckNewBlocks()
@@ -112,7 +120,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                     lastBlockNumber = NewRepository<Block>(uow)
                         .GetLastAs(b => true, b => b.BlockNumber, 1)
                         .SingleOrDefault();
-                    if (lastBlockNumber == 0) lastBlockNumber = -1;
+                    //if (lastBlockNumber == 0) lastBlockNumber = -1;
                 }
                 var newBlock = await GetBlock(lastBlockNumber + 1);
 
@@ -142,126 +150,135 @@ namespace Own.BlockchainExplorer.Domain.Services
 
         private async Task<Result> ProcessBlock(BlockDto blockDto)
         {
-            var validatorReward = 0M;
-
-            if (blockDto.Configuration != null)
-            {
-                var configResult = ProcessConfiguration(blockDto.Configuration);
-                if (configResult.Failed)
-                    return Result.Failure(configResult.Alerts);
-            }
-
-            var blockImportResult = _importService.ImportBlock(blockDto);
-            if (blockImportResult.Failed)
-                return Result.Failure(blockImportResult.Alerts);
-
-            foreach (var txHash in blockDto.TxSet)
-            {
-                var txResult = await ProcessTransaction(txHash, blockImportResult.Data);
-                if (txResult.Failed)
-                    return Result.Failure(txResult.Alerts);
-
-                validatorReward += txResult.Data;
-            }
-
-            foreach (var equivocationProof in blockDto.EquivocationProofs)
-            {
-                var equivocationResult = await ProcessEquivocation(equivocationProof, blockImportResult.Data.BlockId);
-                if (equivocationResult.Failed)
-                    return Result.Failure(equivocationResult.Alerts);
-            }
-
-            foreach (var stakingReward in blockDto.StakingRewards)
-            {
-                var importResult = _importService
-                    .ImportStakingRewardEvent(stakingReward, blockImportResult.Data.BlockId);
-                if (importResult.Failed)
-                    return Result.Failure(importResult.Alerts);
-            }
-
-            var totalStakingRewards = blockDto.StakingRewards.Sum(s => s.Amount);
-
-            var validatorRewardResult = _importService.ImportValidatorRewardEvent(
-                validatorReward - totalStakingRewards, 
-                blockImportResult.Data.BlockId, 
-                blockDto.ProposerAddress);
-
-            if (validatorRewardResult.Failed)
-                return Result.Failure(validatorRewardResult.Alerts);
-
-            return Result.Success();
-        }
-
-        private Result ProcessConfiguration(ConfigurationDto configurationDto)
-        {
-            List<string> newAddressHashes = new List<string>();
             using (var uow = NewUnitOfWork(UnitOfWorkMode.Writable))
             {
-                var validatorRepo = NewRepository<Validator>(uow);
+                uow.BeginTransaction();
 
-                var validatorAddresses = configurationDto.Validators.Select(v => v.ValidatorAddress);
-                var validators = validatorRepo.Get(v => validatorAddresses.Contains(v.BlockchainAddress) && !v.IsActive);
-                var inactiveValidators = validatorRepo.Get(v => !validatorAddresses.Contains(v.BlockchainAddress) && v.IsActive);
+                var validatorReward = 0M;
 
-                foreach (var validator in validators)
+                if (blockDto.Configuration != null)
                 {
-                    validator.IsActive = true;
-                    validatorRepo.Update(validator);
+                    var configResult = ProcessConfiguration(blockDto.Configuration, uow);
+                    if (configResult.Failed)
+                        return Result.Failure(configResult.Alerts);
                 }
 
-                foreach (var validator in inactiveValidators)
+                var blockImportResult = _importService.ImportBlock(blockDto, uow);
+                if (blockImportResult.Failed)
+                    return Result.Failure(blockImportResult.Alerts);
+
+                foreach (var txHash in blockDto.TxSet)
                 {
-                    validator.IsActive = false;
-                    validatorRepo.Update(validator);
+                    var txResult = await ProcessTransaction(txHash, blockImportResult.Data, uow);
+                    if (txResult.Failed)
+                        return Result.Failure(txResult.Alerts);
+
+                    validatorReward += txResult.Data;
                 }
 
-                uow.Commit();
+                foreach (var equivocationProof in blockDto.EquivocationProofs)
+                {
+                    var equivocationResult = await ProcessEquivocation(equivocationProof, 
+                        blockImportResult.Data.BlockId, 
+                        uow);
+                    if (equivocationResult.Failed)
+                        return Result.Failure(equivocationResult.Alerts);
+                }
+
+                foreach (var stakingReward in blockDto.StakingRewards)
+                {
+                    var importResult = _importService
+                        .ImportStakingRewardEvent(stakingReward, blockImportResult.Data.BlockId, uow);
+                    if (importResult.Failed)
+                        return Result.Failure(importResult.Alerts);
+                }
+
+                var totalStakingRewards = blockDto.StakingRewards.Sum(s => s.Amount);
+
+                var validatorRewardResult = _importService.ImportValidatorRewardEvent(
+                    validatorReward - totalStakingRewards,
+                    blockImportResult.Data.BlockId,
+                    blockDto.ProposerAddress,
+                    uow);
+
+                if (validatorRewardResult.Failed)
+                    return Result.Failure(validatorRewardResult.Alerts);
+
+                uow.CommitTransaction();
+
+                return Result.Success();
+            }
+        }
+
+        private Result ProcessConfiguration(ConfigurationDto configurationDto, IUnitOfWork uow)
+        {
+            List<string> newAddressHashes = new List<string>();
+            var validatorRepo = NewRepository<Validator>(uow);
+
+            var validatorAddresses = configurationDto.Validators.Select(v => v.ValidatorAddress);
+            var validators = validatorRepo.Get(v => validatorAddresses.Contains(v.BlockchainAddress) && !v.IsActive);
+            var inactiveValidators = validatorRepo.Get(v => !validatorAddresses.Contains(v.BlockchainAddress) && v.IsActive);
+
+            foreach (var validator in validators)
+            {
+                validator.IsActive = true;
+                validatorRepo.Update(validator);
             }
 
+            foreach (var validator in inactiveValidators)
+            {
+                validator.IsActive = false;
+                validatorRepo.Update(validator);
+            }
+
+            uow.Commit();
+            
             return Result.Success();
         }
 
-        private async Task<Result> ProcessEquivocation(string equivocationProof, long blockId)
+        private async Task<Result> ProcessEquivocation(string equivocationProof, long blockId, IUnitOfWork uow)
         {
             var equivocationResult = await _blockchainClient.GetEquivocationInfo(equivocationProof);
             if (equivocationResult.Failed)
                 return Result.Failure(equivocationResult.Alerts);
 
             var importResult = _importService
-                .ImportEquivocation(equivocationResult.Data, blockId);
+                .ImportEquivocation(equivocationResult.Data, blockId, uow);
             if (importResult.Failed)
                 return Result.Failure(importResult.Alerts);
 
             var depositTakenResult = _importService.ImportDepositTakenEvent(
                 equivocationResult.Data,
                 blockId,
-                importResult.Data.EquivocationId);
+                importResult.Data.EquivocationId,
+                uow);
             if (depositTakenResult.Failed)
                 return Result.Failure(depositTakenResult.Alerts);
 
             var depositGivenResult = _importService.ImportDepositGivenEvents(
                 equivocationResult.Data,
                 blockId,
-                importResult.Data.EquivocationId);
+                importResult.Data.EquivocationId,
+                uow);
             if (depositGivenResult.Failed)
                 return Result.Failure(depositGivenResult.Alerts);
 
             return Result.Success();
         }
 
-        private async Task<Result<decimal>> ProcessTransaction(string txHash, Block block)
+        private async Task<Result<decimal>> ProcessTransaction(string txHash, Block block, IUnitOfWork uow)
         {
             var txResult = await _blockchainClient.GetTxInfo(txHash);
             if (txResult.Failed)
                 return Result.Failure<decimal>(txResult.Alerts);
             var txDto = txResult.Data;
 
-            var addressResult = _importService.ImportAddress(txResult.Data.SenderAddress, txResult.Data.Nonce);
+            var addressResult = _importService.ImportAddress(txResult.Data.SenderAddress, txResult.Data.Nonce, uow);
             if (addressResult.Failed)
                 return Result.Failure<decimal>(addressResult.Alerts);
             var senderAddress = addressResult.Data;
 
-            var txImportResult = _importService.ImportTx(txResult.Data, block.Timestamp);
+            var txImportResult = _importService.ImportTx(txResult.Data, block.Timestamp, uow);
             if (txImportResult.Failed)
                 return Result.Failure<decimal>(txImportResult.Alerts);
             var transaction = txImportResult.Data;
@@ -269,13 +286,14 @@ namespace Own.BlockchainExplorer.Domain.Services
             var i = 0;
             foreach (var actionDto in txResult.Data.Actions)
             {
-                var action = _importService.ImportAction(actionDto, ++i).Data;
+                var action = _importService.ImportAction(actionDto, ++i, uow).Data;
                 var eventResult = _importService.ImportEvents(
                     action, 
                     senderAddress, 
                     block, 
                     transaction, 
-                    (JObject)actionDto.ActionData);
+                    (JObject)actionDto.ActionData,
+                    uow);
 
                 if (eventResult.Failed)
                     return Result.Failure<decimal>(eventResult.Alerts);
