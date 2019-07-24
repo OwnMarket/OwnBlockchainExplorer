@@ -107,7 +107,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             }
 
             return Result.Success();
-            
+
         }
 
         public async Task<Result> CheckNewBlocks()
@@ -120,27 +120,28 @@ namespace Own.BlockchainExplorer.Domain.Services
                     var lastBlockNumbers = NewRepository<Block>(uow)
                         .GetLastAs(b => true, b => b.BlockNumber, 1);
 
-                    lastBlockNumber = lastBlockNumbers.Any() 
-                        ? lastBlockNumbers.SingleOrDefault() 
+                    lastBlockNumber = lastBlockNumbers.Any()
+                        ? lastBlockNumbers.SingleOrDefault()
                         : -1;
 
                 }
-                var newBlock = await GetBlock(lastBlockNumber + 1);
 
-                while (newBlock != null)
+                BlockDto newBlock;
+                do
                 {
+                    newBlock = await GetBlock(lastBlockNumber + 1);
+                    if (newBlock is null)
+                        return Result.Success();
+
                     Console.WriteLine($"Importing block {newBlock.Number} started.");
                     var blockResult = await ProcessBlock(newBlock);
                     if (blockResult.Failed)
                         return Result.Failure(blockResult.Alerts);
 
                     lastBlockNumber = newBlock.Number;
-                    newBlock = await GetBlock(lastBlockNumber + 1);
                     Console.WriteLine($"Importing block {newBlock.Number} finished.");
                 }
-
-                if (newBlock is null)
-                    return Result.Success();
+                while (newBlock != null);
 
                 return Result.Success();
             }
@@ -148,7 +149,6 @@ namespace Own.BlockchainExplorer.Domain.Services
             {
                 return Result.Failure(e.Message);
             }
-
         }
 
         private async Task<Result> ProcessBlock(BlockDto blockDto)
@@ -181,8 +181,8 @@ namespace Own.BlockchainExplorer.Domain.Services
 
                 foreach (var equivocationProof in blockDto.EquivocationProofs)
                 {
-                    var equivocationResult = await ProcessEquivocation(equivocationProof, 
-                        blockImportResult.Data.BlockId, 
+                    var equivocationResult = await ProcessEquivocation(equivocationProof,
+                        blockImportResult.Data.BlockId,
                         uow);
                     if (equivocationResult.Failed)
                         return Result.Failure(equivocationResult.Alerts);
@@ -235,7 +235,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             }
 
             uow.Commit();
-            
+
             return Result.Success();
         }
 
@@ -291,10 +291,10 @@ namespace Own.BlockchainExplorer.Domain.Services
             {
                 var action = _importService.ImportAction(actionDto, ++i, uow).Data;
                 var eventResult = _importService.ImportEvents(
-                    action, 
-                    senderAddress, 
-                    block, 
-                    transaction, 
+                    action,
+                    senderAddress,
+                    block,
+                    transaction,
                     (JObject)actionDto.ActionData,
                     uow);
 
