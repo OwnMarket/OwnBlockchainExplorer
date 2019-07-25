@@ -71,7 +71,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 var blocksProposed = NewRepository<Block>(uow)
                     .GetAs(b => GetDate(b.Timestamp) > minDate, b => new { b.ValidatorId, b.BlockId })
                     .GroupBy(b => b.ValidatorId)
-                    .ToDictionary(g => g.Key, g => g.Select(i => i.BlockId).Distinct());
+                    .ToDictionary(g => g.Key, g => g.Select(i => i.BlockId).Distinct().ToList());
 
                 var validatorRewards = eventRepo
                     .GetAs(
@@ -114,19 +114,15 @@ namespace Own.BlockchainExplorer.Domain.Services
                     if (receivedStakes.TryGetValue(validator.BlockchainAddress, out decimal validatorStake))
                         validatorStatsDto.TotalStake = validatorStake;
 
-                    if (blocksProposed.TryGetValue(validator.ValidatorId, out IEnumerable<long> blockIdsProposed))
+                    if (blocksProposed.TryGetValue(validator.ValidatorId, out List<long> blockIdsProposed))
                     {
                         validatorStatsDto.BlocksProposed = blockIdsProposed.Count();
 
-                        // TODO: performance issue uncomment when ready.
-
-                        //var txsProposedCount = eventRepo
-                        //    .GetCount(
-                        //        e => e.EventType == EventType.Action.ToString()
-                        //        && e.Transaction.Status == TxStatus.Success.ToString()
-                        //        && e.BlockId.ContainedIn(blockIdsProposed)
-                        //        && e.TransactionId.HasValue);
-                        //validatorStatsDto.TxsProposed = txsProposedCount;
+                        var txsProposedCount = eventRepo
+                            .GetCount(
+                                e => e.TransactionId.HasValue
+                                && e.BlockId.ContainedIn(blockIdsProposed));
+                        validatorStatsDto.TxsProposed = txsProposedCount;
 
                         var stakingRewards = blockStakingRewards.Where(b => b.Key.ContainedIn(blockIdsProposed)).Sum(b => b.Value);
                         validatorStatsDto.RewardsDistributed = stakingRewards;
