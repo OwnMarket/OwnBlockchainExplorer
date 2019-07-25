@@ -144,6 +144,27 @@ namespace Own.BlockchainExplorer.Domain.Services
             }
         }
 
+        public Result<IEnumerable<KeyValuePair<string, decimal>>> GetTopAddresses(int page, int limit)
+        {
+            using (var uow = NewUnitOfWork())
+            {
+                var topAddresses = NewRepository<Address>(uow)
+                    .GetLastAs(
+                        a => GetTotalBalance(a) > 0,
+                        a => GetTotalBalance(a),
+                        a => new KeyValuePair<string, decimal>(a.BlockchainAddress, GetTotalBalance(a)),
+                        limit,
+                        (page-1) * limit);
+
+                return Result.Success(topAddresses);
+            }
+        }
+
+        private decimal GetTotalBalance(Address a)
+        {
+            return a.AvailableBalance + a.DepositBalance + a.StakedBalance;
+        }
+
         private DateTime GetDate(long timestamp)
         {
             return new DateTime(1970, 1, 1, 0, 0, 0, 0).AddMilliseconds(timestamp).Date;

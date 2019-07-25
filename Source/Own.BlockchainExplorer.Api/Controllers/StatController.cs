@@ -28,5 +28,13 @@ namespace Own.BlockchainExplorer.Api.Controllers
             return ApiResult(_statService.GetValidatorStats(numberOfDays), r => NotFound(r));
         }
 
+        [HttpGet]
+        [Route("top-addresses")]
+        public IActionResult GetTopAddresses(
+            [FromQuery] int page = 1,
+            [FromQuery] int limit = 50)
+        {
+            return ApiResult(_statService.GetTopAddresses(page, limit), r => NotFound(r));
+        }
     }
 }
