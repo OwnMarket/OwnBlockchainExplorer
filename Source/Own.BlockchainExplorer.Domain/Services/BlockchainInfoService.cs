@@ -111,9 +111,9 @@ namespace Own.BlockchainExplorer.Domain.Services
             using (var uow = NewUnitOfWork())
             {
                 var events = NewRepository<BlockchainEvent>(uow).Get(
-                    e => e.Asset.Hash == assetHash, 
-                    e => e.TxAction, 
-                    e => e.Address, 
+                    e => e.Asset.Hash == assetHash,
+                    e => e.TxAction,
+                    e => e.Address,
                     e => e.Asset.HoldingEligibilitiesByAssetId);
 
                 if (!events.Any())

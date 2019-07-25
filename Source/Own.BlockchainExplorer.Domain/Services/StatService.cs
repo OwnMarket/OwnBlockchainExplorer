@@ -124,7 +124,9 @@ namespace Own.BlockchainExplorer.Domain.Services
                                 && e.BlockId.ContainedIn(blockIdsProposed));
                         validatorStatsDto.TxsProposed = txsProposedCount;
 
-                        var stakingRewards = blockStakingRewards.Where(b => b.Key.ContainedIn(blockIdsProposed)).Sum(b => b.Value);
+                        var stakingRewards = blockStakingRewards
+                            .Where(b => b.Key.ContainedIn(blockIdsProposed))
+                            .Sum(b => b.Value);
                         validatorStatsDto.RewardsDistributed = stakingRewards;
                     }
 

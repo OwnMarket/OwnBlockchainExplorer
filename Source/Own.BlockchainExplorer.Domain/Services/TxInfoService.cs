@@ -52,11 +52,10 @@ namespace Own.BlockchainExplorer.Domain.Services
                     NewRepository<BlockchainEvent>(uow)
                         .Get(
                             e => e.Transaction.Hash == txHash && e.EventType == EventType.Action.ToString(),
-                            e => e.Transaction,
                             e => e.TxAction)
                         .GroupBy(e => e.TxActionId)
                         .Skip((page - 1) * limit).Take(limit)
-                        .Select(g => ActionDto.FromDomainModel(g.First().TxAction))     
+                        .Select(g => ActionDto.FromDomainModel(g.First().TxAction))
                 );
             }
         }

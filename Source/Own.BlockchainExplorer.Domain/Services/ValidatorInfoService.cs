@@ -43,17 +43,13 @@ namespace Own.BlockchainExplorer.Domain.Services
             {
                 var eventRepo = NewRepository<BlockchainEvent>(uow);
                 var receivedStakeIds = eventRepo
-                    .Get(
+                    .GetAs(
                         e => e.EventType == EventType.Action.ToString()
                         && e.Address.BlockchainAddress == blockchainAddress
                         && e.TxAction.ActionType == ActionType.DelegateStake.ToString()
                         && e.Fee == null
                         && e.Transaction.Status == TxStatus.Success.ToString(),
-                        e => e.Account,
-                        e => e.Address,
-                        e => e.TxAction,
-                        e => e.Transaction)
-                    .Select(e => e.TxActionId);
+                        e => e.TxActionId);
 
                 if (!receivedStakeIds.Any())
                     return Result.Success(Enumerable.Empty<StakeDto>());

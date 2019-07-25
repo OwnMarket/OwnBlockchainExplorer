@@ -1,12 +1,12 @@
-﻿using Own.BlockchainExplorer.Common.Extensions;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Own.BlockchainExplorer.Common.Extensions;
 using Own.BlockchainExplorer.Common.Framework;
 using Own.BlockchainExplorer.Core.Dtos.ActionData;
 using Own.BlockchainExplorer.Core.Enums;
 using Own.BlockchainExplorer.Core.Interfaces;
 using Own.BlockchainExplorer.Core.Models;
 using Own.BlockchainExplorer.Domain.Common;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Own.BlockchainExplorer.Domain.Services
 {
@@ -14,8 +14,8 @@ namespace Own.BlockchainExplorer.Domain.Services
     {
         private readonly IBlockchainCryptoProvider _blockchainCryptoProvider;
 
-        public ActionService(IBlockchainCryptoProvider cryptoProvider, 
-            IUnitOfWorkFactory unitOfWorkFactory, 
+        public ActionService(IBlockchainCryptoProvider cryptoProvider,
+            IUnitOfWorkFactory unitOfWorkFactory,
             IRepositoryFactory repositoryFactory)
             : base(unitOfWorkFactory, repositoryFactory)
         {
@@ -23,9 +23,9 @@ namespace Own.BlockchainExplorer.Domain.Services
         }
 
         public Result TransferChx(
-            List<BlockchainEvent> events, 
-            TransferChxData actionData, 
-            IUnitOfWork uow, 
+            List<BlockchainEvent> events,
+            TransferChxData actionData,
+            IUnitOfWork uow,
             Address senderAddress)
         {
             var firstEvent = events.First();
@@ -37,8 +37,8 @@ namespace Own.BlockchainExplorer.Domain.Services
 
             var sameAddress = senderAddress.BlockchainAddress == actionData.RecipientAddress;
 
-            var recipientAddress = sameAddress 
-                ? senderAddress 
+            var recipientAddress = sameAddress
+                ? senderAddress
                 : addressRepo.Get(a => a.BlockchainAddress == actionData.RecipientAddress).SingleOrDefault();
 
             var newAddress = recipientAddress == null;
@@ -133,8 +133,8 @@ namespace Own.BlockchainExplorer.Domain.Services
         }
 
         public Result ConfigureValidator(
-            List<BlockchainEvent> events, 
-            ConfigureValidatorData actionData, 
+            List<BlockchainEvent> events,
+            ConfigureValidatorData actionData,
             IUnitOfWork uow,
             Address senderAddress)
         {
@@ -164,7 +164,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             senderAddress.DepositBalance += depositAmount;
             senderAddress.AvailableBalance -= depositAmount;
 
-            return Result.Success();   
+            return Result.Success();
         }
 
         public Result RemoveValidator(List<BlockchainEvent> events, IUnitOfWork uow, Address senderAddress)
@@ -235,13 +235,13 @@ namespace Own.BlockchainExplorer.Domain.Services
 
             events.First().AssetId = asset.AssetId;
 
-            return Result.Success();          
+            return Result.Success();
         }
 
         public Result SetAssetController(
             List<BlockchainEvent> events,
             SetAssetControllerData actionData,
-            IUnitOfWork uow, 
+            IUnitOfWork uow,
             Address senderAddress)
         {
             var addressRepo = NewRepository<Address>(uow);
@@ -259,7 +259,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             var sameAddress = senderAddress.BlockchainAddress == actionData.ControllerAddress;
 
             var controllerAddress = sameAddress
-                ? senderAddress 
+                ? senderAddress
                 : addressRepo
                     .Get(a => a.BlockchainAddress == actionData.ControllerAddress)
                     .SingleOrDefault();
@@ -363,8 +363,8 @@ namespace Own.BlockchainExplorer.Domain.Services
             if (fromAccount == null)
                 return Result.Failure("Account {0} does not exist.".F(actionData.FromAccountHash));
 
-            var toAccount = sameAccount 
-                ? fromAccount 
+            var toAccount = sameAccount
+                ? fromAccount
                 : accountRepo.Get(a => a.Hash == actionData.ToAccountHash).SingleOrDefault();
 
             if (toAccount == null)
@@ -432,7 +432,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 holdingRepo.Insert(toHolding);
             else
                 holdingRepo.Update(toHolding);
-           
+
             return Result.Success();
         }
 
@@ -465,15 +465,15 @@ namespace Own.BlockchainExplorer.Domain.Services
             firstEvent.AssetId = asset.AssetId;
             firstEvent.Amount = actionData.Amount;
 
-            NewRepository<HoldingEligibility>(uow).Insert(holding); 
+            NewRepository<HoldingEligibility>(uow).Insert(holding);
 
-            return Result.Success();  
+            return Result.Success();
         }
 
         public Result CreateAsset(
-            List<BlockchainEvent> events, 
-            IUnitOfWork uow, 
-            Address senderAddress, 
+            List<BlockchainEvent> events,
+            IUnitOfWork uow,
+            Address senderAddress,
             TxAction action)
         {
             var addressRepo = NewRepository<Address>(uow);
@@ -481,8 +481,8 @@ namespace Own.BlockchainExplorer.Domain.Services
             var asset = new Asset()
             {
                 Hash = _blockchainCryptoProvider.DeriveHash(
-                    senderAddress.BlockchainAddress, 
-                    senderAddress.Nonce, 
+                    senderAddress.BlockchainAddress,
+                    senderAddress.Nonce,
                     (short)action.ActionNumber),
                 ControllerAddress = senderAddress.BlockchainAddress
             };
@@ -494,9 +494,9 @@ namespace Own.BlockchainExplorer.Domain.Services
         }
 
         public Result CreateAccount(
-            List<BlockchainEvent> events, 
-            IUnitOfWork uow, 
-            Address senderAddress, 
+            List<BlockchainEvent> events,
+            IUnitOfWork uow,
+            Address senderAddress,
             TxAction action)
         {
             var addressRepo = NewRepository<Address>(uow);
@@ -712,8 +712,8 @@ namespace Own.BlockchainExplorer.Domain.Services
 
             var sameAddress = senderAddress.BlockchainAddress == actionData.ProviderAddress;
 
-            var providerAddress = sameAddress 
-                ? senderAddress 
+            var providerAddress = sameAddress
+                ? senderAddress
                 : NewRepository<Address>(uow)
                     .Get(a => a.BlockchainAddress == actionData.ProviderAddress)
                     .SingleOrDefault();

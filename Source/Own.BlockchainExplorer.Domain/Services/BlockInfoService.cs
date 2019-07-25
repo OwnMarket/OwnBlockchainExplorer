@@ -21,8 +21,8 @@ namespace Own.BlockchainExplorer.Domain.Services
 
         }
 
-        public Result<IEnumerable<EquivocationInfoShortDto>> GetEquivocationsInfo(long blockNumber, 
-            int page, 
+        public Result<IEnumerable<EquivocationInfoShortDto>> GetEquivocationsInfo(long blockNumber,
+            int page,
             int limit)
         {
             using (var uow = NewUnitOfWork())
@@ -67,7 +67,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                         SenderAddress = g.First().Address.BlockchainAddress,
                         BlockNumber = blockNumber,
                         Status = g.Key.Status
-                    })                   
+                    })
                  );
             }
         }
@@ -78,15 +78,14 @@ namespace Own.BlockchainExplorer.Domain.Services
             {
                 return Result.Success(
                     NewRepository<BlockchainEvent>(uow)
-                     .Get(
+                     .GetAs(
                          e => e.Block.BlockNumber == blockNumber && e.EventType == EventType.StakingReward.ToString(),
-                         e => e.Address)
+                         e => new StakingRewardDto
+                         {
+                             StakerAddress = e.Address.BlockchainAddress,
+                             Amount = e.Amount.Value
+                         })
                     .Skip((page - 1)*limit).Take(limit)
-                    .Select(e => new StakingRewardDto
-                    {
-                        StakerAddress = e.Address.BlockchainAddress,
-                        Amount = e.Amount.Value
-                    })
                  );
             }
         }
@@ -101,7 +100,7 @@ namespace Own.BlockchainExplorer.Domain.Services
 
                 if (block is null)
                     return Result.Failure<BlockInfoDto>("Block {0} does not exist.".F(blockNumber));
- 
+
                 return Result.Success(BlockInfoDto.FromDomainModel(block));
             }
         }

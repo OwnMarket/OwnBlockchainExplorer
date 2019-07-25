@@ -36,18 +36,18 @@ namespace Own.BlockchainExplorer.Domain.Services
                         || e.TxAction.ActionType == ActionType.SetAccountController.ToString())
                         && e.Transaction.Status == TxStatus.Success.ToString(),
                         e => e.Account,
-                        e => e.Address,
-                        e => e.TxAction,
-                        e => e.Transaction);
+                        e => e.Address);
 
                 if (!events.Any())
                     return Result.Success(new List<ControlledAccountDto>().AsEnumerable());
+
+                var controllerAddress = events.First().Address.BlockchainAddress;
 
                 return Result.Success(
                     events.Select(e => new ControlledAccountDto
                     {
                         Hash = e.Account.Hash,
-                        IsActive = e.Account.ControllerAddress == events.First().Address.BlockchainAddress
+                        IsActive = e.Account.ControllerAddress == controllerAddress
                     })
                     .Distinct(new ControlledAccountDtoEqualityComparer())
                     .Where(e => isActive.HasValue ? e.IsActive == isActive : true)
@@ -73,19 +73,18 @@ namespace Own.BlockchainExplorer.Domain.Services
                         || e.TxAction.ActionType == ActionType.SetAssetController.ToString())
                         && e.Transaction.Status == TxStatus.Success.ToString(),
                         e => e.Asset,
-                        e => e.Address,
-                        e => e.TxAction,
-                        e => e.Transaction);
+                        e => e.Address);
 
                 if (!events.Any())
                     return Result.Success(new List<ControlledAssetDto>().AsEnumerable());
 
+                var controllerAddress = events.First().Address.BlockchainAddress;
                 return Result.Success(
                     events.Select(e => new ControlledAssetDto
                     {
                         Hash = e.Asset.Hash,
                         AssetCode = e.Asset.AssetCode,
-                        IsActive = e.Asset.ControllerAddress == events.First().Address.BlockchainAddress
+                        IsActive = e.Asset.ControllerAddress == controllerAddress
                     })
                     .Distinct(new ControlledAssetDtoEqualityComparer())
                     .Where(e => isActive.HasValue ? e.IsActive == isActive : true)
@@ -135,17 +134,13 @@ namespace Own.BlockchainExplorer.Domain.Services
             {
                 var eventRepo = NewRepository<BlockchainEvent>(uow);
                 var receivedStakeIds = eventRepo
-                    .Get(
+                    .GetAs(
                         e => e.EventType == EventType.Action.ToString()
                         && e.Address.BlockchainAddress == blockchainAddress
                         && e.TxAction.ActionType == ActionType.DelegateStake.ToString()
                         && e.Fee == null
                         && e.Transaction.Status == TxStatus.Success.ToString(),
-                        e => e.Account,
-                        e => e.Address,
-                        e => e.TxAction,
-                        e => e.Transaction)
-                    .Select(e => e.TxActionId);
+                        e => e.TxActionId);
 
                 if (!receivedStakeIds.Any())
                     return Result.Success(new List<StakeDto>().AsEnumerable());
