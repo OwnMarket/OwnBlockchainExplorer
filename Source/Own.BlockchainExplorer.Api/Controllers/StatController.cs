@@ -20,5 +20,13 @@ namespace Own.BlockchainExplorer.Api.Controllers
         {
             return ApiResult(_statService.GetTxPerDay(numberOfDays), r => NotFound(r));
         }
+
+        [HttpGet]
+        [Route("validator-stats")]
+        public IActionResult GetValidatorStats([FromQuery] int numberOfDays = 7)
+        {
+            return ApiResult(_statService.GetValidatorStats(numberOfDays), r => NotFound(r));
+        }
+
     }
 }

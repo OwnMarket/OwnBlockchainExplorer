@@ -1,12 +1,12 @@
-﻿using Own.BlockchainExplorer.Common.Extensions;
+﻿using System.Linq;
+using System.Collections.Generic;
+using Own.BlockchainExplorer.Common.Extensions;
 using Own.BlockchainExplorer.Common.Framework;
 using Own.BlockchainExplorer.Core.Dtos.Api;
 using Own.BlockchainExplorer.Core.Enums;
 using Own.BlockchainExplorer.Core.Interfaces;
 using Own.BlockchainExplorer.Core.Models;
 using Own.BlockchainExplorer.Domain.Common;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Own.BlockchainExplorer.Domain.Services
 {
@@ -19,9 +19,10 @@ namespace Own.BlockchainExplorer.Domain.Services
         {
         }
 
-        public Result<IEnumerable<ControlledAccountDto>> GetAccountsInfo(string blockchainAddress, 
-            int page, 
-            int limit, 
+        public Result<IEnumerable<ControlledAccountDto>> GetAccountsInfo(
+            string blockchainAddress,
+            int page,
+            int limit,
             bool? isActive)
         {
             using (var uow = NewUnitOfWork())
@@ -55,8 +56,9 @@ namespace Own.BlockchainExplorer.Domain.Services
             }
         }
 
-        public Result<IEnumerable<ControlledAssetDto>> GetAssetsInfo(string blockchainAddress, 
-            int page, 
+        public Result<IEnumerable<ControlledAssetDto>> GetAssetsInfo(
+            string blockchainAddress,
+            int page,
             int limit,
             bool? isActive)
         {
@@ -92,8 +94,9 @@ namespace Own.BlockchainExplorer.Domain.Services
             }
         }
 
-        public Result<IEnumerable<StakeDto>> GetDelegatedStakesInfo(string blockchainAddress, 
-            int page, 
+        public Result<IEnumerable<StakeDto>> GetDelegatedStakesInfo(
+            string blockchainAddress,
+            int page,
             int limit)
         {
             using (var uow = NewUnitOfWork())
@@ -169,7 +172,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 return Result.Success(
                     NewRepository<BlockchainEvent>(uow)
                     .Get(
-                        e => 
+                        e =>
                             e.Address.BlockchainAddress == blockchainAddress
                             && !((e.EventType == EventType.ValidatorReward.ToString()
                             || e.EventType == EventType.StakingReward.ToString())

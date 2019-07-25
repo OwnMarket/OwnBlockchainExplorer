@@ -1,4 +1,8 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using Own.BlockchainExplorer.Common.Framework;
 using Own.BlockchainExplorer.Core;
 using Own.BlockchainExplorer.Core.Dtos.Scanning;
@@ -6,10 +10,6 @@ using Own.BlockchainExplorer.Core.Enums;
 using Own.BlockchainExplorer.Core.Interfaces;
 using Own.BlockchainExplorer.Core.Models;
 using Own.BlockchainExplorer.Domain.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Own.BlockchainExplorer.Domain.Services
 {
@@ -123,7 +123,6 @@ namespace Own.BlockchainExplorer.Domain.Services
                     lastBlockNumber = lastBlockNumbers.Any()
                         ? lastBlockNumbers.SingleOrDefault()
                         : -1;
-
                 }
 
                 BlockDto newBlock;

@@ -133,10 +133,10 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
             Expression<Func<T, TInclude3>> includeProperty3)
         {
             return this.Get<TInclude1, TInclude2, TInclude3, object>(
-                whereCondition, 
-                includeProperty1, 
-                includeProperty2, 
-                includeProperty3, 
+                whereCondition,
+                includeProperty1,
+                includeProperty2,
+                includeProperty3,
                 null)
                 .ToList();
         }
@@ -187,12 +187,12 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
             Expression<Func<T, TInclude6>> includeProperty6)
         {
             return this.GetQuery(
-                whereCondition, 
-                includeProperty1, 
-                includeProperty2, 
-                includeProperty3, 
-                includeProperty4, 
-                includeProperty5, 
+                whereCondition,
+                includeProperty1,
+                includeProperty2,
+                includeProperty3,
+                includeProperty4,
+                includeProperty5,
                 includeProperty6)
                 .ToList();
         }
@@ -240,9 +240,9 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                 .ToList();
         }
 
-        public IEnumerable<TOutput> GetLastAs<TOutput>(
+        public IEnumerable<TOutput> GetLastAs<TOutput, TOrder>(
             Expression<Func<T, bool>> whereCondition,
-            Expression<Func<T, TOutput>> orderFunction,
+            Expression<Func<T, TOrder>> orderFunction,
             Expression<Func<T, TOutput>> mapFunction,
             int takeCount,
             int skipCount)

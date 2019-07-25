@@ -108,9 +108,9 @@ namespace Own.BlockchainExplorer.Core.Interfaces
             Expression<Func<T, TOutput>> mapFunction,
             int count);
 
-        IEnumerable<TOutput> GetLastAs<TOutput>(
+        IEnumerable<TOutput> GetLastAs<TOutput, TOrder>(
             Expression<Func<T, bool>> whereCondition,
-            Expression<Func<T, TOutput>> orderFunction,
+            Expression<Func<T, TOrder>> orderFunction,
             Expression<Func<T, TOutput>> mapFunction,
             int takeCount,
             int skipCount);

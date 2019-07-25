@@ -1,13 +1,13 @@
-﻿using Own.BlockchainExplorer.Common.Extensions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Own.BlockchainExplorer.Common.Extensions;
 using Own.BlockchainExplorer.Common.Framework;
 using Own.BlockchainExplorer.Core.Dtos.Api;
 using Own.BlockchainExplorer.Core.Enums;
 using Own.BlockchainExplorer.Core.Interfaces;
 using Own.BlockchainExplorer.Core.Models;
 using Own.BlockchainExplorer.Domain.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Own.BlockchainExplorer.Domain.Services
 {
@@ -56,7 +56,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                     .Select(e => e.TxActionId);
 
                 if (!receivedStakeIds.Any())
-                    return Result.Success(new List<StakeDto>().AsEnumerable());
+                    return Result.Success(Enumerable.Empty<StakeDto>());
 
                 return Result.Success(eventRepo
                     .Get(e => receivedStakeIds.Contains(e.TxActionId) && e.Fee != null, e => e.Address)
@@ -77,7 +77,6 @@ namespace Own.BlockchainExplorer.Domain.Services
         {
             using (var uow = NewUnitOfWork())
             {
-                var numberOfDays = 7;
                 var validatorDtos = new List<ValidatorInfoShortDto>();
 
                 var eventRepo = NewRepository<BlockchainEvent>(uow);
@@ -86,11 +85,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                        e => e.EventType == EventType.Action.ToString()
                        && e.TxAction.ActionType == ActionType.DelegateStake.ToString()
                        && e.Fee != null
-                       && e.Transaction.Status == TxStatus.Success.ToString(),
-                       e => e.Account,
-                       e => e.Address,
-                       e => e.TxAction,
-                       e => e.Transaction);
+                       && e.Transaction.Status == TxStatus.Success.ToString());
 
                 var receivedStakes = eventRepo
                    .Get(
@@ -98,10 +93,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                        && e.TxAction.ActionType == ActionType.DelegateStake.ToString()
                        && e.Fee == null
                        && e.Transaction.Status == TxStatus.Success.ToString(),
-                       e => e.Account,
-                       e => e.Address,
-                       e => e.TxAction,
-                       e => e.Transaction);
+                       e => e.Address);
 
                 var validators = NewRepository<Validator>(uow).Get(v => !v.IsDeleted);
 
@@ -118,8 +110,6 @@ namespace Own.BlockchainExplorer.Domain.Services
                         .Distinct()
                         .Count();
 
-                    var blocksProposed = NewRepository<Block>(uow).Get(b => b.ValidatorId == validator.ValidatorId);
-
                     validatorDtos.Add(new ValidatorInfoShortDto
                     {
                         BlockchainAddress = validator.BlockchainAddress,
@@ -131,16 +121,6 @@ namespace Own.BlockchainExplorer.Domain.Services
 
                 return Result.Success(validatorDtos.OrderByDescending(v => v.TotalStake).Skip((page - 1) * limit).Take(limit));
             }
-        }
-        public Result GetBlocksProcessed(string blockchainAddress, int numberOfDays)
-        {
-            using (var uow = NewUnitOfWork())
-            {
-                /*var validator = NewRepository<Validator>(uow).Get
-                NewRepository<BlockchainEvent>(uow).Get(e => e.Block.ValidatorId ==)*/
-            }
-
-            return Result.Success();
         }
     }
 }

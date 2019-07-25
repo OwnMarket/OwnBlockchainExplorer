@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Own.BlockchainExplorer.Api.Common;
 using Own.BlockchainExplorer.Core.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Own.BlockchainExplorer.Api.Controllers
 {
@@ -15,7 +12,7 @@ namespace Own.BlockchainExplorer.Api.Controllers
         {
             _validatorInfoService = validatorInfoService;
         }
-    
+
         [HttpGet]
         [Route("validators")]
         public IActionResult GetValidators([FromQuery] int page = 1, [FromQuery] int limit = 100)
@@ -32,12 +29,12 @@ namespace Own.BlockchainExplorer.Api.Controllers
 
         [HttpGet]
         [Route("validator/{blockchainAddress}/stakes")]
-        public IActionResult GetValidatorStakesInfo(string blockchainAddress,
+        public IActionResult GetValidatorStakesInfo(
+            string blockchainAddress,
             [FromQuery] int page = 1,
             [FromQuery] int limit = 50)
         {
             return ApiResult(_validatorInfoService.GetStakesInfo(blockchainAddress, page, limit), r => NotFound(r));
         }
-
     }
 }
