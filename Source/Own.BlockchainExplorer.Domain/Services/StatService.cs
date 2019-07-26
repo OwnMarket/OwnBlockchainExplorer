@@ -151,8 +151,8 @@ namespace Own.BlockchainExplorer.Domain.Services
                         a => GetTotalBalance(a) > 0,
                         a => GetTotalBalance(a),
                         a => new KeyValuePair<string, decimal>(a.BlockchainAddress, GetTotalBalance(a)),
-                        limit,
-                        (page-1) * limit);
+                        (page - 1) * limit,
+                        limit);
 
                 return Result.Success(topAddresses);
             }

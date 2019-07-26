@@ -244,8 +244,8 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
             Expression<Func<T, bool>> whereCondition,
             Expression<Func<T, TOrder>> orderFunction,
             Expression<Func<T, TOutput>> mapFunction,
-            int takeCount,
-            int skipCount)
+            int skipCount,
+            int takeCount)
         {
             return _db.Set<T>()
                 .Where(whereCondition)

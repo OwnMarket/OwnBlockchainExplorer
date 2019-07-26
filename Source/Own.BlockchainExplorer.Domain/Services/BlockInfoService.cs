@@ -86,8 +86,8 @@ namespace Own.BlockchainExplorer.Domain.Services
                              StakerAddress = e.Address.BlockchainAddress,
                              Amount = e.Amount.Value
                          },
-                         limit,
-                         (page - 1) * limit));
+                         (page - 1) * limit,
+                         limit));
             }
         }
 

@@ -112,7 +112,7 @@ namespace Own.BlockchainExplorer.Core.Interfaces
             Expression<Func<T, bool>> whereCondition,
             Expression<Func<T, TOrder>> orderFunction,
             Expression<Func<T, TOutput>> mapFunction,
-            int takeCount,
-            int skipCount);
+            int skipCount,
+            int takeCount);
     }
 }
