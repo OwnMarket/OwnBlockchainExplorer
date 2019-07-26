@@ -12,39 +12,27 @@ namespace Own.BlockchainExplorer.Domain.Services
 {
     public class BlockInfoService : DataService, IBlockInfoService
     {
+        private readonly IBlockInfoRepositoryFactory _blockInfoRepositoryFactory;
 
         public BlockInfoService(
             IUnitOfWorkFactory unitOfWorkFactory,
-            IRepositoryFactory repositoryFactory)
+            IRepositoryFactory repositoryFactory,
+            IBlockInfoRepositoryFactory blockInfoRepositoryFactory)
             : base(unitOfWorkFactory, repositoryFactory)
         {
-
+            _blockInfoRepositoryFactory = blockInfoRepositoryFactory;
         }
 
-        public Result<IEnumerable<EquivocationInfoShortDto>> GetEquivocationsInfo(long blockNumber,
+        public Result<IEnumerable<EquivocationInfoShortDto>> GetEquivocationsInfo(
+            long blockNumber,
             int page,
             int limit)
         {
             using (var uow = NewUnitOfWork())
             {
-               return Result.Success(
-                   NewRepository<BlockchainEvent>(uow)
-                    .Get(
-                        e => e.Block.BlockNumber == blockNumber && e.EventType == EventType.DepositTaken.ToString(),
-                        e => e.Equivocation,
-                        e => e.Address)
-                    .Select(e => new EquivocationInfoShortDto
-                    {
-                        EquivocationProofHash = e.Equivocation.EquivocationProofHash,
-                        TakenDeposit = new DepositDto
-                        {
-                            BlockchainAddress = e.Address.BlockchainAddress,
-                            Amount = e.Amount.Value * -1,
-                            EquivocationProofHash = e.Equivocation.EquivocationProofHash
-                        }
-                    })
-                    .Skip((page-1)*limit).Take(limit)
-                );
+                var equivocationsInfo = _blockInfoRepositoryFactory.Create(uow)
+                    .GetEquivocationsInfo(blockNumber, page, limit);
+                return Result.Success(equivocationsInfo);
             }
         }
 
@@ -52,23 +40,9 @@ namespace Own.BlockchainExplorer.Domain.Services
         {
             using (var uow = NewUnitOfWork())
             {
-                return Result.Success(
-                    NewRepository<BlockchainEvent>(uow)
-                     .Get(
-                         e => e.Block.BlockNumber == blockNumber && e.EventType == EventType.Action.ToString(),
-                         e => e.Transaction,
-                         e => e.Address)
-                    .GroupBy(e => e.Transaction)
-                    .Skip((page - 1)*limit).Take(limit)
-                    .Select(g => new TxInfoShortDto
-                    {
-                        Hash = g.Key.Hash,
-                        NumberOfActions = g.Select(e => e.TxActionId).Distinct().Count(),
-                        SenderAddress = g.First().Address.BlockchainAddress,
-                        BlockNumber = blockNumber,
-                        Status = g.Key.Status
-                    })
-                 );
+                var transactionInfo = _blockInfoRepositoryFactory.Create(uow)
+                    .GetTransactionsInfo(blockNumber, page, limit);
+                return Result.Success(transactionInfo);
             }
         }
 
@@ -76,9 +50,8 @@ namespace Own.BlockchainExplorer.Domain.Services
         {
             using (var uow = NewUnitOfWork())
             {
-                return Result.Success(
-                    NewRepository<BlockchainEvent>(uow)
-                     .GetLastAs(
+                var stakingRewardInfo = NewRepository<BlockchainEvent>(uow)
+                    .GetLastAs(
                          e => e.Block.BlockNumber == blockNumber && e.EventType == EventType.StakingReward.ToString(),
                          e => true,
                          e => new StakingRewardDto
@@ -87,7 +60,8 @@ namespace Own.BlockchainExplorer.Domain.Services
                              Amount = e.Amount.Value
                          },
                          (page - 1) * limit,
-                         limit));
+                         limit);
+                return Result.Success(stakingRewardInfo);
             }
         }
 
