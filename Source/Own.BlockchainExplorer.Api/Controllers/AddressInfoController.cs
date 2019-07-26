@@ -22,7 +22,8 @@ namespace Own.BlockchainExplorer.Api.Controllers
 
         [HttpGet]
         [Route("address/{blockchainAddress}/accounts")]
-        public IActionResult GetAccountsInfo(string blockchainAddress,
+        public IActionResult GetAccountsInfo(
+            string blockchainAddress,
             [FromQuery] int page = 1,
             [FromQuery] int limit = 50,
             [FromQuery] bool? isActive = null)
@@ -34,7 +35,8 @@ namespace Own.BlockchainExplorer.Api.Controllers
 
         [HttpGet]
         [Route("address/{blockchainAddress}/assets")]
-        public IActionResult GetAssetsInfo(string blockchainAddress,
+        public IActionResult GetAssetsInfo(
+            string blockchainAddress,
             [FromQuery] int page = 1,
             [FromQuery] int limit = 50,
             [FromQuery] bool? isActive = null)
@@ -46,7 +48,8 @@ namespace Own.BlockchainExplorer.Api.Controllers
 
         [HttpGet]
         [Route("address/{blockchainAddress}/delegated-stakes")]
-        public IActionResult GetDelegatedStakesInfo(string blockchainAddress,
+        public IActionResult GetDelegatedStakesInfo(
+            string blockchainAddress,
             [FromQuery] int page = 1,
             [FromQuery] int limit = 50)
         {
@@ -56,7 +59,8 @@ namespace Own.BlockchainExplorer.Api.Controllers
 
         [HttpGet]
         [Route("address/{blockchainAddress}/received-stakes")]
-        public IActionResult GetReceivedStakesInfo(string blockchainAddress,
+        public IActionResult GetReceivedStakesInfo(
+            string blockchainAddress,
             [FromQuery] int page = 1,
             [FromQuery] int limit = 50)
         {
@@ -66,7 +70,8 @@ namespace Own.BlockchainExplorer.Api.Controllers
 
         [HttpGet]
         [Route("address/{blockchainAddress}/events")]
-        public IActionResult GetEventsInfo(string blockchainAddress,
+        public IActionResult GetEventsInfo(
+            string blockchainAddress,
             [FromQuery] int page = 1,
             [FromQuery] int limit = 50)
         {
