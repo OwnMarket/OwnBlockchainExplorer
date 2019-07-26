@@ -78,15 +78,16 @@ namespace Own.BlockchainExplorer.Domain.Services
             {
                 return Result.Success(
                     NewRepository<BlockchainEvent>(uow)
-                     .GetAs(
+                     .GetLastAs(
                          e => e.Block.BlockNumber == blockNumber && e.EventType == EventType.StakingReward.ToString(),
+                         e => true,
                          e => new StakingRewardDto
                          {
                              StakerAddress = e.Address.BlockchainAddress,
                              Amount = e.Amount.Value
-                         })
-                    .Skip((page - 1)*limit).Take(limit)
-                 );
+                         },
+                         limit,
+                         (page - 1) * limit));
             }
         }
 
