@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Own.BlockchainExplorer.Core.Dtos.Api;
 using Own.BlockchainExplorer.Core.Enums;
 using Own.BlockchainExplorer.Core.Interfaces;
+using Own.BlockchainExplorer.Core.Models;
 using Own.BlockchainExplorer.Infrastructure.Data.EF;
 
 namespace Own.BlockchainExplorer.Infrastructure.Data
@@ -147,25 +148,36 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                 .OrderByDescending(e => e.BlockchainEventId)
                 .GroupBy(e => e.Address)
                 .Where(g => g.Sum(e => e.Amount.Value) != 0)
-                .Skip((page - 1) * limit).Take(limit)
+                .Skip((page - 1) * limit)
+                .Take(limit)
                 .Select(g => new StakeDto
                 {
                     StakerAddress = g.Key.BlockchainAddress,
-                    Amount = g.Sum(e => e.Amount.Value) * -1,
+                    Amount = -g.Sum(e => e.Amount.Value),
                     ValidatorAddress = blockchainAddress
                 })
                 .ToList();
         }
 
-        public IEnumerable<EventDto> GetEventsInfo(string blockchainAddress, int page, int limit)
+        private bool IsEmptyReward(BlockchainEvent e)
         {
-            return
-                _db.BlockchainEvents.AsQueryable()
-                .Where(
-                    e => e.Address.BlockchainAddress == blockchainAddress
-                    && !((e.EventType == EventType.ValidatorReward.ToString()
-                    || e.EventType == EventType.StakingReward.ToString())
-                    && e.Amount == 0))
+            return (e.EventType == EventType.ValidatorReward.ToString()
+                || e.EventType == EventType.StakingReward.ToString())
+                && e.Amount == 0;
+        }
+
+        public EventsSummaryDto GetEventsInfo(string blockchainAddress, int page, int limit)
+        {
+            var query =
+                 _db.BlockchainEvents.AsQueryable()
+                 .Where(e => e.Address.BlockchainAddress == blockchainAddress
+                     && !IsEmptyReward(e));
+
+            var eventsCount =
+                query.Select(e => e.BlockchainEventId).Count();
+
+            var events =
+                query
                 .Include(e => e.TxAction)
                 .Include(e => e.Equivocation)
                 .Include(e => e.Transaction)
@@ -176,6 +188,12 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                 .ToList()
                 .Select(e => EventDto.FromDomainModel(e))
                 .ToList();
+
+            return new EventsSummaryDto
+            {
+                Events = events,
+                EventsCount = eventsCount
+            };
         }
     }
 }

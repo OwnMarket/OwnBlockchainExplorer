@@ -31,4 +31,10 @@ namespace Own.BlockchainExplorer.Core.Dtos.Api
             };
         }
     }
+
+    public class EventsSummaryDto
+    {
+        public List<EventDto> Events { get; set; }
+        public int EventsCount { get; set; }
+    }
 }
