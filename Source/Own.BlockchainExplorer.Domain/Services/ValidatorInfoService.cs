@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using Own.BlockchainExplorer.Common;
 using Own.BlockchainExplorer.Common.Extensions;
 using Own.BlockchainExplorer.Common.Framework;
 using Own.BlockchainExplorer.Core.Dtos.Api;
@@ -128,28 +130,43 @@ namespace Own.BlockchainExplorer.Domain.Services
         {
             using (var uow = NewUnitOfWork())
             {
-                var validators = NewRepository<Validator>(uow).GetAs(v => !v.IsDeleted, v => v.NetworkAddress);
+                var validators = NewRepository<Validator>(uow)
+                    .GetAs(v => !v.IsDeleted, v => v.NetworkAddress)
+                    .Select(h => h.Substring(0, h.LastIndexOf(":")));
 
                 // TODO: replace this with validators ips
                 var ips = new List<string> { "62.216.207.233" };
                 var validatorsGeoInfo = new List<ValidatorGeoInfoDto>();
                 var alerts = new List<Alert>();
-                foreach(var ipAddress in ips)
+                foreach(var validatorAddress in validators)
                 {
-                    // TODO: add geo location caching
-                    var geoLocationResult = await _geoLocationProvider.GetGeoLocation(ipAddress);
-                    if (geoLocationResult.Successful)
+                    try
                     {
-                        validatorsGeoInfo.Add(
-                            new ValidatorGeoInfoDto
-                            {
-                                NetworkAddress = "",
-                                Location = geoLocationResult.Data
-                            });
+                        var ipAddress =
+                            Dns.GetHostAddresses(validatorAddress)
+                            .OrderBy(a => a.AddressFamily)
+                            .FirstOrDefault()?.ToString();
+
+                        if (ipAddress.IsNullOrEmpty())
+                            continue;
+
+                        // TODO: add geo location caching
+                        var geoLocationResult = await _geoLocationProvider.GetGeoLocation(ipAddress);
+                        if (geoLocationResult.Successful)
+                        {
+                            validatorsGeoInfo.Add(
+                                new ValidatorGeoInfoDto
+                                {
+                                    NetworkAddress = validatorAddress,
+                                    Location = geoLocationResult.Data
+                                });
+                        }
+                        else
+                            alerts.AddRange(geoLocationResult.Alerts);
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        alerts.AddRange(geoLocationResult.Alerts);
+                        alerts.Add(Alert.Error(ex.LogFormat()));
                     }
                 }
                 return Result.Success(validatorsGeoInfo.AsEnumerable(), alerts);
