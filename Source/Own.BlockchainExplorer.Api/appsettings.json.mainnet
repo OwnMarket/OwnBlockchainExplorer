@@ -9,7 +9,10 @@
     "allowHeaders": "*",
     "exposeHeaders": "Access-Control-Allow-Origin"
   },
-
+  "geo": {
+    "apiUrl": "https://api.ipgeolocation.io/ipgeo",
+    "apiKey": "f8787d5342674f8cb60ef73b51251f67"
+  },
   "swagger": {
     "xmlDocPath": "ADD ONLY IF XML DOC IS OUTSIDE THE RUNNING ASSEMBLY LOCATION"
   }

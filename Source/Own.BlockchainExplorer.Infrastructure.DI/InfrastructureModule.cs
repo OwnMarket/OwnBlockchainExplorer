@@ -6,6 +6,7 @@ using Own.BlockchainExplorer.Core;
 using Own.BlockchainExplorer.Core.Interfaces;
 using Own.BlockchainExplorer.Infrastructure.Blockchain;
 using Own.BlockchainExplorer.Infrastructure.Data;
+using Own.BlockchainExplorer.Infrastructure.Geo;
 
 namespace Own.BlockchainExplorer.Infrastructure.DI
 {
@@ -22,6 +23,7 @@ namespace Own.BlockchainExplorer.Infrastructure.DI
                         serviceCollection.AddTransient(interfaceType, implementationType)));
 
             serviceCollection.AddTransient<IBlockchainClient>(p => new BlockchainClient(Config.NodeApi));
+            serviceCollection.AddTransient<IGeoLocationProvider>(p => new GeoLocationProvider(Config.IpGeoApi));
             serviceCollection.AddTransient<IBlockchainCryptoProvider, BlockchainCryptoProvider>();
         }
     }

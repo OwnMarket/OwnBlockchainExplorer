@@ -31,7 +31,7 @@ namespace Own.BlockchainExplorer.Api.Common
             return Ok(result);
         }
 
-        protected async Task<IActionResult> AsyncApiResult<T>(
+        protected async Task<IActionResult> ApiResultAsync<T>(
             Task<Result<T>> taskResult,
             Func<Result<T>, IActionResult> mapFailure = null)
         {

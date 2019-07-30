@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Own.BlockchainExplorer.Common.Extensions;
 using Own.BlockchainExplorer.Common.Framework;
 using Own.BlockchainExplorer.Core.Dtos.Api;
@@ -13,11 +14,15 @@ namespace Own.BlockchainExplorer.Domain.Services
 {
     public class ValidatorInfoService : DataService, IValidatorInfoService
     {
+        private readonly IGeoLocationProvider _geoLocationProvider;
+
         public ValidatorInfoService(
             IUnitOfWorkFactory unitOfWorkFactory,
-            IRepositoryFactory repositoryFactory)
+            IRepositoryFactory repositoryFactory,
+            IGeoLocationProvider geoLocationProvider)
             : base(unitOfWorkFactory, repositoryFactory)
         {
+            _geoLocationProvider = geoLocationProvider;
         }
 
         public Result<ValidatorInfoDto> GetValidatorInfo(string blockchainAddress)
@@ -116,6 +121,38 @@ namespace Own.BlockchainExplorer.Domain.Services
                 }
 
                 return Result.Success(validatorDtos.OrderByDescending(v => v.TotalStake).Skip((page - 1) * limit).Take(limit));
+            }
+        }
+
+        public async Task<Result<IEnumerable<ValidatorGeoInfoDto>>> GetValidatorsMap()
+        {
+            using (var uow = NewUnitOfWork())
+            {
+                var validators = NewRepository<Validator>(uow).GetAs(v => !v.IsDeleted, v => v.NetworkAddress);
+
+                // TODO: replace this with validators ips
+                var ips = new List<string> { "62.216.207.233" };
+                var validatorsGeoInfo = new List<ValidatorGeoInfoDto>();
+                var alerts = new List<Alert>();
+                foreach(var ipAddress in ips)
+                {
+                    // TODO: add geo location caching
+                    var geoLocationResult = await _geoLocationProvider.GetGeoLocation(ipAddress);
+                    if (geoLocationResult.Successful)
+                    {
+                        validatorsGeoInfo.Add(
+                            new ValidatorGeoInfoDto
+                            {
+                                NetworkAddress = "",
+                                Location = geoLocationResult.Data
+                            });
+                    }
+                    else
+                    {
+                        alerts.AddRange(geoLocationResult.Alerts);
+                    }
+                }
+                return Result.Success(validatorsGeoInfo.AsEnumerable(), alerts);
             }
         }
     }

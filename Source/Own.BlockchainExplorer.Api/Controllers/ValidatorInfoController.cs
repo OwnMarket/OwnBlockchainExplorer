@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Own.BlockchainExplorer.Api.Common;
 using Own.BlockchainExplorer.Core.Interfaces;
 
@@ -18,6 +19,13 @@ namespace Own.BlockchainExplorer.Api.Controllers
         public IActionResult GetValidators([FromQuery] int page = 1, [FromQuery] int limit = 100)
         {
             return ApiResult(_validatorInfoService.GetValidators(page, limit), r => NotFound(r));
+        }
+
+        [HttpGet]
+        [Route("validators-map")]
+        public async Task<IActionResult> GetValidatorsMap()
+        {
+            return await ApiResultAsync(_validatorInfoService.GetValidatorsMap(), r => NotFound(r));
         }
 
         [HttpGet]
