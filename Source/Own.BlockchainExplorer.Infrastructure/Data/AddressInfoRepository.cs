@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Own.BlockchainExplorer.Common.Extensions;
 using Own.BlockchainExplorer.Core.Dtos.Api;
 using Own.BlockchainExplorer.Core.Enums;
 using Own.BlockchainExplorer.Core.Interfaces;
@@ -166,12 +167,19 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                 && e.Amount == 0;
         }
 
-        public EventsSummaryDto GetEventsInfo(string blockchainAddress, int page, int limit)
+        public EventsSummaryDto GetEventsInfo(string blockchainAddress, string filter, int page, int limit)
         {
+            var eventTypes = filter.Split(',')
+                .Where(f => Enum.TryParse(f, out EventType result))
+                .ToList();
+
             var query =
                  _db.BlockchainEvents.AsQueryable()
                  .Where(e => e.Address.BlockchainAddress == blockchainAddress
                      && !IsEmptyReward(e));
+
+            if (eventTypes.Any())
+                query = query.Where(e => e.EventType.ToString().ContainedIn(eventTypes));
 
             var eventsCount =
                 query.Select(e => e.BlockchainEventId).Count();

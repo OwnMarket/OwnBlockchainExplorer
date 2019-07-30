@@ -83,13 +83,14 @@ namespace Own.BlockchainExplorer.Domain.Services
             }
         }
 
-        public Result<EventsSummaryDto> GetEventsInfo(string blockchainAddress, int page, int limit)
+        public Result<EventsSummaryDto> GetEventsInfo(string blockchainAddress, string filter, int page, int limit)
         {
             using (var uow = NewUnitOfWork())
             {
                 return Result.Success(
                     _addressInfoRepositoryFactory.Create(uow).GetEventsInfo(
                         blockchainAddress,
+                        filter,
                         page,
                         limit));
             }

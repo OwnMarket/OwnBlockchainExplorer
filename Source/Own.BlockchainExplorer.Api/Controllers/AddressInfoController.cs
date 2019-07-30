@@ -72,10 +72,11 @@ namespace Own.BlockchainExplorer.Api.Controllers
         [Route("address/{blockchainAddress}/events")]
         public IActionResult GetEventsInfo(
             string blockchainAddress,
+            [FromQuery] string filter = "",
             [FromQuery] int page = 1,
             [FromQuery] int limit = 50)
         {
-            return ApiResult(_addressInfoService.GetEventsInfo(blockchainAddress, page, limit), r => NotFound(r));
+            return ApiResult(_addressInfoService.GetEventsInfo(blockchainAddress, filter, page, limit), r => NotFound(r));
         }
     }
 }

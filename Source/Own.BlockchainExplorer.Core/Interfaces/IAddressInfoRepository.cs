@@ -17,6 +17,6 @@ namespace Own.BlockchainExplorer.Core.Interfaces
             bool? isActive);
         IEnumerable<StakeDto> GetDelegatedStakesInfo(string blockchainAddress, int page, int limit);
         IEnumerable<StakeDto> GetReceivedStakesInfo(string blockchainAddress, int page, int limit);
-        EventsSummaryDto GetEventsInfo(string blockchainAddress, int page, int limit);
+        EventsSummaryDto GetEventsInfo(string blockchainAddress, string filter, int page, int limit);
     }
 }
