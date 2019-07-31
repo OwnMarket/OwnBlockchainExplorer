@@ -11,6 +11,7 @@ namespace Own.BlockchainExplorer.Core.Models
         public long ValidatorId { get; set; }
         public string BlockchainAddress { get; set; }
         public string NetworkAddress { get; set; }
+        public string GeoLocation { get; set; }
         public decimal SharedRewardPercent { get; set; }
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }

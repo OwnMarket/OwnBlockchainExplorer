@@ -314,6 +314,9 @@ namespace Own.BlockchainExplorer.Infrastructure.Data.EF
                 .IsRequired();
             validator.Property(e => e.NetworkAddress)
                 .HasColumnName("network_address");
+            validator.Property(e => e.GeoLocation)
+                .HasColumnName("geo_location")
+                .HasColumnType("json");
             validator.Property(e => e.SharedRewardPercent)
                 .HasColumnName("shared_reward_percent")
                 .IsRequired();
