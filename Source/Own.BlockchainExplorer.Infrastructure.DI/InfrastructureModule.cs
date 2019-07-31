@@ -23,7 +23,7 @@ namespace Own.BlockchainExplorer.Infrastructure.DI
                         serviceCollection.AddTransient(interfaceType, implementationType)));
 
             serviceCollection.AddTransient<IBlockchainClient>(p => new BlockchainClient(Config.NodeApi));
-            serviceCollection.AddTransient<IGeoLocationProvider>(p => new GeoLocationProvider(Config.IpGeoApi));
+            serviceCollection.AddTransient<IGeoLocationProvider>(p => new GeoLocationProvider(Config.IpGeoApi, Config.GeoApiKey));
             serviceCollection.AddTransient<IBlockchainCryptoProvider, BlockchainCryptoProvider>();
         }
     }

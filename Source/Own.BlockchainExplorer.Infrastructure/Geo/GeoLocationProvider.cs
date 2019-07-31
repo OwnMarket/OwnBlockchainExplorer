@@ -16,11 +16,13 @@ namespace Own.BlockchainExplorer.Infrastructure.Geo
     public class GeoLocationProvider : IGeoLocationProvider
     {
         private readonly string _ipGeoApiUrl;
+        private readonly string _apiKey;
         private HttpClient _httpClient;
 
-        public GeoLocationProvider(string ipGeoApiUrl)
+        public GeoLocationProvider(string ipGeoApiUrl, string apiKey)
         {
             _ipGeoApiUrl = ipGeoApiUrl;
+            _apiKey = apiKey;
         }
 
         private HttpClient HttpClient
@@ -38,7 +40,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Geo
 
         public async Task<Result<GeoLocationDto>> GetGeoLocation(string ipAddress)
         {
-            var url = $"{_ipGeoApiUrl}?apiKey={Config.GeoApiKey}&ip={ipAddress}";
+            var url = $"{_ipGeoApiUrl}?apiKey={_apiKey}&ip={ipAddress}";
             var result = await HttpClient.GetAsync(url);
             return await HandleIpGeoApiResponse<GeoLocationDto>(result);
         }
