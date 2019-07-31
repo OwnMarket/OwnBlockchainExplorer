@@ -385,7 +385,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 : holdingRepo
                     .Get(h => h.AssetId == asset.AssetId && h.AccountId == toAccount.AccountId)
                     .SingleOrDefault();
-            var isNewHolding = toHolding == null;
+            var isNewHolding = toHolding is null;
 
             if (isNewHolding)
             {
@@ -451,21 +451,33 @@ namespace Own.BlockchainExplorer.Domain.Services
             if (asset == null)
                 return Result.Failure("Asset {0} does not exist.".F(actionData.AssetHash));
 
-            var holding = new HoldingEligibility()
-            {
-                AssetHash = asset.Hash,
-                AssetId = asset.AssetId,
-                AccountHash = account.Hash,
-                AccountId = account.AccountId,
-                Balance = actionData.Amount
-            };
-
             var firstEvent = events.First();
             firstEvent.AccountId = account.AccountId;
             firstEvent.AssetId = asset.AssetId;
             firstEvent.Amount = actionData.Amount;
 
-            NewRepository<HoldingEligibility>(uow).Insert(holding);
+            var holdingRepo = NewRepository<HoldingEligibility>(uow);
+            var holding = holdingRepo
+                .Get(h => h.AssetId == asset.AssetId && h.AccountId == account.AccountId)
+                .SingleOrDefault();
+
+            var isNewHolding = holding is null;
+            if (isNewHolding)
+            {
+                holding = new HoldingEligibility()
+                {
+                    AssetHash = asset.Hash,
+                    AssetId = asset.AssetId,
+                    AccountHash = account.Hash,
+                    AccountId = account.AccountId
+                };
+            }
+            holding.Balance = actionData.Amount;
+
+            if (isNewHolding)
+                holdingRepo.Insert(holding);
+            else
+                holdingRepo.Update(holding);
 
             return Result.Success();
         }
@@ -579,7 +591,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             var holding = holdingRepo
                 .Get(h => h.AssetId == asset.AssetId && h.AccountId == account.AccountId)
                 .SingleOrDefault();
-                var isNewHolding = holding == null;
+                var isNewHolding = holding is null;
 
             if (isNewHolding)
             {
@@ -646,7 +658,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             var holding = holdingRepo
                 .Get(h => h.AssetId == asset.AssetId && h.AccountId == account.AccountId)
                 .SingleOrDefault();
-            var isNewHolding = holding == null;
+            var isNewHolding = holding is null;
 
             if (isNewHolding)
             {
