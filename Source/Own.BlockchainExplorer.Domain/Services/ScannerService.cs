@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Own.BlockchainExplorer.Common.Extensions;
 using Own.BlockchainExplorer.Common.Framework;
 using Own.BlockchainExplorer.Core;
+using Own.BlockchainExplorer.Core.Dtos.Api;
 using Own.BlockchainExplorer.Core.Dtos.Scanning;
 using Own.BlockchainExplorer.Core.Enums;
 using Own.BlockchainExplorer.Core.Interfaces;
@@ -17,16 +21,19 @@ namespace Own.BlockchainExplorer.Domain.Services
     {
         private readonly IBlockchainClient _blockchainClient;
         private readonly IImportService _importService;
+        private readonly IGeoLocationProvider _geoLocationProvider;
 
         public ScannerService(
             IBlockchainClient blockchainClient,
             IImportService importService,
+            IGeoLocationProvider geoLocationProvider,
             IUnitOfWorkFactory unitOfWorkFactory,
             IRepositoryFactory repositoryFactory)
             : base(unitOfWorkFactory, repositoryFactory)
         {
             _blockchainClient = blockchainClient;
             _importService = importService;
+            _geoLocationProvider = geoLocationProvider;
         }
 
         public Result InitialBlockchainConfiguration()
@@ -163,6 +170,10 @@ namespace Own.BlockchainExplorer.Domain.Services
                     var configResult = ProcessConfiguration(blockDto.Configuration, uow);
                     if (configResult.Failed)
                         return Result.Failure(configResult.Alerts);
+
+                    var geoLocationResult = ProcessGeoLocation(uow);
+                    if (geoLocationResult.Failed)
+                        return Result.Failure(geoLocationResult.Alerts);
                 }
 
                 var blockImportResult = _importService.ImportBlock(blockDto, uow);
@@ -210,6 +221,50 @@ namespace Own.BlockchainExplorer.Domain.Services
 
                 return Result.Success();
             }
+        }
+
+        private Result ProcessGeoLocation(IUnitOfWork uow)
+        {
+            var validatorRepo = NewRepository<Validator>(uow);
+            var validators = validatorRepo.Get(v => !v.IsDeleted);
+            var alerts = new List<Alert>();
+            foreach (var validator in validators)
+            {
+                var validatorAddress = validator.NetworkAddress.Substring(0, validator.NetworkAddress.LastIndexOf(":"));
+                try
+                {
+                    var ipAddress =
+                        Dns.GetHostAddresses(validatorAddress)
+                        .OrderBy(a => a.AddressFamily)
+                        .FirstOrDefault()?.ToString();
+
+                    if (ipAddress.IsNullOrEmpty())
+                        continue;
+
+                    var geoLocationResult = _geoLocationProvider.GetGeoLocation(ipAddress).Result;
+                    if (geoLocationResult.Successful)
+                    {
+                        var validatorGeoInfo =
+                            new ValidatorGeoInfoDto
+                            {
+                                NetworkAddress = validatorAddress,
+                                Location = geoLocationResult.Data
+                            };
+
+                        validator.GeoLocation = JsonConvert.SerializeObject(validatorGeoInfo);
+                        validatorRepo.Update(validator);
+                    }
+                    else
+                        alerts.AddRange(geoLocationResult.Alerts);
+                }
+                catch (Exception ex)
+                {
+                    alerts.Add(Alert.Error($"{validatorAddress}:{ex.Message}"));
+                }
+            }
+            uow.Commit();
+
+            return Result.Success(alerts);
         }
 
         private Result ProcessConfiguration(ConfigurationDto configurationDto, IUnitOfWork uow)

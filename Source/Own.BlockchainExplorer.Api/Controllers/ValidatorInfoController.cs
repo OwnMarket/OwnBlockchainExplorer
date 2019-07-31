@@ -23,9 +23,9 @@ namespace Own.BlockchainExplorer.Api.Controllers
 
         [HttpGet]
         [Route("validators-map")]
-        public async Task<IActionResult> GetValidatorsMap()
+        public IActionResult GetValidatorsMap()
         {
-            return await ApiResultAsync(_validatorInfoService.GetValidatorsMap(), r => NotFound(r));
+            return ApiResult(_validatorInfoService.GetValidatorsMap(), r => NotFound(r));
         }
 
         [HttpGet]

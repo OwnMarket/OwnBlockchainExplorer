@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Own.BlockchainExplorer.Common;
 using Own.BlockchainExplorer.Common.Extensions;
 using Own.BlockchainExplorer.Common.Framework;
@@ -126,43 +127,23 @@ namespace Own.BlockchainExplorer.Domain.Services
             }
         }
 
-        public async Task<Result<IEnumerable<ValidatorGeoInfoDto>>> GetValidatorsMap()
+        public Result<IEnumerable<ValidatorGeoInfoDto>> GetValidatorsMap()
         {
             using (var uow = NewUnitOfWork())
             {
-                var validators = NewRepository<Validator>(uow)
-                    .GetAs(v => !v.IsDeleted, v => v.NetworkAddress)
-                    .Select(h => h.Substring(0, h.LastIndexOf(":")));
+                var validatorsGeo = NewRepository<Validator>(uow)
+                    .GetAs(v => !v.IsDeleted && v.GeoLocation != null, v => v.GeoLocation);
 
-                // TODO: replace this with validators ips
-                var ips = new List<string> { "62.216.207.233" };
+                if (validatorsGeo.IsNullOrEmpty())
+                    return Result.Failure<IEnumerable<ValidatorGeoInfoDto>>("No geo location data found!");
+
                 var validatorsGeoInfo = new List<ValidatorGeoInfoDto>();
                 var alerts = new List<Alert>();
-                foreach(var validatorAddress in validators)
+                foreach (var validatorGeo in validatorsGeo)
                 {
                     try
                     {
-                        var ipAddress =
-                            Dns.GetHostAddresses(validatorAddress)
-                            .OrderBy(a => a.AddressFamily)
-                            .FirstOrDefault()?.ToString();
-
-                        if (ipAddress.IsNullOrEmpty())
-                            continue;
-
-                        // TODO: add geo location caching
-                        var geoLocationResult = await _geoLocationProvider.GetGeoLocation(ipAddress);
-                        if (geoLocationResult.Successful)
-                        {
-                            validatorsGeoInfo.Add(
-                                new ValidatorGeoInfoDto
-                                {
-                                    NetworkAddress = validatorAddress,
-                                    Location = geoLocationResult.Data
-                                });
-                        }
-                        else
-                            alerts.AddRange(geoLocationResult.Alerts);
+                        validatorsGeoInfo.Add(JsonConvert.DeserializeObject<ValidatorGeoInfoDto>(validatorGeo));
                     }
                     catch (Exception ex)
                     {
