@@ -61,7 +61,6 @@ namespace Own.BlockchainExplorer.Infrastructure.Geo
 
             try
             {
-                var x = JsonConvert.DeserializeObject<T>(json);
                 return Result.Success(JsonConvert.DeserializeObject<T>(json));
             }
             catch (Exception)
