@@ -42,10 +42,10 @@ BEGIN
 
 	-- holding_eligibility
 	DROP INDEX IF EXISTS holding_eligibility__ix__account_id;
-	CREATE INDEX holding_eligibility__ix__account_id ON blockchain_event (account_id);
+	CREATE INDEX holding_eligibility__ix__account_id ON holding_eligibility (account_id);
 
 	DROP INDEX IF EXISTS holding_eligibility__ix__asset_id;
-	CREATE INDEX holding_eligibility__ix__asset_id ON blockchain_event (asset_id);
+	CREATE INDEX holding_eligibility__ix__asset_id ON holding_eligibility (asset_id);
 
 
     INSERT INTO database_version (version_number, description)
