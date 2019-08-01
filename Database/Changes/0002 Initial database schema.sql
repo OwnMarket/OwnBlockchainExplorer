@@ -8,26 +8,19 @@ BEGIN
 		account_id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 		hash text NOT NULL,
 		controller_address text NOT NULL,
-		
+
 		CONSTRAINT account_pk PRIMARY KEY (account_id)
 	);
 
-	-- Drop table
-
-	-- DROP TABLE "action"
 
 	CREATE TABLE "tx_action" (
 		tx_action_id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 		action_number int4 NOT NULL,
 		action_type text NOT NULL,
 		action_data text NULL,
-		
+
 		CONSTRAINT tx_action_pk PRIMARY KEY (tx_action_id)
 	);
-
-	-- Drop table
-
-	-- DROP TABLE address
 
 	CREATE TABLE address (
 		address_id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
@@ -40,9 +33,6 @@ BEGIN
 		CONSTRAINT address_pk PRIMARY KEY (address_id)
 	);
 
-	-- Drop table
-
-	-- DROP TABLE asset
 
 	CREATE TABLE asset (
 		asset_id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
@@ -50,13 +40,10 @@ BEGIN
 		asset_code text NULL,
 		is_eligibility_required bool NULL,
 		controller_address text NOT NULL,
-		
+
 		CONSTRAINT asset_pk PRIMARY KEY (asset_id)
 	);
-	
-	-- Drop table
 
-	-- DROP TABLE "validator"
 
 	CREATE TABLE "validator" (
 		validator_id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
@@ -64,13 +51,10 @@ BEGIN
 		network_address text NULL,
 		shared_reward_percent numeric NOT NULL,
 		is_active bool NOT NULL,
-		
+
 		CONSTRAINT validator_pk PRIMARY KEY (validator_id)
 	);
-	
-	-- Drop table
 
-	-- DROP TABLE "transaction"
 
 	CREATE TABLE "transaction" (
 		transaction_id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
@@ -82,13 +66,9 @@ BEGIN
 		status text NOT NULL,
 		error_message text NULL,
 		failed_action_number int2 NULL,
-		
+
 		CONSTRAINT transaction_pk PRIMARY KEY (transaction_id)
 	);
-
-	-- Drop table
-
-	-- DROP TABLE block
 
 	CREATE TABLE block (
 		block_id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
@@ -109,15 +89,11 @@ BEGIN
 		"configuration" json NULL,
 		consensus_round int4 NULL,
 		signatures text NOT NULL,
-		
+
 		CONSTRAINT block_pk PRIMARY KEY (block_id),
 		CONSTRAINT block_block_fk FOREIGN KEY (previous_block_id) REFERENCES block(block_id),
 		CONSTRAINT block_validator_fk FOREIGN KEY (validator_id) REFERENCES validator(validator_id)
 	);
-
-	-- Drop table
-
-	-- DROP TABLE equivocation
 
 	CREATE TABLE equivocation (
 		equivocation_id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
@@ -130,14 +106,11 @@ BEGIN
 		equivocation_value_2 text NULL,
 		signature_1 text NULL,
 		signature_2 text NULL,
-		
+
 		CONSTRAINT equivocation_pk PRIMARY KEY (equivocation_id),
 		CONSTRAINT equivocation_block_fk FOREIGN KEY (block_id) REFERENCES block(block_id)
 	);
 
-	-- Drop table
-
-	-- DROP TABLE "event"
 
 	CREATE TABLE "blockchain_event" (
 		blockchain_event_id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
@@ -151,7 +124,7 @@ BEGIN
 		asset_id int8 NULL,
 		account_id int8 NULL,
 		tx_action_id int8 NULL,
-		
+
 		CONSTRAINT blockchain_event_pk PRIMARY KEY (blockchain_event_id),
 		CONSTRAINT blockchain_event_account_fk FOREIGN KEY (account_id) REFERENCES account(account_id),
 		CONSTRAINT blockchain_event_tx_action_fk FOREIGN KEY (tx_action_id) REFERENCES tx_action(tx_action_id),
@@ -162,9 +135,6 @@ BEGIN
 		CONSTRAINT blockchain_event_transaction_fk FOREIGN KEY (transaction_id) REFERENCES transaction(transaction_id)
 	);
 
-	-- Drop table
-
-	-- DROP TABLE holding_eligibility
 
 	CREATE TABLE holding_eligibility (
 		holding_eligibility_id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
