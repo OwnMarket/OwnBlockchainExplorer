@@ -5,7 +5,7 @@
   "nodeApiUrl": "http://platform-client.testnet.weown.com:10717",
   "geo": {
     "apiUrl": "https://api.ipgeolocation.io/ipgeo",
-    "apiKey": "f8787d5342674f8cb60ef73b51251f67"
+    "apiKey": "<<IPGEO_API_KEY>>"
   },
   "genesisAddress": "CHTESTz5BRZRtuZ9RUJjkVPUXTJ2PozBqG5",
   "genesisChxSupply": "168956522.0930844",
