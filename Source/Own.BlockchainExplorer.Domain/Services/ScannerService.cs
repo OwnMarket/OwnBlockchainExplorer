@@ -330,18 +330,18 @@ namespace Own.BlockchainExplorer.Domain.Services
                 return Result.Failure<decimal>(txResult.Alerts);
             var txDto = txResult.Data;
 
-            var addressResult = _importService.ImportAddress(txResult.Data.SenderAddress, txResult.Data.Nonce, uow);
+            var addressResult = _importService.ImportAddress(txDto.SenderAddress, txDto.Nonce, uow);
             if (addressResult.Failed)
                 return Result.Failure<decimal>(addressResult.Alerts);
             var senderAddress = addressResult.Data;
 
-            var txImportResult = _importService.ImportTx(txResult.Data, block.Timestamp, uow);
+            var txImportResult = _importService.ImportTx(txDto, block.Timestamp, uow);
             if (txImportResult.Failed)
                 return Result.Failure<decimal>(txImportResult.Alerts);
             var transaction = txImportResult.Data;
 
             var i = 0;
-            foreach (var actionDto in txResult.Data.Actions)
+            foreach (var actionDto in txDto.Actions)
             {
                 var action = _importService.ImportAction(actionDto, ++i, uow).Data;
                 var eventResult = _importService.ImportEvents(
