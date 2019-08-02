@@ -54,7 +54,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             }
 
             uow.Commit();
-            return Result.Success(address); 
+            return Result.Success(address);
         }
 
         public Result<Block> ImportBlock(BlockDto blockDto, IUnitOfWork uow)
@@ -153,8 +153,9 @@ namespace Own.BlockchainExplorer.Domain.Services
             return Result.Success(equivocation);
         }
 
-        public Result<BlockchainEvent> ImportStakingRewardEvent(StakingRewardDto stakingRewardDto, 
-            long blockId, 
+        public Result<BlockchainEvent> ImportStakingRewardEvent(
+            StakingRewardDto stakingRewardDto,
+            long blockId,
             IUnitOfWork uow)
         {
             var addressRepo = NewRepository<Address>(uow);
@@ -185,9 +186,9 @@ namespace Own.BlockchainExplorer.Domain.Services
         }
 
         public Result<BlockchainEvent> ImportValidatorRewardEvent(
-            decimal reward, 
-            long blockId, 
-            string blockchainAddress, 
+            decimal reward,
+            long blockId,
+            string blockchainAddress,
             IUnitOfWork uow)
         {
             var addressRepo = NewRepository<Address>(uow);
@@ -219,9 +220,9 @@ namespace Own.BlockchainExplorer.Domain.Services
         }
 
         public Result<BlockchainEvent> ImportDepositTakenEvent(
-            EquivocationDto equivocationDto, 
-            long blockId, 
-            long equivocationId, 
+            EquivocationDto equivocationDto,
+            long blockId,
+            long equivocationId,
             IUnitOfWork uow)
         {
             var addressRepo = NewRepository<Address>(uow);
@@ -246,8 +247,8 @@ namespace Own.BlockchainExplorer.Domain.Services
             address.DepositBalance -= equivocationDto.DepositTaken;
             var newDepositAmount = 10000 - address.DepositBalance;
 
-            var amountToDeduce = address.AvailableBalance > newDepositAmount 
-                ? newDepositAmount 
+            var amountToDeduce = address.AvailableBalance > newDepositAmount
+                ? newDepositAmount
                 : address.AvailableBalance;
 
             address.DepositBalance += amountToDeduce;
@@ -258,13 +259,13 @@ namespace Own.BlockchainExplorer.Domain.Services
             NewRepository<BlockchainEvent>(uow).Insert(depositTakenEvent);
             uow.Commit();
 
-            return Result.Success(depositTakenEvent);           
+            return Result.Success(depositTakenEvent);
         }
 
         public Result<IEnumerable<BlockchainEvent>> ImportDepositGivenEvents(
             EquivocationDto equivocationDto,
             long blockId,
-            long equivocationId, 
+            long equivocationId,
             IUnitOfWork uow)
         {
             var eventRepo = NewRepository<BlockchainEvent>(uow);
@@ -308,7 +309,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             {
                 ActionNumber = actionNumber,
                 ActionType = actionDto.ActionType,
-                ActionData = JsonConvert.SerializeObject(actionDto.ActionData), 
+                ActionData = JsonConvert.SerializeObject(actionDto.ActionData),
             };
 
             NewRepository<TxAction>(uow).Insert(action);
@@ -320,7 +321,7 @@ namespace Own.BlockchainExplorer.Domain.Services
         public Result<IEnumerable<BlockchainEvent>> ImportEvents(
             TxAction action,
             Address senderAddress,
-            Block block,
+            long blockId,
             Transaction tx,
             JObject actionDataObj,
             IUnitOfWork uow)
@@ -331,7 +332,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 {
                     AddressId = senderAddress.AddressId,
                     TxActionId = action.TxActionId,
-                    BlockId = block.BlockId,
+                    BlockId = blockId,
                     Fee = tx.ActionFee,
                     Amount = 0,
                     TransactionId = tx.TransactionId,
@@ -347,9 +348,9 @@ namespace Own.BlockchainExplorer.Domain.Services
                 {
                     case ActionType.TransferChx:
                         result = _actionService.TransferChx(
-                            events, 
-                            actionDataObj.ToObject<TransferChxData>(), 
-                            uow, 
+                            events,
+                            actionDataObj.ToObject<TransferChxData>(),
+                            uow,
                             senderAddress);
                         break;
                     case ActionType.DelegateStake:
@@ -371,8 +372,8 @@ namespace Own.BlockchainExplorer.Domain.Services
                         break;
                     case ActionType.SetAssetCode:
                         result = _actionService.SetAssetCode(
-                            events, 
-                            actionDataObj.ToObject<SetAssetCodeData>(), 
+                            events,
+                            actionDataObj.ToObject<SetAssetCodeData>(),
                             uow);
                         break;
                     case ActionType.SetAssetController:
@@ -391,8 +392,8 @@ namespace Own.BlockchainExplorer.Domain.Services
                         break;
                     case ActionType.TransferAsset:
                         result = _actionService.TransferAsset(
-                            events, 
-                            actionDataObj.ToObject<TransferAssetData>(), 
+                            events,
+                            actionDataObj.ToObject<TransferAssetData>(),
                             uow);
                         break;
                     case ActionType.CreateAssetEmission:
@@ -424,8 +425,8 @@ namespace Own.BlockchainExplorer.Domain.Services
                         break;
                     case ActionType.SetAssetEligibility:
                         result = _actionService.SetAssetEligibility(
-                            events, 
-                            actionDataObj.ToObject<SetAssetEligibilityData>(), 
+                            events,
+                            actionDataObj.ToObject<SetAssetEligibilityData>(),
                             uow);
                         break;
                     case ActionType.ChangeKycControllerAddress:
@@ -437,15 +438,15 @@ namespace Own.BlockchainExplorer.Domain.Services
                         break;
                     case ActionType.AddKycProvider:
                         result = _actionService.AddKycProvider(
-                            events, 
-                            actionDataObj.ToObject<AddKycProviderData>(), 
+                            events,
+                            actionDataObj.ToObject<AddKycProviderData>(),
                             uow,
                             senderAddress);
                         break;
                     case ActionType.RemoveKycProvider:
                         result = _actionService.RemoveKycProvider(
-                            events, 
-                            actionDataObj.ToObject<RemoveKycProviderData>(), 
+                            events,
+                            actionDataObj.ToObject<RemoveKycProviderData>(),
                             uow,
                             senderAddress);
                         break;

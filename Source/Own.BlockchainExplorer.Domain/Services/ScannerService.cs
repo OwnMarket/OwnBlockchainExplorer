@@ -347,7 +347,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 var eventResult = _importService.ImportEvents(
                     action,
                     senderAddress,
-                    block,
+                    block.BlockId,
                     transaction,
                     (JObject)actionDto.ActionData,
                     uow);

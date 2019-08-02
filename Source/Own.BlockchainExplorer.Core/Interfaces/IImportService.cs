@@ -13,30 +13,33 @@ namespace Own.BlockchainExplorer.Core.Interfaces
         Result<Transaction> ImportTx(TxDto txDto, long timestamp, IUnitOfWork uow);
         Result<Equivocation> ImportEquivocation(EquivocationDto equivocationDto, long blockId, IUnitOfWork uow);
 
-        Result<BlockchainEvent> ImportStakingRewardEvent(StakingRewardDto stakingRewardDto, 
-            long blockId, 
+        Result<BlockchainEvent> ImportStakingRewardEvent(
+            StakingRewardDto stakingRewardDto,
+            long blockId,
             IUnitOfWork uow);
-        Result<BlockchainEvent> ImportValidatorRewardEvent(decimal reward, 
-            long blockId, 
-            string blockchainAddress, 
+        Result<BlockchainEvent> ImportValidatorRewardEvent(
+            decimal reward,
+            long blockId,
+            string blockchainAddress,
             IUnitOfWork uow);
-        Result<BlockchainEvent> ImportDepositTakenEvent(EquivocationDto equivocationDto, 
-            long blockId, 
-            long equivocationId, 
+        Result<BlockchainEvent> ImportDepositTakenEvent(
+            EquivocationDto equivocationDto,
+            long blockId,
+            long equivocationId,
             IUnitOfWork uow);
         Result<IEnumerable<BlockchainEvent>> ImportDepositGivenEvents(
             EquivocationDto equivocationDto,
             long blockId,
-            long equivocationId, 
+            long equivocationId,
             IUnitOfWork uow);
 
         Result<TxAction> ImportAction(ActionDto actionDto, int actionNumber, IUnitOfWork uow);
         Result<IEnumerable<BlockchainEvent>> ImportEvents(
             TxAction action,
             Address senderAddress,
-            Block block,
+            long blockId,
             Transaction tx,
-            JObject actionDataObj, 
+            JObject actionDataObj,
             IUnitOfWork uow);
     }
 }
