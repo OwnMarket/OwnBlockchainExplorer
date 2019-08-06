@@ -22,10 +22,10 @@ namespace Own.BlockchainExplorer.Api.Controllers
         }
 
         [HttpGet]
-        [Route("validators-map")]
-        public IActionResult GetValidatorsMap()
+        [Route("validators-geo")]
+        public IActionResult GetValidatorsGeo()
         {
-            return ApiResult(_validatorInfoService.GetValidatorsMap(), r => NotFound(r));
+            return ApiResult(_validatorInfoService.GetValidatorsGeo(), r => NotFound(r));
         }
 
         [HttpGet]

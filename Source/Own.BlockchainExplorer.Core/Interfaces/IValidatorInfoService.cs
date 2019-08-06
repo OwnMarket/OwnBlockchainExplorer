@@ -9,6 +9,6 @@ namespace Own.BlockchainExplorer.Core.Interfaces
         Result<ValidatorInfoDto> GetValidatorInfo(string blockchainAddress);
         Result<IEnumerable<StakeDto>> GetStakesInfo(string blockchainAddress, int page, int limit);
         Result<IEnumerable<ValidatorInfoShortDto>> GetValidators(int page, int limit);
-        Result<IEnumerable<ValidatorGeoInfoDto>> GetValidatorsMap();
+        Result<IEnumerable<ValidatorGeoInfoDto>> GetValidatorsGeo();
     }
 }

@@ -127,7 +127,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             }
         }
 
-        public Result<IEnumerable<ValidatorGeoInfoDto>> GetValidatorsMap()
+        public Result<IEnumerable<ValidatorGeoInfoDto>> GetValidatorsGeo()
         {
             using (var uow = NewUnitOfWork())
             {
