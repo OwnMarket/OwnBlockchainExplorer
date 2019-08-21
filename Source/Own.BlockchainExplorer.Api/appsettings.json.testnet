@@ -11,5 +11,8 @@
   },
   "swagger": {
     "xmlDocPath": "ADD ONLY IF XML DOC IS OUTSIDE THE RUNNING ASSEMBLY LOCATION"
-  }
+  },
+  "genesisAddresses": "CHTESTz5BRZRtuZ9RUJjkVPUXTJ2PozBqG5,CHXFCTvaC9yRfP442Em1Pny2j6bT74wMncc",
+  "genesisChxSupply": "168956522.0930844",
+  "nodeApiUrl": "http://platform-client.testnet.weown.com:10717"
 }

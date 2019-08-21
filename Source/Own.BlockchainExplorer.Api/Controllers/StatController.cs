@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Own.BlockchainExplorer.Api.Common;
 using Own.BlockchainExplorer.Core.Interfaces;
+using System.Threading.Tasks;
 
 namespace Own.BlockchainExplorer.Api.Controllers
 {
@@ -35,6 +36,13 @@ namespace Own.BlockchainExplorer.Api.Controllers
             [FromQuery] int limit = 50)
         {
             return ApiResult(_statService.GetTopAddresses(page, limit), r => NotFound(r));
+        }
+
+        [HttpGet]
+        [Route("supply")]
+        public async Task<IActionResult> GetChxSupplyAsync()
+        {
+            return ApiResult(await _statService.GetChxSupply());
         }
     }
 }

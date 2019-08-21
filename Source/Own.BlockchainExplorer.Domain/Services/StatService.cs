@@ -8,16 +8,22 @@ using Own.BlockchainExplorer.Domain.Common;
 using Own.BlockchainExplorer.Core.Dtos.Api;
 using Own.BlockchainExplorer.Core.Enums;
 using Own.BlockchainExplorer.Common.Extensions;
+using Own.BlockchainExplorer.Core;
+using System.Threading.Tasks;
 
 namespace Own.BlockchainExplorer.Domain.Services
 {
     public class StatService : DataService, IStatService
     {
+        private readonly IBlockchainClient _blockchainClient;
+
         public StatService(
             IUnitOfWorkFactory unitOfWorkFactory,
-            IRepositoryFactory repositoryFactory)
+            IRepositoryFactory repositoryFactory,
+            IBlockchainClient blockchainClient)
             : base(unitOfWorkFactory, repositoryFactory)
         {
+            _blockchainClient = blockchainClient;
         }
 
         public Result<IEnumerable<KeyValuePair<DateTime, int>>> GetTxPerDay(int numberOfDays)
@@ -166,6 +172,25 @@ namespace Own.BlockchainExplorer.Domain.Services
         private DateTime GetDate(long timestamp)
         {
             return new DateTime(1970, 1, 1, 0, 0, 0, 0).AddMilliseconds(timestamp).Date;
+        }
+
+        public async Task<Result<ChxSupplyDto>> GetChxSupply()
+        {
+            var genesisAmount = 0M;
+            foreach(var address in Config.GenesisAddresses)
+            {
+                var addressResult = await _blockchainClient.GetAddressInfo(address);
+                if (addressResult.Failed)
+                    return Result.Failure<ChxSupplyDto>(addressResult.Alerts);
+
+                genesisAmount += addressResult.Data.Balance.Total;
+            }
+
+            return Result.Success(new ChxSupplyDto
+            {
+                Total = Config.GenesisChxSupply.Value,
+                Circulating = Config.GenesisChxSupply.Value - genesisAmount
+            });
         }
     }
 }

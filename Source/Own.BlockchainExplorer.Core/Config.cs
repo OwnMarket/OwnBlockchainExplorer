@@ -22,6 +22,7 @@ namespace Own.BlockchainExplorer.Core
         public static decimal? GenesisChxSupply => _provider.GetDecimal("genesisChxSupply");
         public static string[] GenesisValidators => _provider.GetString("genesisValidators").Split(',', ';');
         public static string FakeValidator => _provider.GetString("fakeValidator");
+        public static string[] GenesisAddresses => _provider.GetString("genesisAddresses").Split(',', ';');
 
         // GeoLocation
         public static string IpGeoApi => _provider.GetString("geo:apiUrl");
