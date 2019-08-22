@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Own.BlockchainExplorer.Api.Controllers
 {
-    [Route("stat")]
+    [Route("stats")]
     public class StatController : OwnController
     {
         private readonly IStatService _statService;
@@ -23,7 +23,7 @@ namespace Own.BlockchainExplorer.Api.Controllers
         }
 
         [HttpGet]
-        [Route("validator-stats")]
+        [Route("validators")]
         public IActionResult GetValidatorStats([FromQuery] int numberOfDays = 7)
         {
             return ApiResult(_statService.GetValidatorStats(numberOfDays), r => NotFound(r));
