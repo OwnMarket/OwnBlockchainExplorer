@@ -14,5 +14,5 @@
   },
   "genesisAddresses": "CHXVAndt1uD1iFTWUqAjM4PeQLV1Ucj7EtL,CHfree5ZSwDwKRh2btFG4UPGSwtSZxyqPeQ,CHRmpg1qoSzfrN31mEWappcVEHyPydHnx2p,CHQUWb1CzjbdnSrhjL21cWi8uUmEu6pFx4i,CHHHAcHxHJabKKwbXja3rSTag69dAvJWxkL,CHbigWBayFp9KkWjb1ML5UuWicCLBj1mocV,CHRWfSK3q97LLkCWXZHouAKchUghxvKXEZk,CHWHSY9hNMeTnHnSb9poQ5Ad8381RGnj2n2,CHZ8C7o1qtcFLuLfM9waBXnRCkB9PWCk5zo,CHbB3ESZPun5dRjKQ9tY7YH4s2zaYNk5J8T,CHbL7fsenM3Sg44JJxz1WDR9EL9xM39xhfK,CHfgnqgnWzei4WLSjqWQ5fPp2TaCYz9o9gX,CHew9x7Nmfmkk2Jy8EGZUvjaEJv8kHTdMmf,CHQMyt8MjQEjdvATd6UTGQwidVswxBxPeaw",
   "genesisChxSupply": "168956522.0930844",
-  "nodeApiUrl": "http://platform-client.mainnet.weown.com:10717"
+  "nodeApiUrl": "http://wallet.mainnet.weown.com:10717"
 }

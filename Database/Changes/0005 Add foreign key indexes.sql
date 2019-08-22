@@ -46,7 +46,14 @@ BEGIN
 
 	DROP INDEX IF EXISTS holding_eligibility__ix__asset_id;
 	CREATE INDEX holding_eligibility__ix__asset_id ON holding_eligibility (asset_id);
-
+	
+	-- block
+	DROP INDEX IF EXISTS block__ix__timestamp;
+	CREATE INDEX block__ix__timestamp ON block ("timestamp");
+	
+	-- transaction
+	DROP INDEX IF EXISTS transaction__ix__timestamp;
+	CREATE INDEX transaction__ix__timestamp ON "transaction" ("timestamp");
 
     INSERT INTO database_version (version_number, description)
     VALUES (5, 'Add foreign key indexes');

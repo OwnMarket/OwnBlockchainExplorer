@@ -2,7 +2,7 @@
   "appSettings": {
     "DB": "server=localhost;database=own_blockchain_explorer;user id=own_blockchain_explorer_scanner;password=testpass1;searchpath=own"
   },
-  "nodeApiUrl": "http://platform-client.mainnet.weown.com:10717",
+  "nodeApiUrl": "http://wallet.mainnet.weown.com:10717",
   "geo": {
     "apiUrl": "https://api.ipgeolocation.io/ipgeo",
     "apiKey": "<<IPGEO_API_KEY>>"
