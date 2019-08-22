@@ -16,7 +16,7 @@ namespace Own.BlockchainExplorer.Api.Controllers
         }
 
         [HttpGet]
-        [Route("tx-per-day")]
+        [Route("txs-per-day")]
         public IActionResult GetTxPerDay(int numberOfDays = 7)
         {
             return ApiResult(_statService.GetTxPerDay(numberOfDays), r => NotFound(r));
