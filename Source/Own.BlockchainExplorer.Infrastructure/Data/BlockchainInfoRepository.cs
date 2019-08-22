@@ -33,14 +33,14 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
             var query =
                 _db.Blocks
                 .OrderByDescending(b => b.Timestamp)
+                .Skip((page - 1) * limit)
+                .Take(limit)
                 .Select(b => new BlockInfoShortDto
                     {
                         Hash = b.Hash,
                         BlockNumber = b.BlockNumber,
                         Timestamp = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddMilliseconds(b.Timestamp)
                     })
-                .Skip((page - 1) * limit)
-                .Take(limit)
                 .AsNoTracking();
 
             return query.ToList();
