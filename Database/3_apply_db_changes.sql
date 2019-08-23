@@ -6,3 +6,5 @@
 \ir 'Changes/0004 Add geo_location column to validator table.sql'
 \ir 'Changes/0005 Add foreign key indexes.sql'
 \ir 'Changes/0006 Add unique key constraints.sql'
+\ir 'Changes/0007 Add indexes on hash columns.sql'
+
