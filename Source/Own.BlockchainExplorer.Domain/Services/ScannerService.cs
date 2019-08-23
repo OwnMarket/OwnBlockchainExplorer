@@ -230,7 +230,10 @@ namespace Own.BlockchainExplorer.Domain.Services
             var alerts = new List<Alert>();
             foreach (var validator in validators)
             {
-                var validatorAddress = validator.NetworkAddress.Substring(0, validator.NetworkAddress.LastIndexOf(":"));
+                var endCharPosition = validator.NetworkAddress.LastIndexOf(":") == -1 
+                    ? validator.NetworkAddress.Length
+                    : validator.NetworkAddress.LastIndexOf(":");
+                var validatorAddress = validator.NetworkAddress.Substring(0, endCharPosition);
                 try
                 {
                     var ipAddress =
