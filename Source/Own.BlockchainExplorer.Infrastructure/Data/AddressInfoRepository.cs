@@ -167,25 +167,26 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                 && e.Amount == 0;
         }
 
-        public EventsSummaryDto GetEventsInfo(string blockchainAddress, string filter, int page, int limit)
+        public IEnumerable<EventDto> GetEventsInfo(string blockchainAddress, string filter, int page, int limit)
         {
             var eventTypes = filter.Split(',')
                 .Where(f => Enum.TryParse(f, out EventType result))
                 .ToList();
 
+            var validatorReward = "ValidatorReward";
+            var stakingReward = "StakingReward";
+
             var query =
                  _db.BlockchainEvents.AsQueryable()
                  .Where(e => e.Address.BlockchainAddress == blockchainAddress
-                     && !IsEmptyReward(e));
+                     && !((e.EventType == validatorReward
+                        || e.EventType == stakingReward)
+                        && e.Amount == 0));
 
             if (eventTypes.Any())
                 query = query.Where(e => e.EventType.ToString().ContainedIn(eventTypes));
 
-            var eventsCount =
-                query.Select(e => e.BlockchainEventId).Count();
-
-            var events =
-                query
+            return query
                 .Include(e => e.TxAction)
                 .Include(e => e.Equivocation)
                 .Include(e => e.Transaction)
@@ -196,12 +197,6 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                 .ToList()
                 .Select(e => EventDto.FromDomainModel(e))
                 .ToList();
-
-            return new EventsSummaryDto
-            {
-                Events = events,
-                EventsCount = eventsCount
-            };
         }
     }
 }
