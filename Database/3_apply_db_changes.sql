@@ -7,4 +7,5 @@
 \ir 'Changes/0005 Add foreign key indexes.sql'
 \ir 'Changes/0006 Add unique key constraints.sql'
 \ir 'Changes/0007 Add indexes on hash columns.sql'
-
+\ir 'Changes/0008 Remove redundant indexes on hash columns.sql'
+\ir 'Changes/0009 Add unique key constraints on transaction and block tables.sql'
