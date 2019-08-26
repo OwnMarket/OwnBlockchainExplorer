@@ -25,7 +25,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
             int limit,
             bool? isActive)
         {
-            var events =
+            return
                 _db.BlockchainEvents.AsQueryable()
                 .Where(
                     e => e.EventType == EventType.Action.ToString()
@@ -35,17 +35,10 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                     && e.Transaction.Status == TxStatus.Success.ToString())
                 .Include(e => e.Account)
                 .Include(e => e.Address)
-                .ToList();
-
-            if (!events.Any())
-                return Enumerable.Empty<ControlledAccountDto>();
-
-            var controllerAddress = events.First().Address.BlockchainAddress;
-            return
-                events.Select(e => new ControlledAccountDto
+                .Select(e => new ControlledAccountDto
                 {
                     Hash = e.Account.Hash,
-                    IsActive = e.Account.ControllerAddress == controllerAddress
+                    IsActive = e.Account.ControllerAddress == blockchainAddress
                 })
                 .GroupBy(c => c.Hash)
                 .Select(g => g.FirstOrDefault())
@@ -61,7 +54,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
             int limit,
             bool? isActive)
         {
-            var events =
+            return
                 _db.BlockchainEvents.AsQueryable()
                 .Where(
                     e => e.EventType == EventType.Action.ToString()
@@ -71,18 +64,11 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                     && e.Transaction.Status == TxStatus.Success.ToString())
                 .Include(e => e.Asset)
                 .Include(e => e.Address)
-                .ToList();
-
-            if (!events.Any())
-                return Enumerable.Empty<ControlledAssetDto>();
-
-            var controllerAddress = events.First().Address.BlockchainAddress;
-            return
-                events.Select(e => new ControlledAssetDto
+                .Select(e => new ControlledAssetDto
                 {
                     Hash = e.Asset.Hash,
                     AssetCode = e.Asset.AssetCode,
-                    IsActive = e.Asset.ControllerAddress == controllerAddress
+                    IsActive = e.Asset.ControllerAddress == blockchainAddress
                 })
                 .GroupBy(c => c.Hash)
                 .Select(g => g.FirstOrDefault())
