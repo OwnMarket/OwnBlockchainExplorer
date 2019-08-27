@@ -472,7 +472,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                     AccountId = account.AccountId
                 };
             }
-            holding.Balance = actionData.Amount;
+            holding.Balance += actionData.Amount;
 
             if (isNewHolding)
                 holdingRepo.Insert(holding);
