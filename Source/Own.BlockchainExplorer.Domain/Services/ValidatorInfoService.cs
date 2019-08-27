@@ -17,15 +17,15 @@ namespace Own.BlockchainExplorer.Domain.Services
 {
     public class ValidatorInfoService : DataService, IValidatorInfoService
     {
-        private readonly IGeoLocationProvider _geoLocationProvider;
+        private readonly IGeoLocationService _geoLocationService;
 
         public ValidatorInfoService(
             IUnitOfWorkFactory unitOfWorkFactory,
             IRepositoryFactory repositoryFactory,
-            IGeoLocationProvider geoLocationProvider)
+            IGeoLocationService geoLocationService)
             : base(unitOfWorkFactory, repositoryFactory)
         {
-            _geoLocationProvider = geoLocationProvider;
+            _geoLocationService = geoLocationService;
         }
 
         public Result<ValidatorInfoDto> GetValidatorInfo(string blockchainAddress)

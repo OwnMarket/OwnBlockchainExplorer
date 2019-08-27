@@ -4,7 +4,7 @@ using Own.BlockchainExplorer.Core.Dtos.Api;
 
 namespace Own.BlockchainExplorer.Core.Interfaces
 {
-    public interface IGeoLocationProvider
+    public interface IGeoLocationService
     {
         Task<Result<GeoLocationDto>> GetGeoLocation(string ipAddress);
     }

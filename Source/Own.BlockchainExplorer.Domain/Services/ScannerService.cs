@@ -21,19 +21,19 @@ namespace Own.BlockchainExplorer.Domain.Services
     {
         private readonly IBlockchainClient _blockchainClient;
         private readonly IImportService _importService;
-        private readonly IGeoLocationProvider _geoLocationProvider;
+        private readonly IGeoLocationService _geoLocationService;
 
         public ScannerService(
             IBlockchainClient blockchainClient,
             IImportService importService,
-            IGeoLocationProvider geoLocationProvider,
+            IGeoLocationService geoLocationService,
             IUnitOfWorkFactory unitOfWorkFactory,
             IRepositoryFactory repositoryFactory)
             : base(unitOfWorkFactory, repositoryFactory)
         {
             _blockchainClient = blockchainClient;
             _importService = importService;
-            _geoLocationProvider = geoLocationProvider;
+            _geoLocationService = geoLocationService;
         }
 
         public Result InitialBlockchainConfiguration()
@@ -244,7 +244,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                     if (ipAddress.IsNullOrEmpty())
                         continue;
 
-                    var geoLocationResult = _geoLocationProvider.GetGeoLocation(ipAddress).Result;
+                    var geoLocationResult = _geoLocationService.GetGeoLocation(ipAddress).Result;
                     if (geoLocationResult.Successful)
                     {
                         var validatorGeoInfo =

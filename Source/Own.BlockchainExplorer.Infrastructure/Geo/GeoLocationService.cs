@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using Own.BlockchainExplorer.Common;
 using Own.BlockchainExplorer.Common.Extensions;
@@ -13,16 +14,20 @@ using Own.BlockchainExplorer.Core.Interfaces;
 
 namespace Own.BlockchainExplorer.Infrastructure.Geo
 {
-    public class GeoLocationProvider : IGeoLocationProvider
+    public class GeoLocationService : IGeoLocationService
     {
-        private readonly string _ipGeoApiUrl;
-        private readonly string _apiKey;
+        private readonly IMemoryCache _geoLocationCache;
+        private readonly MemoryCacheEntryOptions _cacheExpirationOptions;
         private HttpClient _httpClient;
 
-        public GeoLocationProvider(string ipGeoApiUrl, string apiKey)
+        public GeoLocationService(IMemoryCache geoLocationCache)
         {
-            _ipGeoApiUrl = ipGeoApiUrl;
-            _apiKey = apiKey;
+            _geoLocationCache = geoLocationCache;
+            _cacheExpirationOptions = new MemoryCacheEntryOptions
+            {
+                AbsoluteExpiration = DateTime.Now.AddMinutes(30),
+                Priority = CacheItemPriority.Normal
+            };
         }
 
         private HttpClient HttpClient
@@ -40,9 +45,15 @@ namespace Own.BlockchainExplorer.Infrastructure.Geo
 
         public async Task<Result<GeoLocationDto>> GetGeoLocation(string ipAddress)
         {
-            var url = $"{_ipGeoApiUrl}?apiKey={_apiKey}&ip={ipAddress}";
+            if (_geoLocationCache.TryGetValue(ipAddress, out GeoLocationDto geoLocationDto))
+                return Result.Success(geoLocationDto);
+
+            var url = $"{Config.IpGeoApi}?apiKey={Config.GeoApiKey}&ip={ipAddress}";
             var result = await HttpClient.GetAsync(url);
-            return await HandleIpGeoApiResponse<GeoLocationDto>(result);
+            var geoApiResult = await HandleIpGeoApiResponse<GeoLocationDto>(result);
+            _geoLocationCache.Set(ipAddress, geoApiResult.Data, _cacheExpirationOptions);
+
+            return geoApiResult;
         }
 
         private async Task<Result<T>> HandleIpGeoApiResponse<T>(HttpResponseMessage responseMessage)

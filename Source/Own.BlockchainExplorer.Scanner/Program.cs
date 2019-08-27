@@ -40,6 +40,7 @@ namespace Own.BlockchainExplorer.Scanner
         {
             var serviceCollection = new ServiceCollection();
 
+            serviceCollection.AddMemoryCache();
             new InfrastructureModule().Load(serviceCollection);
             new DomainModule().Load(serviceCollection);
 
@@ -67,7 +68,7 @@ namespace Own.BlockchainExplorer.Scanner
                     Console.WriteLine(message);
                     _continueScanning = false;
                 }
-            }     
+            }
         }
     }
 }
