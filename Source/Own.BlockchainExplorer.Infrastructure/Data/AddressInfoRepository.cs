@@ -109,6 +109,8 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                     Amount = g.Sum(e => e.Amount.Value),
                     StakerAddress = blockchainAddress
                 })
+                .OrderByDescending(s => s.Amount)
+                .ThenBy(s => s.StakerAddress)
                 .ToList();
         }
 
@@ -143,6 +145,8 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                     Amount = -g.Sum(e => e.Amount.Value),
                     ValidatorAddress = blockchainAddress
                 })
+                .OrderByDescending(s => s.Amount)
+                .ThenBy(s => s.StakerAddress)
                 .ToList();
         }
 
