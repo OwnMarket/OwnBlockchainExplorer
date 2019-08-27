@@ -159,8 +159,8 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                 .Where(f => Enum.TryParse(f, out EventType result))
                 .ToList();
 
-            var validatorReward = "ValidatorReward";
-            var stakingReward = "StakingReward";
+            var validatorReward = EventType.ValidatorReward.ToString();
+            var stakingReward = EventType.StakeReturned.ToString();
 
             var query =
                  _db.BlockchainEvents.AsQueryable()
