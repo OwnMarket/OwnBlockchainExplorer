@@ -8,7 +8,7 @@ namespace Own.BlockchainExplorer.Core.Dtos.Api
         public string EquivocationProofHash { get; set; }
         public long BlockNumber { get; set; }
         public int ConsensusRound { get; set; }
-        public int ConsensusStep { get; set; }
+        public string ConsensusStep { get; set; }
         public string EquivocationValue1 { get; set; }
         public string EquivocationValue2 { get; set; }
         public string Signature1 { get; set; }
