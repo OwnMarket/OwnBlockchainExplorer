@@ -67,7 +67,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 EquivocationProofHash = "BTXVBwuTXWTpPtJC71FPGaeC17NVhu9mS6JavqZqHbYH",
                 BlockNumber = 123,
                 ConsensusRound = 1,
-                ConsensusStep = 1,
+                ConsensusStep = "vote",
                 EquivocationValue1 = "9VMtBESNLXWFRQXrd2HbXc2CGWUkdyPQjAKP5MciU59k",
                 EquivocationValue2 = "D8ViZH31RHBYrDfUhUC1DK49pY1dxCvgRMsbnS9Lbn3p",
                 Signature1 = "E5nmjsHcL1hFmJEjphUhg6DBn6gyxYzrTKKtXvDGB8FhefQZQ6o5QJ1MRgXqqY97YMsCe8cs3muDF524Mq1Q9qTzG",
