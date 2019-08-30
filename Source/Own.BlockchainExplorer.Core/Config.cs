@@ -27,6 +27,7 @@ namespace Own.BlockchainExplorer.Core
         // GeoLocation
         public static string IpGeoApi => _provider.GetString("geo:apiUrl");
         public static string GeoApiKey => _provider.GetString("geo:apiKey");
+        public static int GeoCacheTime => _provider.GetInteger("geoCacheTime").Value; // Minutes
 
         // API
         public static string[] ApiUrls => _provider.GetString("server.urls")?.Split(',', ';');

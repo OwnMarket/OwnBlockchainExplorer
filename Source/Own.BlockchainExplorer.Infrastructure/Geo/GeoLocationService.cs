@@ -25,7 +25,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Geo
             _geoLocationCache = geoLocationCache;
             _cacheExpirationOptions = new MemoryCacheEntryOptions
             {
-                AbsoluteExpiration = DateTime.Now.AddMinutes(30),
+                AbsoluteExpiration = DateTime.Now.AddMinutes(Config.GeoCacheTime),
                 Priority = CacheItemPriority.Normal
             };
         }
