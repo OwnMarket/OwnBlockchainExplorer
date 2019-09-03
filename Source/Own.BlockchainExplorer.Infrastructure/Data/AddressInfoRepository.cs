@@ -101,8 +101,6 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                 .OrderByDescending(e => e.BlockchainEventId)
                 .GroupBy(e => e.Address)
                 .Where(g => g.Sum(e => e.Amount.Value) != 0)
-                .Skip((page - 1) * limit)
-                .Take(limit)
                 .Select(g => new StakeDto
                 {
                     ValidatorAddress = g.Key.BlockchainAddress,
@@ -111,6 +109,8 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                 })
                 .OrderByDescending(s => s.Amount)
                 .ThenBy(s => s.StakerAddress)
+                .Skip((page - 1) * limit)
+                .Take(limit)
                 .ToList();
         }
 
@@ -137,8 +137,6 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                 .OrderByDescending(e => e.BlockchainEventId)
                 .GroupBy(e => e.Address)
                 .Where(g => g.Sum(e => e.Amount.Value) != 0)
-                .Skip((page - 1) * limit)
-                .Take(limit)
                 .Select(g => new StakeDto
                 {
                     StakerAddress = g.Key.BlockchainAddress,
@@ -147,14 +145,9 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                 })
                 .OrderByDescending(s => s.Amount)
                 .ThenBy(s => s.StakerAddress)
+                .Skip((page - 1) * limit)
+                .Take(limit)
                 .ToList();
-        }
-
-        private bool IsEmptyReward(BlockchainEvent e)
-        {
-            return (e.EventType == EventType.ValidatorReward.ToString()
-                || e.EventType == EventType.StakingReward.ToString())
-                && e.Amount == 0;
         }
 
         public IEnumerable<EventDto> GetEventsInfo(string blockchainAddress, string filter, int page, int limit)
