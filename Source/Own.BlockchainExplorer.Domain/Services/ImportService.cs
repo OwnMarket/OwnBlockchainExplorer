@@ -272,7 +272,6 @@ namespace Own.BlockchainExplorer.Domain.Services
             var addressRepo = NewRepository<Address>(uow);
 
             var events = new List<BlockchainEvent>();
-
             foreach (var depositDto in equivocationDto.DepositDistribution)
             {
                 var depositGivenEvent = new BlockchainEvent
@@ -292,6 +291,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                         "Address {0} does not exist.".F(depositDto.ValidatorAddress));
 
                 depositGivenEvent.AddressId = address.AddressId;
+                events.Add(depositGivenEvent);
 
                 address.AvailableBalance += depositDto.Amount;
                 addressRepo.Update(address);
