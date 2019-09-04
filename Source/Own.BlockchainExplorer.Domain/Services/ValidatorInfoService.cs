@@ -147,6 +147,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                     }
                     catch (Exception ex)
                     {
+                        Log.Error(ex);
                         alerts.Add(Alert.Error(ex.LogFormat()));
                     }
                 }

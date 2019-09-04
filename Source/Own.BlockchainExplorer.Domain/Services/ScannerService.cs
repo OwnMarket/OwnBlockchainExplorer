@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Own.BlockchainExplorer.Common;
 using Own.BlockchainExplorer.Common.Extensions;
 using Own.BlockchainExplorer.Common.Framework;
 using Own.BlockchainExplorer.Core;
@@ -110,11 +111,10 @@ namespace Own.BlockchainExplorer.Domain.Services
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Log.Error(e);
             }
 
             return Result.Success();
-
         }
 
         public async Task<Result> CheckNewBlocks()
@@ -139,13 +139,13 @@ namespace Own.BlockchainExplorer.Domain.Services
                     if (newBlock is null)
                         return Result.Success();
 
-                    Console.WriteLine($"Importing block {newBlock.Number} started.");
+                    Log.Info($"Importing block {newBlock.Number} started.");
                     var blockResult = await ProcessBlock(newBlock);
                     if (blockResult.Failed)
                         return Result.Failure(blockResult.Alerts);
 
                     lastBlockNumber = newBlock.Number;
-                    Console.WriteLine($"Importing block {newBlock.Number} finished.");
+                    Log.Info($"Importing block {newBlock.Number} finished.");
                 }
                 while (newBlock != null);
 
@@ -153,6 +153,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             }
             catch (Exception e)
             {
+                Log.Error(e);
                 return Result.Failure(e.Message);
             }
         }
@@ -230,7 +231,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             var alerts = new List<Alert>();
             foreach (var validator in validators)
             {
-                var endCharPosition = validator.NetworkAddress.LastIndexOf(":") == -1 
+                var endCharPosition = validator.NetworkAddress.LastIndexOf(":") == -1
                     ? validator.NetworkAddress.Length
                     : validator.NetworkAddress.LastIndexOf(":");
                 var validatorAddress = validator.NetworkAddress.Substring(0, endCharPosition);
@@ -262,6 +263,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 }
                 catch (Exception ex)
                 {
+                    Log.Error(ex);
                     alerts.Add(Alert.Error($"{validatorAddress}:{ex.Message}"));
                 }
             }

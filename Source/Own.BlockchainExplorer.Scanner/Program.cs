@@ -15,7 +15,6 @@ namespace Own.BlockchainExplorer.Scanner
     class Program
     {
         private static IScannerService _scannerService;
-        private static bool _continueScanning = true;
 
         static void Main(string[] args)
         {
@@ -58,16 +57,12 @@ namespace Own.BlockchainExplorer.Scanner
 
         private static void RunCycle()
         {
-            if (_continueScanning)
+            _scannerService.InitialBlockchainConfiguration();
+            var result = _scannerService.CheckNewBlocks().Result;
+            if (result.Failed)
             {
-                _scannerService.InitialBlockchainConfiguration();
-                var result = _scannerService.CheckNewBlocks().Result;
-                if (result.Failed)
-                {
-                    var message = string.Join(";", result.Alerts.Select(a => a.Message));
-                    Console.WriteLine(message);
-                    _continueScanning = false;
-                }
+                var message = string.Join(";", result.Alerts.Select(a => a.Message));
+                Log.Error(message);
             }
         }
     }
