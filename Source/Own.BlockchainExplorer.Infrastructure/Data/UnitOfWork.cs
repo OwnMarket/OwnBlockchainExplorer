@@ -24,16 +24,6 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
             Db.SaveChanges();
         }
 
-        public void BeginTransaction()
-        {
-            Db.Database.BeginTransaction();
-        }
-
-        public void CommitTransaction()
-        {
-            Db.Database.CommitTransaction();
-        }
-
         public void Dispose()
         {
             Db.Dispose();
