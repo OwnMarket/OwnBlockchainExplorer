@@ -83,7 +83,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             }
         }
 
-        public Result<IEnumerable<EventDto>> GetEventsInfo(string blockchainAddress, string filter, int page, int limit)
+        public Result<EventsSummaryDto> GetEventsInfo(string blockchainAddress, string filter, int page, int limit)
         {
             using (var uow = NewUnitOfWork())
             {

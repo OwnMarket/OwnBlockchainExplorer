@@ -150,7 +150,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                 .ToList();
         }
 
-        public IEnumerable<EventDto> GetEventsInfo(string blockchainAddress, string filter, int page, int limit)
+        public EventsSummaryDto GetEventsInfo(string blockchainAddress, string filter, int page, int limit)
         {
             var eventTypes = filter.Split(',')
                 .Where(f => Enum.TryParse(f, out EventType result))
@@ -169,7 +169,11 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
             if (eventTypes.Any())
                 query = query.Where(e => e.EventType.ToString().ContainedIn(eventTypes));
 
-            return query
+            var eventsCount =
+                query.Select(e => e.BlockchainEventId).Count();
+
+            var events =
+                query
                 .Include(e => e.TxAction)
                 .Include(e => e.Equivocation)
                 .Include(e => e.Transaction)
@@ -180,6 +184,12 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                 .ToList()
                 .Select(e => EventDto.FromDomainModel(e))
                 .ToList();
+
+            return new EventsSummaryDto
+            {
+                Events = events,
+                EventsCount = eventsCount
+            };
         }
     }
 }
