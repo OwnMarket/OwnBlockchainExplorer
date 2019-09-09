@@ -53,6 +53,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                         .Get(
                             e => e.Transaction.Hash == txHash && e.EventType == EventType.Action.ToString(),
                             e => e.TxAction)
+                        .OrderBy(e => e.TxAction.ActionNumber)
                         .GroupBy(e => e.TxActionId)
                         .Skip((page - 1) * limit).Take(limit)
                         .Select(g => ActionDto.FromDomainModel(g.First().TxAction))
