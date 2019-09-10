@@ -167,7 +167,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                         && e.Amount == 0));
 
             if (eventTypes.Any())
-                query = query.Where(e => e.EventType.ToString().ContainedIn(eventTypes));
+                query = query.Where(e => eventTypes.Contains(e.EventType));
 
             var eventsCount =
                 query.Select(e => e.BlockchainEventId).Count();
