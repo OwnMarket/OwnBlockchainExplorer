@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Own.BlockchainExplorer.Common.Extensions;
@@ -8,8 +11,6 @@ using Own.BlockchainExplorer.Core.Enums;
 using Own.BlockchainExplorer.Core.Interfaces;
 using Own.BlockchainExplorer.Core.Models;
 using Own.BlockchainExplorer.Domain.Common;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Own.BlockchainExplorer.Domain.Services
 {
@@ -111,6 +112,9 @@ namespace Own.BlockchainExplorer.Domain.Services
                     Hash = txDto.TxHash,
                     Nonce = txDto.Nonce,
                     Timestamp = timestamp,
+                    ExpirationTime = txDto.ExpirationTime != 0
+                        ? (DateTime?) new DateTime(1970, 1, 1, 0, 0, 0, 0).AddMilliseconds(txDto.ExpirationTime)
+                        : null,
                     ActionFee = txDto.ActionFee,
                     Status = txDto.Status,
                     ErrorMessage = txDto.ErrorCode,

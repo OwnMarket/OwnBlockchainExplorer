@@ -7,6 +7,7 @@ namespace Own.BlockchainExplorer.Core.Dtos.Scanning
         public string TxHash { get; set; }
         public string SenderAddress { get; set; }
         public long Nonce { get; set; }
+        public long ExpirationTime { get; set; }
         public decimal ActionFee { get; set; }
         public List<ActionDto> Actions { get; set; }
         public string Status { get; set; }
