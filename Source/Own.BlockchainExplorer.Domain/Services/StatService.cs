@@ -104,7 +104,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 var validatorAddresses = validators.Select(v => v.BlockchainAddress);
                 var deposits = NewRepository<Address>(uow)
                     .GetAs(
-                        a => a.BlockchainAddress.ContainedIn(validatorAddresses),
+                        a => validatorAddresses.Contains(a.BlockchainAddress),
                         a => new KeyValuePair<string, decimal>(a.BlockchainAddress, a.DepositBalance))
                     .ToDictionary(d => d.Key, d => d.Value);
 
@@ -127,7 +127,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                         var txsProposedCount = eventRepo
                             .GetCount(
                                 e => e.TransactionId.HasValue
-                                && e.BlockId.ContainedIn(blockIdsProposed));
+                                && blockIdsProposed.Contains(e.BlockId));
                         validatorStatsDto.TxsProposed = txsProposedCount;
 
                         var stakingRewards = blockStakingRewards
