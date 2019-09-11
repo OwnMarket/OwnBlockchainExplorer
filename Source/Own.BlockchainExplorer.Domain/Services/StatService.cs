@@ -69,14 +69,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 var minDateTimestamp = minDate.ToUnixTimeMilliseconds();
 
                 var receivedStakes = blockchainInfoRepo.GetReceivedStakes();
-
-                var blocksProposed = NewRepository<Block>(uow)
-                    .GetAs(b => b.Timestamp > minDateTimestamp, b => new { b.ValidatorId, b.BlockId })
-                    .GroupBy(b => b.ValidatorId)
-                    .ToDictionary(g => g.Key, g => g.Select(i => i.BlockId).Distinct().ToList());
-
                 var validatorRewards = blockchainInfoRepo.GetValidatorRewards(minDateTimestamp);
-                var blockStakingRewards = blockchainInfoRepo.GetBlockStakingRewards(minDateTimestamp);
 
                 var stats = new List<ValidatorStatsDto>();
                 var validators = NewRepository<Validator>(uow).Get(v => !v.IsDeleted);
@@ -87,6 +80,9 @@ namespace Own.BlockchainExplorer.Domain.Services
                         a => new KeyValuePair<string, decimal>(a.BlockchainAddress, a.DepositBalance))
                     .ToDictionary(d => d.Key, d => d.Value);
 
+                var validatorProposedBlockCount = blockchainInfoRepo.GetValidatorProposedBlockCount(minDateTimestamp);
+                var validatorProposedTxCount = blockchainInfoRepo.GetValidatorProposedTxCount(minDateTimestamp);
+                var validatorStakingRewards = blockchainInfoRepo.GetValidatorStakingRewards(minDateTimestamp);
                 foreach (var validator in validators)
                 {
                     var validatorStatsDto = new ValidatorStatsDto
@@ -99,21 +95,14 @@ namespace Own.BlockchainExplorer.Domain.Services
                     if (receivedStakes.TryGetValue(validator.BlockchainAddress, out decimal validatorStake))
                         validatorStatsDto.TotalStake = validatorStake;
 
-                    if (blocksProposed.TryGetValue(validator.ValidatorId, out List<long> blockIdsProposed))
-                    {
-                        validatorStatsDto.BlocksProposed = blockIdsProposed.Count();
+                    if (validatorProposedBlockCount.TryGetValue(validator.ValidatorId, out int proposedBlockCount))
+                        validatorStatsDto.BlocksProposed = proposedBlockCount;
 
-                        var txsProposedCount = eventRepo
-                            .GetCount(
-                                e => e.TransactionId.HasValue
-                                && blockIdsProposed.Contains(e.BlockId));
-                        validatorStatsDto.TxsProposed = txsProposedCount;
+                    if (validatorProposedTxCount.TryGetValue(validator.ValidatorId, out int proposedTxCount))
+                        validatorStatsDto.TxsProposed = proposedTxCount;
 
-                        var stakingRewards = blockStakingRewards
-                            .Where(b => b.Key.ContainedIn(blockIdsProposed))
-                            .Sum(b => b.Value);
+                    if (validatorStakingRewards.TryGetValue(validator.ValidatorId, out decimal stakingRewards))
                         validatorStatsDto.RewardsDistributed = stakingRewards;
-                    }
 
                     if (validatorRewards.TryGetValue(validator.BlockchainAddress, out decimal collectedRewards))
                         validatorStatsDto.RewardsCollected = collectedRewards;
