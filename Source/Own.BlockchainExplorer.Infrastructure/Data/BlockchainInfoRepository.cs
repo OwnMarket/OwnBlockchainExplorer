@@ -63,7 +63,8 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
             return
                 _db.Validators
                     .Where(v => !v.IsDeleted)
-                    .Join(_db.Blocks.Where(b => b.Timestamp > minTimestamp),
+                    .Join(
+                        _db.Blocks.Where(b => b.Timestamp > minTimestamp),
                         v => v.ValidatorId,
                         b => b.ValidatorId,
                         (v, b) => new {v.ValidatorId, b.BlockId})
@@ -114,19 +115,20 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
             return
                 _db.Validators
                     .Where(v => !v.IsDeleted)
-                    .Join(_db.Blocks.Where(b => b.Timestamp > minTimestamp),
+                    .Join(
+                        _db.Blocks.Where(b => b.Timestamp > minTimestamp),
                         v => v.ValidatorId,
                         b => b.ValidatorId,
                         (v, b) => new { v.ValidatorId, b.BlockId })
-                    .Join(_db.BlockchainEvents
-                        .Where(
+                    .Join(
+                        _db.BlockchainEvents.Where(
                             e => e.EventType == EventType.StakingReward.ToString()
                             && e.Block.Timestamp > minTimestamp
                             && e.Amount.HasValue
                             && e.Amount.Value > 0),
-                            vb => vb.BlockId,
-                            e => e.BlockId,
-                            (vb, e) => new { vb.ValidatorId, vb.BlockId, e.Amount.Value })
+                        vb => vb.BlockId,
+                        e => e.BlockId,
+                        (vb, e) => new { vb.ValidatorId, vb.BlockId, e.Amount.Value })
                     .GroupBy(s => s.ValidatorId)
                     .Select(g => new KeyValuePair<long, decimal>(g.Key, g.Sum(s => s.Value)))
                     .ToDictionary(g => g.Key, g => g.Value);
