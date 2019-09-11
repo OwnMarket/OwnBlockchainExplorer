@@ -8,5 +8,8 @@ namespace Own.BlockchainExplorer.Core.Interfaces
     {
         IEnumerable<Transaction> GetTxs(int limit, int page);
         IEnumerable<BlockInfoShortDto> GetBlocks(int limit, int page);
+        Dictionary<string, decimal> GetReceivedStakes();
+        Dictionary<string, decimal> GetValidatorRewards(long minTimestamp);
+        Dictionary<long, decimal> GetBlockStakingRewards(long minTimestamp);
     }
 }

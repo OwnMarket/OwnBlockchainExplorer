@@ -15,14 +15,17 @@ namespace Own.BlockchainExplorer.Domain.Services
 {
     public class StatService : DataService, IStatService
     {
+        private readonly IBlockchainInfoRepositoryFactory _blockchainInfoRepositoryFactory;
         private readonly IBlockchainClient _blockchainClient;
 
         public StatService(
             IUnitOfWorkFactory unitOfWorkFactory,
             IRepositoryFactory repositoryFactory,
+            IBlockchainInfoRepositoryFactory blockchainInfoRepositoryFactory,
             IBlockchainClient blockchainClient)
             : base(unitOfWorkFactory, repositoryFactory)
         {
+            _blockchainInfoRepositoryFactory = blockchainInfoRepositoryFactory;
             _blockchainClient = blockchainClient;
         }
 
@@ -59,45 +62,21 @@ namespace Own.BlockchainExplorer.Domain.Services
             using (var uow = NewUnitOfWork())
             {
                 var eventRepo = NewRepository<BlockchainEvent>(uow);
-                var receivedStakes = eventRepo
-                  .GetAs(
-                      e => e.EventType == EventType.Action.ToString()
-                      && e.TxAction.ActionType == ActionType.DelegateStake.ToString()
-                      && e.Fee == null
-                      && e.Transaction.Status == TxStatus.Success.ToString()
-                      && e.Amount.HasValue
-                      && e.Amount.Value > 0,
-                      e => new KeyValuePair<string, decimal>(e.Address.BlockchainAddress, e.Amount.Value))
-                  .GroupBy(s => s.Key)
-                  .ToDictionary(g => g.Key, g => g.Sum(s => s.Value));
+                var blockchainInfoRepo = _blockchainInfoRepositoryFactory.Create(uow);
 
-                var currentDate = DateTime.UtcNow.Date;
+                var currentDate = DateTimeOffset.UtcNow;
                 var minDate = currentDate.AddDays(-numberOfDays);
+                var minDateTimestamp = minDate.ToUnixTimeMilliseconds();
+
+                var receivedStakes = blockchainInfoRepo.GetReceivedStakes();
 
                 var blocksProposed = NewRepository<Block>(uow)
-                    .GetAs(b => GetDate(b.Timestamp) > minDate, b => new { b.ValidatorId, b.BlockId })
+                    .GetAs(b => b.Timestamp > minDateTimestamp, b => new { b.ValidatorId, b.BlockId })
                     .GroupBy(b => b.ValidatorId)
                     .ToDictionary(g => g.Key, g => g.Select(i => i.BlockId).Distinct().ToList());
 
-                var validatorRewards = eventRepo
-                    .GetAs(
-                        e => e.EventType == EventType.ValidatorReward.ToString()
-                        && GetDate(e.Block.Timestamp) > minDate
-                        && e.Amount.HasValue
-                        && e.Amount.Value > 0,
-                        e => new KeyValuePair<string, decimal>(e.Address.BlockchainAddress, e.Amount.Value))
-                    .GroupBy(s => s.Key)
-                    .ToDictionary(g => g.Key, g => g.Sum(s => s.Value));
-
-                var blockStakingRewards = eventRepo
-                    .GetAs(
-                        e => e.EventType == EventType.StakingReward.ToString()
-                        && GetDate(e.Block.Timestamp) > minDate
-                        && e.Amount.HasValue
-                        && e.Amount.Value > 0,
-                       e => new KeyValuePair<long, decimal>(e.BlockId, e.Amount.Value))
-                    .GroupBy(s => s.Key)
-                    .ToDictionary(g => g.Key, g => g.Sum(s => s.Value));
+                var validatorRewards = blockchainInfoRepo.GetValidatorRewards(minDateTimestamp);
+                var blockStakingRewards = blockchainInfoRepo.GetBlockStakingRewards(minDateTimestamp);
 
                 var stats = new List<ValidatorStatsDto>();
                 var validators = NewRepository<Validator>(uow).Get(v => !v.IsDeleted);

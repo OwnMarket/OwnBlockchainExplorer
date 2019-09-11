@@ -6,6 +6,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Own.BlockchainExplorer.Core.Interfaces;
 using Own.BlockchainExplorer.Core.Models;
+using Own.BlockchainExplorer.Core.Enums;
 
 namespace Own.BlockchainExplorer.Infrastructure.Data
 {
@@ -44,6 +45,53 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                 .AsNoTracking();
 
             return query.ToList();
+        }
+
+        public Dictionary<string, decimal> GetReceivedStakes()
+        {
+            return
+                _db.BlockchainEvents
+                    .Where(
+                        e => e.EventType == EventType.Action.ToString()
+                        && e.TxAction.ActionType == ActionType.DelegateStake.ToString()
+                        && e.Fee == null
+                        && e.Transaction.Status == TxStatus.Success.ToString()
+                        && e.Amount.HasValue
+                        && e.Amount.Value > 0)
+                    .Select(e => new { e.Address.BlockchainAddress, e.Amount.Value })
+                    .GroupBy(s => s.BlockchainAddress)
+                    .Select(g => new KeyValuePair<string, decimal>(g.Key, g.Sum(s => s.Value)))
+                    .ToDictionary(g => g.Key, g => g.Value);
+        }
+
+        public Dictionary<string, decimal> GetValidatorRewards(long minTimestamp)
+        {
+            return
+                _db.BlockchainEvents
+                    .Where(
+                        e => e.EventType == EventType.ValidatorReward.ToString()
+                        && e.Block.Timestamp > minTimestamp
+                        && e.Amount.HasValue
+                        && e.Amount.Value > 0)
+                    .Select(e => new { e.Address.BlockchainAddress, e.Amount.Value })
+                    .GroupBy(s => s.BlockchainAddress)
+                    .Select(g => new KeyValuePair<string, decimal>(g.Key, g.Sum(s => s.Value)))
+                    .ToDictionary(g => g.Key, g => g.Value);
+        }
+
+        public Dictionary<long, decimal> GetBlockStakingRewards(long minTimestamp)
+        {
+            return
+                _db.BlockchainEvents
+                    .Where(
+                        e => e.EventType == EventType.StakingReward.ToString()
+                        && e.Block.Timestamp > minTimestamp
+                        && e.Amount.HasValue
+                        && e.Amount.Value > 0)
+                    .Select(e => new { e.BlockId, e.Amount.Value })
+                    .GroupBy(s => s.BlockId)
+                    .Select(g => new KeyValuePair<long, decimal>(g.Key, g.Sum(s => s.Value)))
+                    .ToDictionary(g => g.Key, g => g.Value);
         }
     }
 }
