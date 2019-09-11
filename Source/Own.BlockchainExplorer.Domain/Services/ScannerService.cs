@@ -162,6 +162,8 @@ namespace Own.BlockchainExplorer.Domain.Services
         {
             using (var uow = NewUnitOfWork(UnitOfWorkMode.Writable))
             {
+                uow.BeginTransaction();
+
                 var validatorReward = 0M;
 
                 if (blockDto.Configuration != null)
@@ -216,7 +218,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 if (validatorRewardResult.Failed)
                     return Result.Failure(validatorRewardResult.Alerts);
 
-                uow.Commit();
+                uow.CommitTransaction();
 
                 return Result.Success();
             }
@@ -265,6 +267,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                     alerts.Add(Alert.Error($"{validatorAddress}:{ex.Message}"));
                 }
             }
+            uow.Commit();
 
             return Result.Success(alerts);
         }
@@ -289,6 +292,8 @@ namespace Own.BlockchainExplorer.Domain.Services
                 validator.IsActive = false;
                 validatorRepo.Update(validator);
             }
+
+            uow.Commit();
 
             return Result.Success();
         }

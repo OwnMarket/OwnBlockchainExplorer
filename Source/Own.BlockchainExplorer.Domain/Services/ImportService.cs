@@ -54,6 +54,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 addressRepo.Update(address);
             }
 
+            uow.Commit();
             return Result.Success(address);
         }
 
@@ -95,6 +96,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 .SingleOrDefault();
 
             blockRepo.Insert(block);
+            uow.Commit();
 
             return Result.Success(block);
         }
@@ -122,6 +124,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 };
 
             txRepo.Insert(tx);
+            uow.Commit();
 
             return Result.Success(tx);
         }
@@ -149,6 +152,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 };
 
             equivocationRepo.Insert(equivocation);
+            uow.Commit();
 
             return Result.Success(equivocation);
         }
@@ -180,6 +184,7 @@ namespace Own.BlockchainExplorer.Domain.Services
 
             addressRepo.Update(address);
             NewRepository<BlockchainEvent>(uow).Insert(blockchainEvent);
+            uow.Commit();
 
             return Result.Success(blockchainEvent);
         }
@@ -213,6 +218,7 @@ namespace Own.BlockchainExplorer.Domain.Services
 
             addressRepo.Update(address);
             NewRepository<BlockchainEvent>(uow).Insert(blockchainEvent);
+            uow.Commit();
 
             return Result.Success(blockchainEvent);
         }
@@ -255,6 +261,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             addressRepo.Update(address);
 
             NewRepository<BlockchainEvent>(uow).Insert(depositTakenEvent);
+            uow.Commit();
 
             return Result.Success(depositTakenEvent);
         }
@@ -295,6 +302,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             }
 
             eventRepo.Insert(events);
+            uow.Commit();
 
             return Result.Success(events.AsEnumerable());
         }
@@ -309,6 +317,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             };
 
             NewRepository<TxAction>(uow).Insert(action);
+            uow.Commit();
 
             return Result.Success(action);
         }
@@ -457,6 +466,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             NewRepository<BlockchainEvent>(uow).Insert(events);
             NewRepository<Address>(uow).Update(senderAddress);
 
+            uow.Commit();
             return Result.Success(events.AsEnumerable());
         }
     }
