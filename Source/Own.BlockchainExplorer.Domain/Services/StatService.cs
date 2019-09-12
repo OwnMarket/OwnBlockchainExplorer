@@ -89,6 +89,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                     {
                         BlockchainAddress = validator.BlockchainAddress,
                         NetworkAddress = validator.NetworkAddress,
+                        IsActive = validator.IsActive,
                         SharedRewardPercent = validator.SharedRewardPercent
                     };
 

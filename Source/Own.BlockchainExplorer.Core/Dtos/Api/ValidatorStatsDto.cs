@@ -4,6 +4,7 @@
     {
         public string BlockchainAddress { get; set; }
         public string NetworkAddress { get; set; }
+        public bool IsActive { get; set; }
         public decimal SharedRewardPercent { get; set; }
         public decimal TotalStake { get; set; }
         public decimal Deposit { get; set; }
