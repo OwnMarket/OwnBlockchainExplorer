@@ -123,19 +123,16 @@ namespace Own.BlockchainExplorer.Domain.Services
             {
                 var topAddresses = NewRepository<Address>(uow)
                     .GetLastAs(
-                        a => GetTotalBalance(a) > 0,
-                        a => GetTotalBalance(a),
-                        a => new KeyValuePair<string, decimal>(a.BlockchainAddress, GetTotalBalance(a)),
+                        a => a.AvailableBalance + a.DepositBalance + a.StakedBalance > 0,
+                        a => a.AvailableBalance + a.DepositBalance + a.StakedBalance,
+                        a => new KeyValuePair<string, decimal>(
+                            a.BlockchainAddress,
+                            a.AvailableBalance + a.DepositBalance + a.StakedBalance),
                         (page - 1) * limit,
                         limit);
 
                 return Result.Success(topAddresses);
             }
-        }
-
-        private decimal GetTotalBalance(Address a)
-        {
-            return a.AvailableBalance + a.DepositBalance + a.StakedBalance;
         }
 
         private DateTime GetDate(long timestamp)
