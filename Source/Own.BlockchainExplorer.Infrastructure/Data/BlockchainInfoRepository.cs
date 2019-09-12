@@ -88,7 +88,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                         && e.Fee == null
                         && e.Transaction.Status == TxStatus.Success.ToString()
                         && e.Amount.HasValue
-                        && e.Amount.Value > 0)
+                        && e.Amount.Value != 0)
                     .Select(e => new { e.Address.BlockchainAddress, e.Amount.Value })
                     .GroupBy(s => s.BlockchainAddress)
                     .Select(g => new KeyValuePair<string, decimal>(g.Key, g.Sum(s => s.Value)))
@@ -103,7 +103,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                         e => e.EventType == EventType.ValidatorReward.ToString()
                         && e.Block.Timestamp > minTimestamp
                         && e.Amount.HasValue
-                        && e.Amount.Value > 0)
+                        && e.Amount.Value != 0)
                     .Select(e => new { e.Address.BlockchainAddress, e.Amount.Value })
                     .GroupBy(s => s.BlockchainAddress)
                     .Select(g => new KeyValuePair<string, decimal>(g.Key, g.Sum(s => s.Value)))
@@ -125,7 +125,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                             e => e.EventType == EventType.StakingReward.ToString()
                             && e.Block.Timestamp > minTimestamp
                             && e.Amount.HasValue
-                            && e.Amount.Value > 0),
+                            && e.Amount.Value != 0),
                         vb => vb.BlockId,
                         e => e.BlockId,
                         (vb, e) => new { vb.ValidatorId, vb.BlockId, e.Amount.Value })
