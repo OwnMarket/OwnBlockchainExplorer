@@ -113,7 +113,13 @@ namespace Own.BlockchainExplorer.Domain.Services
 
                     stats.Add(validatorStatsDto);
                 }
-                return Result.Success(stats.AsEnumerable());
+
+                var orderedStats = stats
+                    .OrderByDescending(s => s.TotalStake)
+                    .ThenBy(s => s.BlockchainAddress)
+                    .AsEnumerable();
+
+                return Result.Success(orderedStats);
             }
         }
 
