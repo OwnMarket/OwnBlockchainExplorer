@@ -29,16 +29,6 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                 .ToList();
         }
 
-        public IEnumerable<KeyValuePair<long, int>> GetTxs(long minTimestamp)
-        {
-            return
-                _db.Transactions
-                .Where(t => t.Timestamp > minTimestamp)
-                .GroupBy(t => t.Timestamp)
-                .Select(g => new KeyValuePair<long, int>(g.Key, g.Count()))
-                .ToList();
-        }
-
         public IEnumerable<BlockInfoShortDto> GetBlocks(int limit, int page)
         {
             var query =

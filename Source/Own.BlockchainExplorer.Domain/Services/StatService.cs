@@ -33,17 +33,16 @@ namespace Own.BlockchainExplorer.Domain.Services
         {
             using (var uow = NewUnitOfWork())
             {
-                var blockchainInfoRepo = _blockchainInfoRepositoryFactory.Create(uow);
+                var currentDate = DateTime.UtcNow.Date;
+                var minDate = currentDate.AddDays(-1 * numberOfDays);
 
-                var currentDate = DateTimeOffset.UtcNow;
-                var minDate = currentDate.AddDays(-numberOfDays);
-                var minDateTimestamp = minDate.ToUnixTimeMilliseconds();
-
-                var result = blockchainInfoRepo.GetTxs(minDateTimestamp)
-                    .Select(p => new KeyValuePair<DateTime, int>(GetDate(p.Key), p.Value))
+                var result = NewRepository<Transaction>(uow)
+                    .Get(t => GetDate(t.Timestamp) > minDate)
+                    .GroupBy(t => GetDate(t.Timestamp))
+                    .Select(g => new KeyValuePair<DateTime, int>(g.Key, g.Count()))
                     .ToList();
 
-                var tempDate = minDate.AddDays(1).Date;
+                var tempDate = minDate.AddDays(1);
 
                 while (tempDate <= currentDate)
                 {
