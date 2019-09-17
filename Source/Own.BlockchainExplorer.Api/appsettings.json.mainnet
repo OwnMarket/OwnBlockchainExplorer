@@ -9,7 +9,6 @@
     "allowHeaders": "*",
     "exposeHeaders": "Access-Control-Allow-Origin"
   },
-  "geoCacheTime": 120,
   "swagger": {
     "xmlDocPath": "ADD ONLY IF XML DOC IS OUTSIDE THE RUNNING ASSEMBLY LOCATION"
   },
