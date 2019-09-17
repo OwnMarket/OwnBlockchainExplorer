@@ -7,6 +7,7 @@
     "apiUrl": "https://api.ipgeolocation.io/ipgeo",
     "apiKey": "<<IPGEO_API_KEY>>"
   },
+  "geoCacheTime": 120,
   "genesisAddress": "CHTESTz5BRZRtuZ9RUJjkVPUXTJ2PozBqG5",
   "genesisChxSupply": "168956522.0930844",
   "genesisValidators": "CHcyuwQW3ykAhoJ83xWvgVj8K8AKcRdutnT@val01.testnet.weown.com:25718,CHWebsoFuacyi8jQiNqR1wPsiyun7JL6k3e@val02.testnet.weown.com:25719,CHJpiZSFCKqbqoZQYU5wdDEHHsUCURWhrE7@val03.testnet.weown.com:25718,CHLiuMCrGG1nEX32m8uc99khZhwKiYoMUzV@val04.testnet.weown.com:25719",
