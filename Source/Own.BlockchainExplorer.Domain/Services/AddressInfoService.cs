@@ -110,5 +110,21 @@ namespace Own.BlockchainExplorer.Domain.Services
                 return Result.Success(AddressInfoDto.FromDomainModel(address));
             }
         }
+
+        public Result<decimal> GetTotalChxBalanceInfo(string blockchainAddress)
+        {
+            var addressInfoResult = GetAddressInfo(blockchainAddress);
+            return addressInfoResult.Failed
+                ? Result.Failure<decimal>(addressInfoResult.Alerts)
+                : Result.Success(addressInfoResult.Data.ChxBalanceInfo.TotalBalance);
+        }
+
+        public Result<decimal> GetAvailableChxBalanceInfo(string blockchainAddress)
+        {
+            var addressInfoResult = GetAddressInfo(blockchainAddress);
+            return addressInfoResult.Failed
+                ? Result.Failure<decimal>(addressInfoResult.Alerts)
+                : Result.Success(addressInfoResult.Data.ChxBalanceInfo.AvailableBalance);
+        }
     }
 }

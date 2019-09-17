@@ -42,7 +42,21 @@ namespace Own.BlockchainExplorer.Api.Controllers
         [Route("supply")]
         public async Task<IActionResult> GetChxSupplyAsync()
         {
-            return ApiResult(await _statService.GetChxSupply());
+            return await ApiResultAsync(_statService.GetChxSupply());
+        }
+
+        [HttpGet]
+        [Route("supply/total")]
+        public async Task<IActionResult> GetTotalChxSupplyAsync()
+        {
+            return await DataOrApiResultAsync(_statService.GetTotalChxSupply());
+        }
+
+        [HttpGet]
+        [Route("supply/circulating")]
+        public async Task<IActionResult> GetCirculatingChxSupplyAsync()
+        {
+            return await DataOrApiResultAsync(_statService.GetCirculatingChxSupply());
         }
     }
 }

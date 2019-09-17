@@ -21,6 +21,20 @@ namespace Own.BlockchainExplorer.Api.Controllers
         }
 
         [HttpGet]
+        [Route("address/{blockchainAddress}/balance/total")]
+        public IActionResult GetTotalChxBalanceInfo(string blockchainAddress)
+        {
+            return DataOrApiResult(_addressInfoService.GetTotalChxBalanceInfo(blockchainAddress));
+        }
+
+        [HttpGet]
+        [Route("address/{blockchainAddress}/balance/available")]
+        public IActionResult GetAvailableChxBalanceInfo(string blockchainAddress)
+        {
+            return DataOrApiResult(_addressInfoService.GetAvailableChxBalanceInfo(blockchainAddress));
+        }
+
+        [HttpGet]
         [Route("address/{blockchainAddress}/accounts")]
         public IActionResult GetAccountsInfo(
             string blockchainAddress,

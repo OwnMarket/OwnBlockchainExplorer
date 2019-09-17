@@ -164,5 +164,21 @@ namespace Own.BlockchainExplorer.Domain.Services
                 Circulating = Config.GenesisChxSupply.Value - genesisAmount
             });
         }
+
+        public async Task<Result<decimal>> GetTotalChxSupply()
+        {
+            var chxSupplyResult = await GetChxSupply();
+            return chxSupplyResult.Failed
+                ? Result.Failure<decimal>(chxSupplyResult.Alerts)
+                : Result.Success(chxSupplyResult.Data.Total);
+        }
+
+        public async Task<Result<decimal>> GetCirculatingChxSupply()
+        {
+            var chxSupplyResult = await GetChxSupply();
+            return chxSupplyResult.Failed
+                ? Result.Failure<decimal>(chxSupplyResult.Alerts)
+                : Result.Success(chxSupplyResult.Data.Circulating);
+        }
     }
 }

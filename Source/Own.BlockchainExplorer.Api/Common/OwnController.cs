@@ -30,12 +30,25 @@ namespace Own.BlockchainExplorer.Api.Common
 
             return Ok(result);
         }
+        /// <summary>
+        /// Returns the data if successful, ApiResult otherwise.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="result"></param>
+        /// <param name="mapFailure">Maps failure case into IActionResult. Uses BadRequest() by default.</param>
+        /// <returns></returns>
+        protected IActionResult DataOrApiResult<T>(Result<T> result, Func<Result<T>, IActionResult> mapFailure = null)
+        {
+            return result.Successful
+                ? Ok(result.Data)
+                : ApiResult(result);
+        }
 
         protected async Task<IActionResult> ApiResultAsync<T>(
             Task<Result<T>> taskResult,
             Func<Result<T>, IActionResult> mapFailure = null)
         {
-            return ApiResult<T>(await taskResult, mapFailure);
+            return ApiResult(await taskResult, mapFailure);
         }
 
         protected async Task<IActionResult> AsyncApiResult(
@@ -43,6 +56,16 @@ namespace Own.BlockchainExplorer.Api.Common
             Func<object, IActionResult> mapFailure = null)
         {
             return ApiResult(await taskResult, mapFailure);
+        }
+
+        protected async Task<IActionResult> DataOrApiResultAsync<T>(
+            Task<Result<T>> taskResult,
+            Func<Result<T>, IActionResult> mapFailure = null)
+        {
+            var result = await taskResult;
+            return result.Successful
+                ? Ok(result.Data)
+                : ApiResult(result, mapFailure);
         }
     }
 }

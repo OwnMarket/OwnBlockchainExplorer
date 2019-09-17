@@ -20,5 +20,7 @@ namespace Own.BlockchainExplorer.Core.Interfaces
         Result<IEnumerable<StakeDto>> GetReceivedStakesInfo(string blockchainAddress, int page, int limit);
         Result<EventsSummaryDto> GetEventsInfo(string blockchainAddress, string filter, int page, int limit);
         Result<AddressInfoDto> GetAddressInfo(string blockchainAddress);
+        Result<decimal> GetTotalChxBalanceInfo(string blockchainAddress);
+        Result<decimal> GetAvailableChxBalanceInfo(string blockchainAddress);
     }
 }
