@@ -17,17 +17,11 @@ namespace Own.BlockchainExplorer.Infrastructure.Geo
     public class GeoLocationService : IGeoLocationService
     {
         private readonly IMemoryCache _geoLocationCache;
-        private readonly MemoryCacheEntryOptions _cacheExpirationOptions;
         private HttpClient _httpClient;
 
         public GeoLocationService(IMemoryCache geoLocationCache)
         {
             _geoLocationCache = geoLocationCache;
-            _cacheExpirationOptions = new MemoryCacheEntryOptions
-            {
-                AbsoluteExpiration = DateTime.Now.AddMinutes(Config.GeoCacheTime),
-                Priority = CacheItemPriority.Normal
-            };
         }
 
         private HttpClient HttpClient
@@ -51,7 +45,12 @@ namespace Own.BlockchainExplorer.Infrastructure.Geo
             var url = $"{Config.IpGeoApi}?apiKey={Config.GeoApiKey}&ip={ipAddress}";
             var result = await HttpClient.GetAsync(url);
             var geoApiResult = await HandleIpGeoApiResponse<GeoLocationDto>(result);
-            _geoLocationCache.Set(ipAddress, geoApiResult.Data, _cacheExpirationOptions);
+            var cacheExpirationOptions = new MemoryCacheEntryOptions
+            {
+                AbsoluteExpiration = DateTime.Now.AddMinutes(Config.GeoCacheTime),
+                Priority = CacheItemPriority.Normal
+            };
+            _geoLocationCache.Set(ipAddress, geoApiResult.Data, cacheExpirationOptions);
 
             return geoApiResult;
         }
