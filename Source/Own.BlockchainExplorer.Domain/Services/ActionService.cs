@@ -685,12 +685,23 @@ namespace Own.BlockchainExplorer.Domain.Services
                     .Get(a => a.BlockchainAddress == actionData.KycControllerAddress)
                     .SingleOrDefault();
 
-            if (kycControllerAddress == null)
-                return Result.Failure("Address {0} does not exist.".F(actionData.KycControllerAddress));
+
+            var newAddress = kycControllerAddress is null;
+            if (newAddress)
+            {
+                kycControllerAddress = new Address
+                {
+                    BlockchainAddress = actionData.KycControllerAddress,
+                    Nonce = 0,
+                    AvailableBalance = 0,
+                    StakedBalance = 0,
+                    DepositBalance = 0
+                };
+            }
 
             events.Add(new BlockchainEvent()
             {
-                AddressId = kycControllerAddress.AddressId,
+                Address = kycControllerAddress,
                 TxActionId = firstEvent.TxActionId,
                 BlockId = firstEvent.BlockId,
                 Fee = 0,
