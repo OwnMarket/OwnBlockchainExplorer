@@ -407,16 +407,25 @@ namespace Own.BlockchainExplorer.Domain.Services
             firstEvent.AssetId = asset.AssetId;
             firstEvent.Amount = actionData.Amount * -1;
 
-            var toControllerAddressId = addressRepo
-                .GetAs(a => a.BlockchainAddress == toAccount.ControllerAddress, a => a.AddressId)
+            var toControllerAddress = addressRepo
+                .Get(a => a.BlockchainAddress == toAccount.ControllerAddress)
                 .SingleOrDefault();
 
-            if (toControllerAddressId == default(long))
-                return Result.Failure("Address {0} does not exist.".F(toAccount.ControllerAddress));
+            if (toControllerAddress is null)
+            {
+                toControllerAddress = new Address
+                {
+                    BlockchainAddress = toAccount.ControllerAddress,
+                    Nonce = 0,
+                    AvailableBalance = 0,
+                    StakedBalance = 0,
+                    DepositBalance = 0
+                };
+            }
 
             events.Add(new BlockchainEvent
             {
-                AddressId = toControllerAddressId,
+                Address = toControllerAddress,
                 TxActionId = firstEvent.TxActionId,
                 BlockId = firstEvent.BlockId,
                 Fee = 0,
@@ -741,12 +750,21 @@ namespace Own.BlockchainExplorer.Domain.Services
                     .Get(a => a.BlockchainAddress == actionData.ProviderAddress)
                     .SingleOrDefault();
 
-            if (providerAddress == null)
-                return Result.Failure("Address {0} does not exist.".F(actionData.ProviderAddress));
+            if (providerAddress is null)
+            {
+                providerAddress = new Address
+                {
+                    BlockchainAddress = actionData.ProviderAddress,
+                    Nonce = 0,
+                    AvailableBalance = 0,
+                    StakedBalance = 0,
+                    DepositBalance = 0
+                };
+            }
 
             events.Add(new BlockchainEvent()
             {
-                AddressId = providerAddress.AddressId,
+                Address = providerAddress,
                 TxActionId = firstEvent.TxActionId,
                 BlockId = firstEvent.BlockId,
                 Fee = 0,
@@ -780,12 +798,21 @@ namespace Own.BlockchainExplorer.Domain.Services
                 .Get(a => a.BlockchainAddress == actionData.ProviderAddress)
                 .SingleOrDefault();
 
-            if (providerAddress == null)
-                return Result.Failure("Address {0} does not exist.".F(actionData.ProviderAddress));
+            if (providerAddress is null)
+            {
+                providerAddress = new Address
+                {
+                    BlockchainAddress = actionData.ProviderAddress,
+                    Nonce = 0,
+                    AvailableBalance = 0,
+                    StakedBalance = 0,
+                    DepositBalance = 0
+                };
+            }
 
             events.Add(new BlockchainEvent()
             {
-                AddressId = providerAddress.AddressId,
+                Address = providerAddress,
                 TxActionId = firstEvent.TxActionId,
                 BlockId = firstEvent.BlockId,
                 Fee = 0,
