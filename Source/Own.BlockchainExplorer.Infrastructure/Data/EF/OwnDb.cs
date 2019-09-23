@@ -273,6 +273,9 @@ namespace Own.BlockchainExplorer.Infrastructure.Data.EF
             transaction.Property(e => e.Timestamp)
                 .HasColumnName("timestamp")
                 .IsRequired();
+            transaction.Property(e => e.DateTime)
+                .HasColumnName("date_time")
+                .IsRequired();
             transaction.Property(e => e.ExpirationTime)
                 .HasColumnName("expiration_time");
             transaction.Property(e => e.ActionFee)

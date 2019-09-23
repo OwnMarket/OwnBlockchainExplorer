@@ -1,6 +1,7 @@
 ﻿using Own.BlockchainExplorer.Core.Dtos.Api;
-using Own.BlockchainExplorer.Core.Models;
+using System;
 using System.Collections.Generic;
+using Own.BlockchainExplorer.Core.Models;
 
 namespace Own.BlockchainExplorer.Core.Interfaces
 {
@@ -8,6 +9,7 @@ namespace Own.BlockchainExplorer.Core.Interfaces
     {
         IEnumerable<Transaction> GetTxs(int limit, int page);
         IEnumerable<BlockInfoShortDto> GetBlocks(int limit, int page);
+        List<KeyValuePair<DateTime, int>> GetTxPerDay(int numberOfDays);
         Dictionary<long, int> GetValidatorProposedBlockCount(long minTimestamp);
         Dictionary<long, int> GetValidatorProposedTxCount(long minTimestamp);
         Dictionary<string, decimal> GetReceivedStakes();

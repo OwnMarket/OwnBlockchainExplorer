@@ -1,9 +1,9 @@
-﻿using Own.BlockchainExplorer.Core.Dtos.Api;
-using Own.BlockchainExplorer.Infrastructure.Data.EF;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Own.BlockchainExplorer.Core.Dtos.Api;
+using Own.BlockchainExplorer.Infrastructure.Data.EF;
 using Own.BlockchainExplorer.Core.Interfaces;
 using Own.BlockchainExplorer.Core.Models;
 using Own.BlockchainExplorer.Core.Enums;
@@ -45,6 +45,19 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                 .AsNoTracking();
 
             return query.ToList();
+        }
+
+        public List<KeyValuePair<DateTime, int>> GetTxPerDay(int numberOfDays)
+        {
+            var currentDate = DateTime.UtcNow.Date;
+            var minDate = currentDate.AddDays(-1 * numberOfDays);
+
+            return
+                _db.Transactions
+                .Where(t => t.DateTime.Date > minDate)
+                .GroupBy(t => t.DateTime.Date)
+                .Select(g => new KeyValuePair<DateTime, int>(g.Key, g.Count()))
+                .ToList();
         }
 
         public Dictionary<long, int> GetValidatorProposedBlockCount(long minTimestamp)

@@ -6,8 +6,6 @@ using Own.BlockchainExplorer.Core.Interfaces;
 using Own.BlockchainExplorer.Core.Models;
 using Own.BlockchainExplorer.Domain.Common;
 using Own.BlockchainExplorer.Core.Dtos.Api;
-using Own.BlockchainExplorer.Core.Enums;
-using Own.BlockchainExplorer.Common.Extensions;
 using Own.BlockchainExplorer.Core;
 using System.Threading.Tasks;
 
@@ -36,11 +34,8 @@ namespace Own.BlockchainExplorer.Domain.Services
                 var currentDate = DateTime.UtcNow.Date;
                 var minDate = currentDate.AddDays(-1 * numberOfDays);
 
-                var result = NewRepository<Transaction>(uow)
-                    .Get(t => GetDate(t.Timestamp) > minDate)
-                    .GroupBy(t => GetDate(t.Timestamp))
-                    .Select(g => new KeyValuePair<DateTime, int>(g.Key, g.Count()))
-                    .ToList();
+                var result = _blockchainInfoRepositoryFactory.Create(uow)
+                    .GetTxPerDay(numberOfDays);
 
                 var tempDate = minDate.AddDays(1);
 
@@ -139,11 +134,6 @@ namespace Own.BlockchainExplorer.Domain.Services
 
                 return Result.Success(topAddresses);
             }
-        }
-
-        private DateTime GetDate(long timestamp)
-        {
-            return new DateTime(1970, 1, 1, 0, 0, 0, 0).AddMilliseconds(timestamp).Date;
         }
 
         public async Task<Result<ChxSupplyDto>> GetChxSupply()

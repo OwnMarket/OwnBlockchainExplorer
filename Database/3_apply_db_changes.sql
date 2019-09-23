@@ -11,3 +11,4 @@
 \ir 'Changes/0009 Add unique key constraints on transaction and block tables.sql'
 \ir 'Changes/0010 Add index controller_address on account table.sql'
 \ir 'Changes/0011 Change type of consensus_step in equivocation table.sql'
+\ir 'Changes/0012 Add date_time column to tx table.sql'

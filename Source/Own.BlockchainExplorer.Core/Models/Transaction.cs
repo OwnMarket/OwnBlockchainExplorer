@@ -12,6 +12,7 @@ namespace Own.BlockchainExplorer.Core.Models
         public string Hash { get; set; }
         public long Nonce { get; set; }
         public long Timestamp { get; set; }
+        public DateTime DateTime { get; set; }
         public DateTime? ExpirationTime { get; set; }
         public decimal ActionFee { get; set; }
         public string Status { get; set; }
