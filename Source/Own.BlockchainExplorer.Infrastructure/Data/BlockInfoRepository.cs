@@ -20,7 +20,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
         public IEnumerable<EquivocationInfoShortDto> GetEquivocationsInfo(long blockNumber, int page, int limit)
         {
             return
-                _db.BlockchainEvents.AsQueryable()
+                _db.BlockchainEvents
                 .Where(e => e.Block.BlockNumber == blockNumber && e.EventType == EventType.DepositTaken.ToString())
                 .Include(e => e.Equivocation)
                 .Include(e => e.Address)
@@ -42,11 +42,12 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
         public IEnumerable<TxInfoShortDto> GetTransactionsInfo(long blockNumber, int page, int limit)
         {
             return
-                _db.BlockchainEvents.AsQueryable()
+                _db.BlockchainEvents
                 .Where(e => e.Block.BlockNumber == blockNumber && e.EventType == EventType.Action.ToString())
                 .Include(e => e.Transaction)
                 .Include(e => e.Address)
                 .GroupBy(e => e.Transaction)
+                .OrderBy(g => g.Key.TransactionId)
                 .Select(g => new TxInfoShortDto
                 {
                     Hash = g.Key.Hash,
