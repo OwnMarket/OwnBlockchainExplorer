@@ -56,7 +56,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             }
         }
 
-        public Result<IEnumerable<StakeDto>> GetDelegatedStakesInfo(
+        public Result<StakeSummaryDto> GetDelegatedStakesInfo(
             string blockchainAddress,
             int page,
             int limit)
@@ -71,7 +71,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             }
         }
 
-        public Result<IEnumerable<StakeDto>> GetReceivedStakesInfo(string blockchainAddress, int page, int limit)
+        public Result<StakeSummaryDto> GetReceivedStakesInfo(string blockchainAddress, int page, int limit)
         {
             using (var uow = NewUnitOfWork())
             {

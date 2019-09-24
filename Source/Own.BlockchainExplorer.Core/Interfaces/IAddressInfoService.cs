@@ -16,8 +16,8 @@ namespace Own.BlockchainExplorer.Core.Interfaces
             int page,
             int limit,
             bool? isActive);
-        Result<IEnumerable<StakeDto>> GetDelegatedStakesInfo(string blockchainAddress, int page, int limit);
-        Result<IEnumerable<StakeDto>> GetReceivedStakesInfo(string blockchainAddress, int page, int limit);
+        Result<StakeSummaryDto> GetDelegatedStakesInfo(string blockchainAddress, int page, int limit);
+        Result<StakeSummaryDto> GetReceivedStakesInfo(string blockchainAddress, int page, int limit);
         Result<EventsSummaryDto> GetEventsInfo(string blockchainAddress, string filter, int page, int limit);
         Result<AddressInfoDto> GetAddressInfo(string blockchainAddress);
         Result<decimal> GetTotalChxBalanceInfo(string blockchainAddress);

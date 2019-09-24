@@ -78,7 +78,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                 .ToList();
         }
 
-        public IEnumerable<StakeDto> GetDelegatedStakesInfo(string blockchainAddress, int page, int limit)
+        public StakeSummaryDto GetDelegatedStakesInfo(string blockchainAddress, int page, int limit)
         {
             var delegateStakeIds =
                 _db.BlockchainEvents.AsQueryable()
@@ -92,9 +92,9 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                 .ToList();
 
             if (!delegateStakeIds.Any())
-                return Enumerable.Empty<StakeDto>();
+                return new StakeSummaryDto();
 
-            return
+            var stakes =
                 _db.BlockchainEvents.AsQueryable()
                 .Where(e => delegateStakeIds.Contains(e.TxActionId) && e.Fee == null)
                 .Include(e => e.Address)
@@ -112,9 +112,15 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                 .Skip((page - 1) * limit)
                 .Take(limit)
                 .ToList();
+
+            return new StakeSummaryDto
+            {
+                Stakes = stakes,
+                TotalAmount = stakes.Sum(s => s.Amount)
+            };
         }
 
-        public IEnumerable<StakeDto> GetReceivedStakesInfo(string blockchainAddress, int page, int limit)
+        public StakeSummaryDto GetReceivedStakesInfo(string blockchainAddress, int page, int limit)
         {
             var receivedStakeIds =
                 _db.BlockchainEvents.AsQueryable()
@@ -128,9 +134,9 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                 .ToList();
 
             if (!receivedStakeIds.Any())
-                return Enumerable.Empty<StakeDto>();
+                return new StakeSummaryDto();
 
-            return
+            var stakes =
                 _db.BlockchainEvents.AsQueryable()
                 .Where(e => receivedStakeIds.Contains(e.TxActionId) && e.Fee != null)
                 .Include(e => e.Address)
@@ -148,6 +154,12 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                 .Skip((page - 1) * limit)
                 .Take(limit)
                 .ToList();
+
+            return new StakeSummaryDto
+            {
+                Stakes = stakes,
+                TotalAmount = stakes.Sum(s => s.Amount)
+            };
         }
 
         public EventsSummaryDto GetEventsInfo(string blockchainAddress, string filter, int page, int limit)
