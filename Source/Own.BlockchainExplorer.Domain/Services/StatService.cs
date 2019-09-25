@@ -1,29 +1,32 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Own.BlockchainExplorer.Common.Framework;
 using Own.BlockchainExplorer.Core.Interfaces;
 using Own.BlockchainExplorer.Core.Models;
 using Own.BlockchainExplorer.Domain.Common;
 using Own.BlockchainExplorer.Core.Dtos.Api;
 using Own.BlockchainExplorer.Core;
-using System.Threading.Tasks;
 
 namespace Own.BlockchainExplorer.Domain.Services
 {
     public class StatService : DataService, IStatService
     {
         private readonly IBlockchainInfoRepositoryFactory _blockchainInfoRepositoryFactory;
+        private readonly IBlockInfoService _blockInfoService;
         private readonly IBlockchainClient _blockchainClient;
 
         public StatService(
             IUnitOfWorkFactory unitOfWorkFactory,
             IRepositoryFactory repositoryFactory,
             IBlockchainInfoRepositoryFactory blockchainInfoRepositoryFactory,
+            IBlockInfoService blockInfoService,
             IBlockchainClient blockchainClient)
             : base(unitOfWorkFactory, repositoryFactory)
         {
             _blockchainInfoRepositoryFactory = blockchainInfoRepositoryFactory;
+            _blockInfoService = blockInfoService;
             _blockchainClient = blockchainClient;
         }
 
@@ -52,16 +55,28 @@ namespace Own.BlockchainExplorer.Domain.Services
             }
         }
 
-        public Result<IEnumerable<ValidatorStatsDto>> GetValidatorStats(int numberOfDays)
+        public Result<IEnumerable<ValidatorStatsDto>> GetValidatorStats(int? numberOfDays)
         {
             using (var uow = NewUnitOfWork())
             {
                 var eventRepo = NewRepository<BlockchainEvent>(uow);
                 var blockchainInfoRepo = _blockchainInfoRepositoryFactory.Create(uow);
 
-                var currentDate = DateTimeOffset.UtcNow;
-                var minDate = currentDate.AddDays(-numberOfDays);
-                var minDateTimestamp = minDate.ToUnixTimeMilliseconds();
+                long minDateTimestamp;
+                if (numberOfDays.HasValue)
+                {
+                    var currentDate = DateTimeOffset.UtcNow;
+                    var minDate = currentDate.AddDays(-numberOfDays.Value);
+                    minDateTimestamp = minDate.ToUnixTimeMilliseconds();
+                }
+                else
+                {
+                    var configBlockResult = _blockInfoService.GetLastConfigBlock();
+                    if (configBlockResult.Failed)
+                        return Result.Success(Enumerable.Empty<ValidatorStatsDto>());
+
+                    minDateTimestamp = ((DateTimeOffset)configBlockResult.Data.Timestamp).ToUnixTimeMilliseconds();
+                }
 
                 var receivedStakes = blockchainInfoRepo.GetReceivedStakes();
                 var validatorRewards = blockchainInfoRepo.GetValidatorRewards(minDateTimestamp);

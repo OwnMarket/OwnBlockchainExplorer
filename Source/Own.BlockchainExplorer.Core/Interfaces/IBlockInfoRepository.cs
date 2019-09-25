@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Own.BlockchainExplorer.Common.Framework;
 using Own.BlockchainExplorer.Core.Dtos.Api;
 
 namespace Own.BlockchainExplorer.Core.Interfaces

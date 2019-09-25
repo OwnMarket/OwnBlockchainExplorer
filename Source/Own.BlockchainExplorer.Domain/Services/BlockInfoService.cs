@@ -1,12 +1,12 @@
-﻿using Own.BlockchainExplorer.Common.Extensions;
+﻿using System.Linq;
+using System.Collections.Generic;
+using Own.BlockchainExplorer.Common.Extensions;
 using Own.BlockchainExplorer.Common.Framework;
 using Own.BlockchainExplorer.Core.Dtos.Api;
 using Own.BlockchainExplorer.Core.Enums;
 using Own.BlockchainExplorer.Core.Interfaces;
 using Own.BlockchainExplorer.Core.Models;
 using Own.BlockchainExplorer.Domain.Common;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Own.BlockchainExplorer.Domain.Services
 {
@@ -21,6 +21,44 @@ namespace Own.BlockchainExplorer.Domain.Services
             : base(unitOfWorkFactory, repositoryFactory)
         {
             _blockInfoRepositoryFactory = blockInfoRepositoryFactory;
+        }
+
+        public Result<BlockInfoDto> GetBlockInfo(long blockNumber)
+        {
+            using (var uow = NewUnitOfWork())
+            {
+                var block = NewRepository<Block>(uow)
+                    .Get(b => b.BlockNumber == blockNumber, b => b.Validator, b => b.PreviousBlock)
+                    .SingleOrDefault();
+
+                if (block is null)
+                    return Result.Failure<BlockInfoDto>("Block {0} does not exist.".F(blockNumber));
+
+                return Result.Success(BlockInfoDto.FromDomainModel(block));
+            }
+        }
+
+        public Result<BlockInfoDto> GetLastConfigBlock()
+        {
+            using (var uow = NewUnitOfWork())
+            {
+                var blockRepo = NewRepository<Block>(uow);
+                var block = blockRepo
+                    .GetLastAs(b => true, b => b, 1)
+                    .SingleOrDefault();
+
+                if (block is null)
+                    return Result.Failure<BlockInfoDto>("No block found");
+
+                var configurationBlock = blockRepo
+                    .Get(b => b.BlockNumber == block.ConfigurationBlockNumber, b => b.Validator, b => b.PreviousBlock)
+                    .SingleOrDefault();
+
+                if (configurationBlock is null)
+                    return Result.Failure<BlockInfoDto>("ConfigurationBlock {0} does not exist.".F(configurationBlock.BlockNumber));
+
+                return Result.Success(BlockInfoDto.FromDomainModel(configurationBlock));
+            }
         }
 
         public Result<IEnumerable<EquivocationInfoShortDto>> GetEquivocationsInfo(
@@ -62,21 +100,6 @@ namespace Own.BlockchainExplorer.Domain.Services
                          (page - 1) * limit,
                          limit);
                 return Result.Success(stakingRewardInfo);
-            }
-        }
-
-        public Result<BlockInfoDto> GetBlockInfo(long blockNumber)
-        {
-            using (var uow = NewUnitOfWork())
-            {
-                var block = NewRepository<Block>(uow)
-                    .Get(b => b.BlockNumber == blockNumber, b => b.Validator, b => b.PreviousBlock)
-                    .SingleOrDefault();
-
-                if (block is null)
-                    return Result.Failure<BlockInfoDto>("Block {0} does not exist.".F(blockNumber));
-
-                return Result.Success(BlockInfoDto.FromDomainModel(block));
             }
         }
     }

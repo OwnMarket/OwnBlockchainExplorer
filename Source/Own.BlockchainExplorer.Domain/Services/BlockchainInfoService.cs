@@ -1,11 +1,11 @@
-using System.Linq;
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using Own.BlockchainExplorer.Common.Framework;
 using Own.BlockchainExplorer.Core.Dtos.Api;
 using Own.BlockchainExplorer.Core.Interfaces;
 using Own.BlockchainExplorer.Core.Models;
 using Own.BlockchainExplorer.Domain.Common;
-using System.Collections.Generic;
 using Own.BlockchainExplorer.Common.Extensions;
 using Own.BlockchainExplorer.Core.Enums;
 

@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Own.BlockchainExplorer.Api.Common;
 using Own.BlockchainExplorer.Core.Interfaces;
-using System.Threading.Tasks;
 
 namespace Own.BlockchainExplorer.Api.Controllers
 {
@@ -24,7 +24,7 @@ namespace Own.BlockchainExplorer.Api.Controllers
 
         [HttpGet]
         [Route("validators")]
-        public IActionResult GetValidatorStats([FromQuery] int numberOfDays = 7)
+        public IActionResult GetValidatorStats([FromQuery] int? numberOfDays = null)
         {
             return ApiResult(_statService.GetValidatorStats(numberOfDays), r => NotFound(r));
         }
