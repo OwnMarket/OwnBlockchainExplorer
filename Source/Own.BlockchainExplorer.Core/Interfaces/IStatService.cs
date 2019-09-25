@@ -10,7 +10,7 @@ namespace Own.BlockchainExplorer.Core.Interfaces
     {
         Result<IEnumerable<KeyValuePair<DateTime, int>>> GetTxPerDay(int numberOfDays);
         Result<IEnumerable<ValidatorStatsDto>> GetValidatorStats(int numberOfDays);
-        Result<IEnumerable<KeyValuePair<string, decimal>>> GetTopAddresses(int page, int limit);
+        Result<AddressSummaryDto> GetTopAddresses(int page, int limit);
         Task<Result<ChxSupplyDto>> GetChxSupply();
         Task<Result<decimal>> GetTotalChxSupply();
         Task<Result<decimal>> GetCirculatingChxSupply();

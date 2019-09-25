@@ -118,21 +118,33 @@ namespace Own.BlockchainExplorer.Domain.Services
             }
         }
 
-        public Result<IEnumerable<KeyValuePair<string, decimal>>> GetTopAddresses(int page, int limit)
+        public Result<AddressSummaryDto> GetTopAddresses(int page, int limit)
         {
             using (var uow = NewUnitOfWork())
             {
-                var topAddresses = NewRepository<Address>(uow)
+                var addressRepo = NewRepository<Address>(uow);
+
+                var addressesWithHolding =
+                    addressRepo.GetCount(a => a.AvailableBalance + a.DepositBalance + a.StakedBalance > 0);
+
+                var topAddresses = addressRepo
                     .GetLastAs(
                         a => a.AvailableBalance + a.DepositBalance + a.StakedBalance > 0,
                         a => a.AvailableBalance + a.DepositBalance + a.StakedBalance,
-                        a => new KeyValuePair<string, decimal>(
-                            a.BlockchainAddress,
-                            a.AvailableBalance + a.DepositBalance + a.StakedBalance),
+                        a => new AddressInfoSlimDto
+                        {
+                            BlockchainAddress = a.BlockchainAddress,
+                            TotalBalance = a.AvailableBalance + a.DepositBalance + a.StakedBalance
+                        },
                         (page - 1) * limit,
-                        limit);
+                        limit)
+                   .ToList();
 
-                return Result.Success(topAddresses);
+                return Result.Success(new AddressSummaryDto
+                {
+                    Addresses = topAddresses,
+                    AddressCount = addressesWithHolding
+                });
             }
         }
 
