@@ -355,25 +355,25 @@ namespace Own.BlockchainExplorer.Domain.Services
                         result = _actionService.TransferChx(
                             ref events,
                             actionDataObj.ToObject<TransferChxData>(),
-                            uow,
-                            senderAddress);
+                            senderAddress,
+                            uow);
                         break;
                     case ActionType.DelegateStake:
                         result = _actionService.DelegateStake(
                             ref events,
                             actionDataObj.ToObject<DelegateStakeData>(),
-                            uow,
-                            senderAddress);
+                            senderAddress,
+                            uow);
                         break;
                     case ActionType.ConfigureValidator:
                         result = _actionService.ConfigureValidator(
                             events,
                             actionDataObj.ToObject<ConfigureValidatorData>(),
-                            uow,
-                            senderAddress);
+                            senderAddress,
+                            uow);
                         break;
                     case ActionType.RemoveValidator:
-                        result = _actionService.RemoveValidator(ref events, uow, senderAddress);
+                        result = _actionService.RemoveValidator(ref events, senderAddress, uow);
                         break;
                     case ActionType.SetAssetCode:
                         result = _actionService.SetAssetCode(
@@ -385,15 +385,15 @@ namespace Own.BlockchainExplorer.Domain.Services
                         result = _actionService.SetAssetController(
                             ref events,
                             actionDataObj.ToObject<SetAssetControllerData>(),
-                            uow,
-                            senderAddress);
+                            senderAddress,
+                            uow);
                         break;
                     case ActionType.SetAccountController:
                         result = _actionService.SetAccountController(
                             ref events,
                             actionDataObj.ToObject<SetAccountControllerData>(),
-                            uow,
-                            senderAddress);
+                            senderAddress,
+                            uow);
                         break;
                     case ActionType.TransferAsset:
                         result = _actionService.TransferAsset(
@@ -408,10 +408,10 @@ namespace Own.BlockchainExplorer.Domain.Services
                             uow);
                         break;
                     case ActionType.CreateAsset:
-                        result = _actionService.CreateAsset(events, uow, senderAddress, action);
+                        result = _actionService.CreateAsset(events, senderAddress, action, uow);
                         break;
                     case ActionType.CreateAccount:
-                        result = _actionService.CreateAccount(events, uow, senderAddress, action);
+                        result = _actionService.CreateAccount(events, senderAddress, action, uow);
                         break;
                     case ActionType.SubmitVote:
                         result = _actionService.SubmitVote(events, actionDataObj.ToObject<SubmitVoteData>(), uow);
@@ -438,22 +438,22 @@ namespace Own.BlockchainExplorer.Domain.Services
                         result = _actionService.ChangeKycControllerAddress(
                             ref events,
                             actionDataObj.ToObject<ChangeKycControllerAddressData>(),
-                            uow,
-                            senderAddress);
+                            senderAddress,
+                            uow);
                         break;
                     case ActionType.AddKycProvider:
                         result = _actionService.AddKycProvider(
                             ref events,
                             actionDataObj.ToObject<AddKycProviderData>(),
-                            uow,
-                            senderAddress);
+                            senderAddress,
+                            uow);
                         break;
                     case ActionType.RemoveKycProvider:
                         result = _actionService.RemoveKycProvider(
                             ref events,
                             actionDataObj.ToObject<RemoveKycProviderData>(),
-                            uow,
-                            senderAddress);
+                            senderAddress,
+                            uow);
                         break;
                     default:
                         result = Result.Failure("Unsupported action type.");

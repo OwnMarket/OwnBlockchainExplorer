@@ -10,36 +10,36 @@ namespace Own.BlockchainExplorer.Core.Interfaces
         Result TransferChx(
               ref List<BlockchainEvent> events,
               TransferChxData actionData,
-              IUnitOfWork uow,
-              Address senderAddress);
+              Address senderAddress,
+              IUnitOfWork uow);
 
         Result DelegateStake(
             ref List<BlockchainEvent> events,
             DelegateStakeData actionData,
-            IUnitOfWork uow,
-            Address senderAddress);
+            Address senderAddress,
+            IUnitOfWork uow);
 
         Result ConfigureValidator(
             List<BlockchainEvent> events,
             ConfigureValidatorData actionData,
-            IUnitOfWork uow,
-            Address senderAddress);
+            Address senderAddress,
+            IUnitOfWork uow);
 
-        Result RemoveValidator(ref List<BlockchainEvent> events, IUnitOfWork uow, Address senderAddress);
+        Result RemoveValidator(ref List<BlockchainEvent> events, Address senderAddress, IUnitOfWork uow);
 
         Result SetAssetCode(List<BlockchainEvent> events, SetAssetCodeData actionData, IUnitOfWork uow);
 
         Result SetAssetController(
             ref List<BlockchainEvent> events,
             SetAssetControllerData actionData,
-            IUnitOfWork uow,
-            Address senderAddress);
+            Address senderAddress,
+            IUnitOfWork uow);
 
         Result SetAccountController(
             ref List<BlockchainEvent> events,
             SetAccountControllerData actionData,
-            IUnitOfWork uow,
-            Address senderAddress);
+            Address senderAddress,
+            IUnitOfWork uow);
 
         Result TransferAsset(
             ref List<BlockchainEvent> events,
@@ -51,9 +51,17 @@ namespace Own.BlockchainExplorer.Core.Interfaces
             CreateAssetEmissionData actionData,
             IUnitOfWork uow);
 
-        Result CreateAsset(List<BlockchainEvent> events, IUnitOfWork uow, Address senderAddress, TxAction action);
+        Result CreateAsset(
+            List<BlockchainEvent> events,
+            Address senderAddress,
+            TxAction action,
+            IUnitOfWork uow);
 
-        Result CreateAccount(List<BlockchainEvent> events, IUnitOfWork uow, Address senderAddress, TxAction action);
+        Result CreateAccount(
+            List<BlockchainEvent> events,
+            Address senderAddress,
+            TxAction action,
+            IUnitOfWork uow);
 
         Result SubmitVote(
             List<BlockchainEvent> events,
@@ -78,19 +86,19 @@ namespace Own.BlockchainExplorer.Core.Interfaces
         Result ChangeKycControllerAddress(
             ref List<BlockchainEvent> events,
             ChangeKycControllerAddressData actionData,
-            IUnitOfWork uow,
-            Address senderAddress);
+            Address senderAddress,
+            IUnitOfWork uow);
 
         Result AddKycProvider(
             ref List<BlockchainEvent> events,
             AddKycProviderData actionData,
-            IUnitOfWork uow,
-            Address senderAddress);
+            Address senderAddress,
+            IUnitOfWork uow);
 
         Result RemoveKycProvider(
             ref List<BlockchainEvent> events,
             RemoveKycProviderData actionData,
-            IUnitOfWork uow,
-            Address senderAddress);
+            Address senderAddress,
+            IUnitOfWork uow);
     }
 }
