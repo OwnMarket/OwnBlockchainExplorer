@@ -353,14 +353,14 @@ namespace Own.BlockchainExplorer.Domain.Services
                 {
                     case ActionType.TransferChx:
                         result = _actionService.TransferChx(
-                            events,
+                            ref events,
                             actionDataObj.ToObject<TransferChxData>(),
                             uow,
                             senderAddress);
                         break;
                     case ActionType.DelegateStake:
                         result = _actionService.DelegateStake(
-                            events,
+                            ref events,
                             actionDataObj.ToObject<DelegateStakeData>(),
                             uow,
                             senderAddress);
@@ -373,7 +373,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                             senderAddress);
                         break;
                     case ActionType.RemoveValidator:
-                        result = _actionService.RemoveValidator(events, uow, senderAddress);
+                        result = _actionService.RemoveValidator(ref events, uow, senderAddress);
                         break;
                     case ActionType.SetAssetCode:
                         result = _actionService.SetAssetCode(
@@ -383,21 +383,21 @@ namespace Own.BlockchainExplorer.Domain.Services
                         break;
                     case ActionType.SetAssetController:
                         result = _actionService.SetAssetController(
-                            events,
+                            ref events,
                             actionDataObj.ToObject<SetAssetControllerData>(),
                             uow,
                             senderAddress);
                         break;
                     case ActionType.SetAccountController:
                         result = _actionService.SetAccountController(
-                            events,
+                            ref events,
                             actionDataObj.ToObject<SetAccountControllerData>(),
                             uow,
                             senderAddress);
                         break;
                     case ActionType.TransferAsset:
                         result = _actionService.TransferAsset(
-                            events,
+                            ref events,
                             actionDataObj.ToObject<TransferAssetData>(),
                             uow);
                         break;
@@ -436,21 +436,21 @@ namespace Own.BlockchainExplorer.Domain.Services
                         break;
                     case ActionType.ChangeKycControllerAddress:
                         result = _actionService.ChangeKycControllerAddress(
-                            events,
+                            ref events,
                             actionDataObj.ToObject<ChangeKycControllerAddressData>(),
                             uow,
                             senderAddress);
                         break;
                     case ActionType.AddKycProvider:
                         result = _actionService.AddKycProvider(
-                            events,
+                            ref events,
                             actionDataObj.ToObject<AddKycProviderData>(),
                             uow,
                             senderAddress);
                         break;
                     case ActionType.RemoveKycProvider:
                         result = _actionService.RemoveKycProvider(
-                            events,
+                            ref events,
                             actionDataObj.ToObject<RemoveKycProviderData>(),
                             uow,
                             senderAddress);

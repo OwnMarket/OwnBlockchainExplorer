@@ -8,13 +8,13 @@ namespace Own.BlockchainExplorer.Core.Interfaces
     public interface IActionService
     {
         Result TransferChx(
-              List<BlockchainEvent> events,
+              ref List<BlockchainEvent> events,
               TransferChxData actionData,
               IUnitOfWork uow,
               Address senderAddress);
 
         Result DelegateStake(
-            List<BlockchainEvent> events,
+            ref List<BlockchainEvent> events,
             DelegateStakeData actionData,
             IUnitOfWork uow,
             Address senderAddress);
@@ -25,23 +25,26 @@ namespace Own.BlockchainExplorer.Core.Interfaces
             IUnitOfWork uow,
             Address senderAddress);
 
-        Result RemoveValidator(List<BlockchainEvent> events, IUnitOfWork uow, Address senderAddress);
+        Result RemoveValidator(ref List<BlockchainEvent> events, IUnitOfWork uow, Address senderAddress);
 
         Result SetAssetCode(List<BlockchainEvent> events, SetAssetCodeData actionData, IUnitOfWork uow);
 
         Result SetAssetController(
-            List<BlockchainEvent> events,
+            ref List<BlockchainEvent> events,
             SetAssetControllerData actionData,
             IUnitOfWork uow,
             Address senderAddress);
 
         Result SetAccountController(
-            List<BlockchainEvent> events,
+            ref List<BlockchainEvent> events,
             SetAccountControllerData actionData,
             IUnitOfWork uow,
             Address senderAddress);
 
-        Result TransferAsset(List<BlockchainEvent> events, TransferAssetData actionData, IUnitOfWork uow);
+        Result TransferAsset(
+            ref List<BlockchainEvent> events,
+            TransferAssetData actionData,
+            IUnitOfWork uow);
 
         Result CreateAssetEmission(
             List<BlockchainEvent> events,
@@ -73,19 +76,19 @@ namespace Own.BlockchainExplorer.Core.Interfaces
             IUnitOfWork uow);
 
         Result ChangeKycControllerAddress(
-            List<BlockchainEvent> events,
+            ref List<BlockchainEvent> events,
             ChangeKycControllerAddressData actionData,
             IUnitOfWork uow,
             Address senderAddress);
 
         Result AddKycProvider(
-            List<BlockchainEvent> events,
+            ref List<BlockchainEvent> events,
             AddKycProviderData actionData,
             IUnitOfWork uow,
             Address senderAddress);
 
         Result RemoveKycProvider(
-            List<BlockchainEvent> events,
+            ref List<BlockchainEvent> events,
             RemoveKycProviderData actionData,
             IUnitOfWork uow,
             Address senderAddress);

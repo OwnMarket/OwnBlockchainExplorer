@@ -23,7 +23,7 @@ namespace Own.BlockchainExplorer.Domain.Services
         }
 
         public Result TransferChx(
-            List<BlockchainEvent> events,
+            ref List<BlockchainEvent> events,
             TransferChxData actionData,
             IUnitOfWork uow,
             Address senderAddress)
@@ -78,7 +78,7 @@ namespace Own.BlockchainExplorer.Domain.Services
         }
 
         public Result DelegateStake(
-            List<BlockchainEvent> events,
+            ref List<BlockchainEvent> events,
             DelegateStakeData actionData,
             IUnitOfWork uow,
             Address senderAddress)
@@ -167,7 +167,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             return Result.Success();
         }
 
-        public Result RemoveValidator(List<BlockchainEvent> events, IUnitOfWork uow, Address senderAddress)
+        public Result RemoveValidator(ref List<BlockchainEvent> events, IUnitOfWork uow, Address senderAddress)
         {
             var validatorRepo = NewRepository<Validator>(uow);
             var eventRepo = NewRepository<BlockchainEvent>(uow);
@@ -239,7 +239,7 @@ namespace Own.BlockchainExplorer.Domain.Services
         }
 
         public Result SetAssetController(
-            List<BlockchainEvent> events,
+            ref List<BlockchainEvent> events,
             SetAssetControllerData actionData,
             IUnitOfWork uow,
             Address senderAddress)
@@ -296,7 +296,7 @@ namespace Own.BlockchainExplorer.Domain.Services
         }
 
         public Result SetAccountController(
-            List<BlockchainEvent> events,
+            ref List<BlockchainEvent> events,
             SetAccountControllerData actionData,
             IUnitOfWork uow,
             Address senderAddress)
@@ -350,7 +350,10 @@ namespace Own.BlockchainExplorer.Domain.Services
             return Result.Success();
         }
 
-        public Result TransferAsset(List<BlockchainEvent> events, TransferAssetData actionData, IUnitOfWork uow)
+        public Result TransferAsset(
+            ref List<BlockchainEvent> events,
+            TransferAssetData actionData,
+            IUnitOfWork uow)
         {
             var addressRepo = NewRepository<Address>(uow);
             var accountRepo = NewRepository<Account>(uow);
@@ -648,7 +651,7 @@ namespace Own.BlockchainExplorer.Domain.Services
         }
 
         public Result ChangeKycControllerAddress(
-            List<BlockchainEvent> events,
+            ref List<BlockchainEvent> events,
             ChangeKycControllerAddressData actionData,
             IUnitOfWork uow,
             Address senderAddress)
@@ -730,7 +733,7 @@ namespace Own.BlockchainExplorer.Domain.Services
         }
 
         public Result AddKycProvider(
-            List<BlockchainEvent> events,
+            ref List<BlockchainEvent> events,
             AddKycProviderData actionData,
             IUnitOfWork uow,
             Address senderAddress)
@@ -778,7 +781,7 @@ namespace Own.BlockchainExplorer.Domain.Services
         }
 
         public Result RemoveKycProvider(
-            List<BlockchainEvent> events,
+            ref List<BlockchainEvent> events,
             RemoveKycProviderData actionData,
             IUnitOfWork uow,
             Address senderAddress)
