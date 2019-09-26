@@ -1,7 +1,8 @@
-﻿using Own.BlockchainExplorer.Common.Extensions;
+﻿using System;
 using Serilog;
+using Serilog.Core;
 using Serilog.Events;
-using System;
+using Own.BlockchainExplorer.Common.Extensions;
 
 namespace Own.BlockchainExplorer.Common
 {
@@ -9,9 +10,20 @@ namespace Own.BlockchainExplorer.Common
     {
         private static ILogger _log;
 
+        class ConsoleLog : ILogEventSink
+        {
+            public void Emit(LogEvent logEvent)
+            {
+                Console.WriteLine($"{DateTimeOffset.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff")} {logEvent.Level} | {logEvent.MessageTemplate.Render(logEvent.Properties)}");
+            }
+        }
+
         public static void Initialize(string fileName)
         {
-            _log = new LoggerConfiguration().WriteTo.Console().CreateLogger();
+            _log = new LoggerConfiguration()
+                .WriteTo.File(fileName)
+                .WriteTo.Sink(new ConsoleLog())
+                .CreateLogger();
         }
 
         public static void Debug(string format, params object[] args)
