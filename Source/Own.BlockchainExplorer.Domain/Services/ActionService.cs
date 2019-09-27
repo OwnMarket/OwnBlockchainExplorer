@@ -651,7 +651,7 @@ namespace Own.BlockchainExplorer.Domain.Services
         }
 
         public Result ChangeKycControllerAddress(
-            ref List<BlockchainEvent> events,
+            List<BlockchainEvent> events,
             ChangeKycControllerAddressData actionData,
             Address senderAddress,
             IUnitOfWork uow)
@@ -709,20 +709,9 @@ namespace Own.BlockchainExplorer.Domain.Services
                     StakedBalance = 0,
                     DepositBalance = 0
                 };
-            }
 
-            events.Add(new BlockchainEvent()
-            {
-                Address = kycControllerAddress,
-                TxActionId = firstEvent.TxActionId,
-                BlockId = firstEvent.BlockId,
-                Fee = 0,
-                Amount = 0,
-                TransactionId = firstEvent.TransactionId,
-                EventType = EventType.Action.ToString(),
-                AccountId = account.AccountId,
-                AssetId = asset.AssetId
-            });
+                NewRepository<Address>(uow).Insert(kycControllerAddress);
+            }
 
             if (isNewHolding)
                 holdingRepo.Insert(holding);
@@ -733,7 +722,7 @@ namespace Own.BlockchainExplorer.Domain.Services
         }
 
         public Result AddKycProvider(
-            ref List<BlockchainEvent> events,
+            List<BlockchainEvent> events,
             AddKycProviderData actionData,
             Address senderAddress,
             IUnitOfWork uow)
@@ -763,25 +752,15 @@ namespace Own.BlockchainExplorer.Domain.Services
                     StakedBalance = 0,
                     DepositBalance = 0
                 };
-            }
 
-            events.Add(new BlockchainEvent()
-            {
-                Address = providerAddress,
-                TxActionId = firstEvent.TxActionId,
-                BlockId = firstEvent.BlockId,
-                Fee = 0,
-                Amount = 0,
-                TransactionId = firstEvent.TransactionId,
-                EventType = EventType.Action.ToString(),
-                AssetId = asset.AssetId
-            });
+                NewRepository<Address>(uow).Insert(providerAddress);
+            }
 
             return Result.Success();
         }
 
         public Result RemoveKycProvider(
-            ref List<BlockchainEvent> events,
+            List<BlockchainEvent> events,
             RemoveKycProviderData actionData,
             Address senderAddress,
             IUnitOfWork uow)
@@ -798,8 +777,8 @@ namespace Own.BlockchainExplorer.Domain.Services
             var providerAddress = sameAddress
                 ? senderAddress
                 : NewRepository<Address>(uow)
-                .Get(a => a.BlockchainAddress == actionData.ProviderAddress)
-                .SingleOrDefault();
+                    .Get(a => a.BlockchainAddress == actionData.ProviderAddress)
+                    .SingleOrDefault();
 
             if (providerAddress is null)
             {
@@ -811,19 +790,9 @@ namespace Own.BlockchainExplorer.Domain.Services
                     StakedBalance = 0,
                     DepositBalance = 0
                 };
-            }
 
-            events.Add(new BlockchainEvent()
-            {
-                Address = providerAddress,
-                TxActionId = firstEvent.TxActionId,
-                BlockId = firstEvent.BlockId,
-                Fee = 0,
-                Amount = 0,
-                TransactionId = firstEvent.TransactionId,
-                EventType = EventType.Action.ToString(),
-                AssetId = asset.AssetId
-            });
+                NewRepository<Address>(uow).Insert(providerAddress);
+            }
 
             return Result.Success();
         }

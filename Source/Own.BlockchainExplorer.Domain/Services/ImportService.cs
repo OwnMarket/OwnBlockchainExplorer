@@ -436,21 +436,21 @@ namespace Own.BlockchainExplorer.Domain.Services
                         break;
                     case ActionType.ChangeKycControllerAddress:
                         result = _actionService.ChangeKycControllerAddress(
-                            ref events,
+                            events,
                             actionDataObj.ToObject<ChangeKycControllerAddressData>(),
                             senderAddress,
                             uow);
                         break;
                     case ActionType.AddKycProvider:
                         result = _actionService.AddKycProvider(
-                            ref events,
+                            events,
                             actionDataObj.ToObject<AddKycProviderData>(),
                             senderAddress,
                             uow);
                         break;
                     case ActionType.RemoveKycProvider:
                         result = _actionService.RemoveKycProvider(
-                            ref events,
+                            events,
                             actionDataObj.ToObject<RemoveKycProviderData>(),
                             senderAddress,
                             uow);

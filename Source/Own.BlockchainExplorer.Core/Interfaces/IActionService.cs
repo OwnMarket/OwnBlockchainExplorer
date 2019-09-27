@@ -84,19 +84,19 @@ namespace Own.BlockchainExplorer.Core.Interfaces
             IUnitOfWork uow);
 
         Result ChangeKycControllerAddress(
-            ref List<BlockchainEvent> events,
+            List<BlockchainEvent> events,
             ChangeKycControllerAddressData actionData,
             Address senderAddress,
             IUnitOfWork uow);
 
         Result AddKycProvider(
-            ref List<BlockchainEvent> events,
+            List<BlockchainEvent> events,
             AddKycProviderData actionData,
             Address senderAddress,
             IUnitOfWork uow);
 
         Result RemoveKycProvider(
-            ref List<BlockchainEvent> events,
+            List<BlockchainEvent> events,
             RemoveKycProviderData actionData,
             Address senderAddress,
             IUnitOfWork uow);
