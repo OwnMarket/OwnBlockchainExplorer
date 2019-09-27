@@ -44,7 +44,13 @@ namespace Own.BlockchainExplorer.Domain.Services
                 if (!events.Any()) return Result.Failure<EquivocationInfoDto>(
                     "Equivocation {0} does not exist.".F(equivocationProofHash));
 
-                var eqDto = EquivocationInfoDto.FromDomainModel(events.First().Equivocation);
+                var equivocation = events.First().Equivocation;
+                var eqDto = EquivocationInfoDto.FromDomainModel(equivocation);
+
+                var blockNumber = NewRepository<Block>(uow)
+                    .GetAs(b => b.BlockId == equivocation.BlockId, b => b.BlockNumber)
+                    .SingleOrDefault();
+                eqDto.IncludedInBlockNumber = blockNumber;
 
                 var depositTakenEvent = events.Single(e => e.EventType == EventType.DepositTaken.ToString());
                 eqDto.TakenDeposit = new DepositDto
