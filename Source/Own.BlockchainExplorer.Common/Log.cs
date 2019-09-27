@@ -9,7 +9,7 @@ namespace Own.BlockchainExplorer.Common
     public static class Log
     {
         private static ILogger _log;
-
+        private static ConsoleColor defaultColor = Console.ForegroundColor;
         class ConsoleLog : ILogEventSink
         {
             public void Emit(LogEvent logEvent)
@@ -32,28 +32,38 @@ namespace Own.BlockchainExplorer.Common
         public static void Debug(string format, params object[] args)
         {
 #if DEBUG
+            Console.ForegroundColor = ConsoleColor.DarkGray;
             _log.Write(LogEventLevel.Debug, format, args);
+            Console.ForegroundColor = defaultColor;
 #endif
         }
 
         public static void Info(string format, params object[] args)
         {
+            Console.ForegroundColor = ConsoleColor.White;
             _log.Write(LogEventLevel.Information, format, args);
+            Console.ForegroundColor = defaultColor;
         }
 
         public static void Warning(string format, params object[] args)
         {
+            Console.ForegroundColor = ConsoleColor.Yellow;
             _log.Write(LogEventLevel.Warning, format, args);
+            Console.ForegroundColor = defaultColor;
         }
 
         public static void Error(string format, params object[] args)
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             _log.Write(LogEventLevel.Error, format, args);
+            Console.ForegroundColor = defaultColor;
         }
 
         public static void Error(Exception ex)
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             _log.Write(LogEventLevel.Error, ex.LogFormat(), "");
+            Console.ForegroundColor = defaultColor;
         }
     }
 }
