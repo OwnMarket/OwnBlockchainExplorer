@@ -92,7 +92,11 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                 .ToList();
 
             if (!delegateStakeIds.Any())
-                return new StakeSummaryDto();
+                return new StakeSummaryDto
+                {
+                    Stakes = new List<StakeDto>(),
+                    TotalAmount = 0
+                };
 
             var stakes =
                 _db.BlockchainEvents.AsQueryable()
@@ -134,7 +138,11 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                 .ToList();
 
             if (!receivedStakeIds.Any())
-                return new StakeSummaryDto();
+                return new StakeSummaryDto
+                {
+                    Stakes = new List<StakeDto>(),
+                    TotalAmount = 0
+                };
 
             var stakes =
                 _db.BlockchainEvents.AsQueryable()
