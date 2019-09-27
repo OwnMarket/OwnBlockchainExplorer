@@ -263,7 +263,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex);
+                    Log.Error($"[{validatorAddress}]: {ex.LogFormat()}");
                     alerts.Add(Alert.Error($"{validatorAddress}:{ex.Message}"));
                 }
             }
