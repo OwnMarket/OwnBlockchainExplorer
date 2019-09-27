@@ -14,7 +14,10 @@ namespace Own.BlockchainExplorer.Common
         {
             public void Emit(LogEvent logEvent)
             {
-                Console.WriteLine($"{DateTimeOffset.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff")} {logEvent.Level} | {logEvent.MessageTemplate.Render(logEvent.Properties)}");
+                Console.WriteLine($"" +
+                    $"{DateTimeOffset.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff")} " +
+                    $"{logEvent.Level.ToString().Substring(0, 3).ToUpper()} | " +
+                    $"{logEvent.MessageTemplate.Render(logEvent.Properties)}");
             }
         }
 
