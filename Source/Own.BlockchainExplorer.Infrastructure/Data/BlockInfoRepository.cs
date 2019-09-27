@@ -31,7 +31,6 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                     {
                         BlockchainAddress = e.Address.BlockchainAddress,
                         Amount = -e.Amount.Value,
-                        EquivocationProofHash = e.Equivocation.EquivocationProofHash
                     }
                 })
                 .Skip((page - 1) * limit)

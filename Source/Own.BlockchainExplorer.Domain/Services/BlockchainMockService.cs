@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Own.BlockchainExplorer.Domain.Services
 {
-    public class BlockchainMockService 
+    public class BlockchainMockService
     {
         public Result<AddressInfoDto> GetAddressInfo(string blockchainAddress)
         {
@@ -43,7 +43,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 StakingRewardsRoot = "Ey9qZK4J4G2PK68ZFzyteP8dcUWCjcBiMZ46D7nH11pY",
                 ConfigurationRoot = "8J9eC9A3jzmwCxg8VhjT84xAts8tVVm6RwzLKBhMd3D8",
                 ConsensusRound = 0,
-                Signatures = "GBfbNB8xQUaLoZDFDGtpAH3EYks2uFdaBErPJKAzR37DBkKDL4HEFNRYLPapbQuZ5JgDzUSXgU7iGJqy4sSJx4775;64y6JNqpeDqS927rgbCKbdqysAkeEfLC4KS5pAeDpuPL2SR1gsqFFMr5YmrcrPhk75dXeihWovUqctYPrDHjCejiP;664ZaikasKTrtp9BMnoJgEtFuVAgdEq56D9FJKvF1jsq7pFAEXmJu7Nt4FmWjfT8ncXQTCxhakUGgFiDHPjnE4xLG"           
+                Signatures = "GBfbNB8xQUaLoZDFDGtpAH3EYks2uFdaBErPJKAzR37DBkKDL4HEFNRYLPapbQuZ5JgDzUSXgU7iGJqy4sSJx4775;64y6JNqpeDqS927rgbCKbdqysAkeEfLC4KS5pAeDpuPL2SR1gsqFFMr5YmrcrPhk75dXeihWovUqctYPrDHjCejiP;664ZaikasKTrtp9BMnoJgEtFuVAgdEq56D9FJKvF1jsq7pFAEXmJu7Nt4FmWjfT8ncXQTCxhakUGgFiDHPjnE4xLG"
             });
         }
 
@@ -76,7 +76,6 @@ namespace Own.BlockchainExplorer.Domain.Services
                 {
                     Amount = 5000,
                     BlockchainAddress = "CHT72YWjChhv5xYeDono6Nn4Z5Qe5Q7aRyq",
-                    EquivocationProofHash = "BTXVBwuTXWTpPtJC71FPGaeC17NVhu9mS6JavqZqHbYH"
                 },
                 GivenDeposits = new List<DepositDto>()
                 {
@@ -84,34 +83,29 @@ namespace Own.BlockchainExplorer.Domain.Services
                     {
                         Amount = 1000,
                         BlockchainAddress = "CHc1zbyXodtHMEsixH7ZQEajY2Fun3ab5jy",
-                        EquivocationProofHash = "BTXVBwuTXWTpPtJC71FPGaeC17NVhu9mS6JavqZqHbYH"
                     },
                     new DepositDto()
                     {
                         Amount = 1000,
                         BlockchainAddress = "CHVkbiNDYsZJTcUUtRDEucceRrZ8kbXgFCJ",
-                        EquivocationProofHash = "BTXVBwuTXWTpPtJC71FPGaeC17NVhu9mS6JavqZqHbYH"
                     },
                     new DepositDto()
                     {
                         Amount = 1000,
                         BlockchainAddress = "CHZHzBNVMQweCiqYVueEYpmeJMax8382HFr",
-                        EquivocationProofHash = "BTXVBwuTXWTpPtJC71FPGaeC17NVhu9mS6JavqZqHbYH"
                     },
                     new DepositDto()
                     {
                         Amount = 1000,
                         BlockchainAddress = "CHLwBmcHjN23HCNmLMag3sosxeW13h3cko6",
-                        EquivocationProofHash = "BTXVBwuTXWTpPtJC71FPGaeC17NVhu9mS6JavqZqHbYH"
                     },
                     new DepositDto()
                     {
                         Amount = 1000,
                         BlockchainAddress = "CHNugxKAxMaPbKpx5yraBNoLh63icwqVa5Y",
-                        EquivocationProofHash = "BTXVBwuTXWTpPtJC71FPGaeC17NVhu9mS6JavqZqHbYH"
                     }
                 },
-                IncludedInBlockNumber = 125     
+                IncludedInBlockNumber = 125
             });
         }
 
@@ -129,7 +123,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                     new ControllerAddressDto()
                     {
                         BlockchainAddress = "CHMf4inrS8hnPNEgJVZPRHFhsDPCHSHZfAJ"
-                    }  
+                    }
                 },
                 Holdings = new List<HoldingDto>()
                 {

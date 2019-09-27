@@ -4,6 +4,5 @@
     {
         public string BlockchainAddress { get; set; }
         public decimal Amount { get; set; }
-        public string EquivocationProofHash { get; set; }
     }
 }
