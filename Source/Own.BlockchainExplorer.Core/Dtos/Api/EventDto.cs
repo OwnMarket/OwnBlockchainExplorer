@@ -1,14 +1,14 @@
-﻿using Own.BlockchainExplorer.Core.Enums;
-using Own.BlockchainExplorer.Core.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using Own.BlockchainExplorer.Core.Enums;
+using Own.BlockchainExplorer.Core.Models;
 
 namespace Own.BlockchainExplorer.Core.Dtos.Api
 {
     public class EventDto
     {
         public long? BlockNumber { get; set; }
+        public DateTime? BlockTime { get; set; }
         public string TransactionHash { get; set; }
         public string EquivocationHash { get; set; }
         public string EventDetails { get; set; }
@@ -17,9 +17,13 @@ namespace Own.BlockchainExplorer.Core.Dtos.Api
 
         public static EventDto FromDomainModel(BlockchainEvent model)
         {
+            var blockTimestamp = model.Block?.Timestamp;
             return new EventDto
             {
                 BlockNumber = model.Block?.BlockNumber,
+                BlockTime = blockTimestamp.HasValue
+                    ? (DateTime?)new DateTime(1970, 1, 1, 0, 0, 0, 0).AddMilliseconds(blockTimestamp.Value)
+                    : null,
                 TransactionHash = model.Transaction?.Hash,
                 EquivocationHash = model.Equivocation?.EquivocationProofHash,
                 EventDetails = model.EventType +
