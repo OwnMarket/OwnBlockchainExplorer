@@ -1,6 +1,7 @@
-﻿using Own.BlockchainExplorer.Core.Models;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using Newtonsoft.Json;
+using Own.BlockchainExplorer.Common.Extensions;
+using Own.BlockchainExplorer.Core.Models;
 
 namespace Own.BlockchainExplorer.Core.Dtos.Api
 {
@@ -20,7 +21,7 @@ namespace Own.BlockchainExplorer.Core.Dtos.Api
         public string StateRoot { get; set; }
         public string StakingRewardsRoot { get; set; }
         public string ConfigurationRoot { get; set; }
-        public string Configuration { get; set; }
+        public BlockConfigurationDto Configuration { get; set; }
         public int? ConsensusRound { get; set; }
         public string Signatures { get; set; }
 
@@ -42,10 +43,17 @@ namespace Own.BlockchainExplorer.Core.Dtos.Api
                 StateRoot = block.StateRoot,
                 StakingRewardsRoot = block.StakingRewardsRoot,
                 ConfigurationRoot = block.ConfigurationRoot,
-                Configuration = block.Configuration,
+                Configuration = GetBlockConfiguration(block.Configuration),
                 ConsensusRound = block.ConsensusRound,
                 Signatures = block.Signatures
             };
+        }
+
+        private static BlockConfigurationDto GetBlockConfiguration(string configuration)
+        {
+            if (!configuration.IsNullOrEmpty())
+                return JsonConvert.DeserializeObject<BlockConfigurationDto>(configuration);
+            return null;
         }
     }
 
