@@ -202,7 +202,8 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
             Expression<Func<T, ICollection<TInclude1>>> includeProperty1,
             Expression<Func<TInclude1, TInclude2>> includeProperty2)
         {
-            return this.GetDeepQuery<TInclude1, TInclude2>(whereCondition, includeProperty1, includeProperty2);
+            return this.GetDeepQuery(whereCondition, includeProperty1, includeProperty2)
+                .ToList();
         }
 
         public IEnumerable<T> GetDeep<TInclude1, TInclude2, TInclude3>(
