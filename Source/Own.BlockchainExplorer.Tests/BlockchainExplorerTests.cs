@@ -13,10 +13,10 @@ namespace Own.BlockchainExplorer.Tests
         [Fact]
         public async Task CompareAddressBalances()
         {
-            IAddressInfoService addressInfoService = Instantiate<IAddressInfoService>();
-            IBlockchainClient blockchainClient = Instantiate<IBlockchainClient>();
+            var addressInfoService = Instantiate<IAddressInfoService>();
+            var blockchainClient = Instantiate<IBlockchainClient>();
 
-            IEnumerable<string> addresses = new List<string>();
+            IEnumerable<string> addresses;
 
             using (var uow = NewUnitOfWork())
             {
@@ -52,10 +52,10 @@ namespace Own.BlockchainExplorer.Tests
         [Fact]
         public async Task CompareAccountHoldings()
         {
-            IBlockchainInfoService blockchainInfoService = Instantiate<IBlockchainInfoService>();
-            IBlockchainClient blockchainClient = Instantiate<IBlockchainClient>();
+            var blockchainInfoService = Instantiate<IBlockchainInfoService>();
+            var blockchainClient = Instantiate<IBlockchainClient>();
 
-            IEnumerable<string> accounts = new List<string>();
+            IEnumerable<string> accounts;
 
             using (var uow = NewUnitOfWork())
             {

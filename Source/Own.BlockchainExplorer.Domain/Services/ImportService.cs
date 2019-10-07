@@ -331,7 +331,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             JObject actionDataObj,
             IUnitOfWork uow)
         {
-            List<BlockchainEvent> events = new List<BlockchainEvent>
+            var events = new List<BlockchainEvent>
             {
                 new BlockchainEvent
                 {
@@ -348,7 +348,7 @@ namespace Own.BlockchainExplorer.Domain.Services
 
             if (tx.Status == TxStatus.Success.ToString())
             {
-                Result result = Result.Success();
+                var result = Result.Success();
                 switch (action.ActionType.ToEnum<ActionType>())
                 {
                     case ActionType.TransferChx:

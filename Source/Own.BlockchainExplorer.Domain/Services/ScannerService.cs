@@ -274,7 +274,7 @@ namespace Own.BlockchainExplorer.Domain.Services
 
         private Result ProcessConfiguration(ConfigurationDto configurationDto, IUnitOfWork uow)
         {
-            List<string> newAddressHashes = new List<string>();
+            var newAddressHashes = new List<string>();
             var validatorRepo = NewRepository<Validator>(uow);
 
             var validatorAddresses = configurationDto.Validators.Select(v => v.ValidatorAddress);
