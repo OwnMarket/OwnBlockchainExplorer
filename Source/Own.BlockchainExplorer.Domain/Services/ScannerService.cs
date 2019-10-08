@@ -132,10 +132,22 @@ namespace Own.BlockchainExplorer.Domain.Services
                         : -1;
                 }
 
-                BlockDto newBlock;
-                do
+                var getBlocksTasks = new List<Task<BlockDto>>();
+                for (var blockNr = lastBlockNumber + 1; blockNr < lastBlockNumber + Config.ScanBatchSize; blockNr ++)
                 {
-                    newBlock = await GetBlock(lastBlockNumber + 1);
+                    getBlocksTasks.Add(GetBlock(blockNr));
+                }
+
+                Task.WaitAll(getBlocksTasks.ToArray());
+
+                var newBlocks = getBlocksTasks
+                    .Where(t => t.IsCompletedSuccessfully)
+                    .Select(t => t.Result)
+                    .Where(b => !(b is null))
+                    .OrderBy(b => b.Number);
+
+                foreach(var newBlock in newBlocks)
+                {
                     if (newBlock is null)
                         return Result.Success();
 
@@ -147,8 +159,6 @@ namespace Own.BlockchainExplorer.Domain.Services
                     lastBlockNumber = newBlock.Number;
                     Log.Info($"Importing block {newBlock.Number} finished.");
                 }
-                while (newBlock != null);
-
                 return Result.Success();
             }
             catch (Exception e)

@@ -28,6 +28,8 @@ namespace Own.BlockchainExplorer.Core
         public static string IpGeoApi => _provider.GetString("geo:apiUrl");
         public static string GeoApiKey => _provider.GetString("geo:apiKey");
         public static int GeoCacheTime => _provider.GetInteger("geoCacheTime").Value; // Minutes
+       
+        public static int ScanBatchSize => _provider.GetInteger("scanBatchSize").Value;
 
         // API
         public static string[] ApiUrls => _provider.GetString("server.urls")?.Split(',', ';');
