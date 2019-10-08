@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
 using Own.BlockchainExplorer.Core.Dtos.Api;
 using Own.BlockchainExplorer.Infrastructure.Data.EF;
 using Own.BlockchainExplorer.Core.Interfaces;
@@ -84,9 +83,9 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                         _db.BlockchainEvents.Where(ev => ev.TransactionId.HasValue),
                         vb => vb.BlockId,
                         e => e.BlockId,
-                        (vb, e) => new { vb.ValidatorId, vb.BlockId, BlockchainEvent = e})
+                        (vb, e) => new { vb.ValidatorId, vb.BlockId, e.TransactionId})
                     .GroupBy(s => s.ValidatorId)
-                    .Select(g => new KeyValuePair<long, int>(g.Key, g.Select(s => s.BlockchainEvent).Count()))
+                    .Select(g => new KeyValuePair<long, int>(g.Key, g.Select(s => s.TransactionId).Distinct().Count()))
                     .ToDictionary(g => g.Key, g => g.Value);
         }
 
