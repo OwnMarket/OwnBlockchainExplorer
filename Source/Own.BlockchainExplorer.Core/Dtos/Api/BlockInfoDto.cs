@@ -34,7 +34,7 @@ namespace Own.BlockchainExplorer.Core.Dtos.Api
                 PreviousBlockHash = block.PreviousBlockHash,
                 PreviousBlockNumber = block.PreviousBlock?.BlockNumber,
                 ConfigurationBlockNumber = block.ConfigurationBlockNumber,
-                Timestamp = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddMilliseconds(block.Timestamp),
+                Timestamp = DateTimeOffset.FromUnixTimeMilliseconds(block.Timestamp).DateTime,
                 ValidatorAddress = block.Validator.BlockchainAddress,
                 TxSetRoot = block.TxSetRoot,
                 TxResultSetRoot = block.TxResultSetRoot,

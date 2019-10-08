@@ -40,9 +40,8 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                     {
                         Hash = b.Hash,
                         BlockNumber = b.BlockNumber,
-                        Timestamp = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddMilliseconds(b.Timestamp)
-                    })
-                .AsNoTracking();
+                        Timestamp = DateTimeOffset.FromUnixTimeMilliseconds(b.Timestamp).DateTime
+                    });
 
             return query.ToList();
         }
