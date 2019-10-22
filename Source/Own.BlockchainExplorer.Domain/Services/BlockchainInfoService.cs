@@ -170,7 +170,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 return Result.Success(txs.Select(tx => new TxInfoShortDto
                 {
                     Hash = tx.Hash,
-                    Timestamp = DateTimeOffset.FromUnixTimeMilliseconds(tx.Timestamp).DateTime,
+                    Timestamp = DateTimeOffset.FromUnixTimeMilliseconds(tx.Timestamp).UtcDateTime,
                     Status = tx.Status,
                     NumberOfActions = events
                         .Where(e => e.TransactionId == tx.TransactionId).GroupBy(e => e.TxActionId).Count(),

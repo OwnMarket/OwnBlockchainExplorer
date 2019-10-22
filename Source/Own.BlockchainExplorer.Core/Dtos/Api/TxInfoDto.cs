@@ -23,7 +23,7 @@ namespace Own.BlockchainExplorer.Core.Dtos.Api
             {
                 Hash = tx.Hash,
                 Nonce = tx.Nonce,
-                Timestamp = DateTimeOffset.FromUnixTimeMilliseconds(tx.Timestamp).DateTime,
+                Timestamp = DateTimeOffset.FromUnixTimeMilliseconds(tx.Timestamp).UtcDateTime,
                 ExpirationTime = tx.ExpirationTime,
                 ActionFee = tx.ActionFee,
                 Status = tx.Status,

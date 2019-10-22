@@ -22,7 +22,7 @@ namespace Own.BlockchainExplorer.Core.Dtos.Api
             {
                 BlockNumber = model.Block?.BlockNumber,
                 BlockTime = blockTimestamp.HasValue
-                    ? (DateTime?)DateTimeOffset.FromUnixTimeMilliseconds(blockTimestamp.Value).DateTime
+                    ? (DateTime?)DateTimeOffset.FromUnixTimeMilliseconds(blockTimestamp.Value).UtcDateTime
                     : null,
                 TransactionHash = model.Transaction?.Hash,
                 EquivocationHash = model.Equivocation?.EquivocationProofHash,

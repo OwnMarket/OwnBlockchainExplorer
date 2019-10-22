@@ -114,9 +114,9 @@ namespace Own.BlockchainExplorer.Domain.Services
                     Hash = txDto.TxHash,
                     Nonce = txDto.Nonce,
                     Timestamp = timestamp,
-                    DateTime = DateTimeOffset.FromUnixTimeMilliseconds(timestamp).DateTime,
+                    DateTime = DateTimeOffset.FromUnixTimeMilliseconds(timestamp).UtcDateTime,
                     ExpirationTime = txDto.ExpirationTime != 0
-                        ? (DateTime?)DateTimeOffset.FromUnixTimeMilliseconds(txDto.ExpirationTime).DateTime
+                        ? (DateTime?)DateTimeOffset.FromUnixTimeMilliseconds(txDto.ExpirationTime).UtcDateTime
                         : null,
                     ActionFee = txDto.ActionFee,
                     Status = txDto.Status,

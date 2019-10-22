@@ -39,7 +39,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                     {
                         Hash = b.Hash,
                         BlockNumber = b.BlockNumber,
-                        Timestamp = DateTimeOffset.FromUnixTimeMilliseconds(b.Timestamp).DateTime
+                        Timestamp = DateTimeOffset.FromUnixTimeMilliseconds(b.Timestamp).UtcDateTime
                     });
 
             return query.ToList();
