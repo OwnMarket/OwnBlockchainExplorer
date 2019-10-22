@@ -133,7 +133,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 }
 
                 var getBlocksTasks = new List<Task<BlockDto>>();
-                for (var blockNr = lastBlockNumber + 1; blockNr < lastBlockNumber + Config.ScanBatchSize; blockNr ++)
+                for (var blockNr = lastBlockNumber + 1; blockNr <= lastBlockNumber + Config.ScanBatchSize; blockNr ++)
                 {
                     getBlocksTasks.Add(GetBlock(blockNr));
                 }

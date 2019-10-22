@@ -22,7 +22,14 @@ namespace Own.BlockchainExplorer.Scanner
             var serviceProvider = ConfigureServices();
             _scannerService = serviceProvider.GetService<IScannerService>();
 
-            TaskScheduler.Run(RunCycle, 1);
+            Task.Run(async () =>
+            {
+                while (true)
+                {
+                    RunCycle();
+                    await Task.Delay(1000);
+                }
+            });
 
             WaitForCancellation();
         }
