@@ -10,19 +10,19 @@
 
         public enum EventType
         {
+            Action,
             ValidatorReward,
             StakingReward,
             DepositTaken,
             DepositGiven,
-            Action,
             StakeReturned
         }
 
         public enum TxStatus
         {
+            Pending,
             Success,
-            Failure,
-            Pending
+            Failure
         }
 
         public enum ActionType
