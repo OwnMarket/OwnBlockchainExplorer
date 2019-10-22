@@ -18,7 +18,7 @@ namespace Own.BlockchainExplorer.Api
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Blockchain Explorer Api");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Blockchain Explorer API");
             });
 
             app.UseMiddleware<GlobalExceptionHandler>()
