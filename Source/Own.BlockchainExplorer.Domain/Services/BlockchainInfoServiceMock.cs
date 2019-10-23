@@ -61,7 +61,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             });
         }
 
-        public Result<EquivocationInfoDto> GetEquivocationInfo(string EquivocationProofHash)
+        public Result<EquivocationInfoDto> GetEquivocationInfo(string equivocationProofHash)
         {
             return Result.Success(new EquivocationInfoDto() {
                 EquivocationProofHash = "BTXVBwuTXWTpPtJC71FPGaeC17NVhu9mS6JavqZqHbYH",
@@ -273,7 +273,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             }.AsEnumerable());
         }
 
-        public Result<string> Search(string hash)
+        public Result<string> Search(string searchValue)
         {
             throw new NotImplementedException();
         }

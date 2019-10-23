@@ -6,13 +6,13 @@ namespace Own.BlockchainExplorer.Core.Interfaces
 {
     public interface IBlockchainInfoService
     {
-        Result<EquivocationInfoDto> GetEquivocationInfo(string EquivocationProofHash);
+        Result<EquivocationInfoDto> GetEquivocationInfo(string equivocationProofHash);
         Result<AccountInfoDto> GetAccountInfo(string accountHash);
         Result<AssetInfoDto> GetAssetInfo(string assetHash);
 
         Result<IEnumerable<TxInfoShortDto>> GetTxs(int limit, int page);
         Result<IEnumerable<BlockInfoShortDto>> GetBlocks(int limit, int page);
 
-        Result<string> Search(string hash);
+        Result<string> Search(string searchValue);
     }
 }

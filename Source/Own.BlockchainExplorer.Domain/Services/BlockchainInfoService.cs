@@ -14,23 +14,14 @@ namespace Own.BlockchainExplorer.Domain.Services
     public class BlockchainInfoService : DataService, IBlockchainInfoService
     {
         private readonly IBlockchainInfoRepositoryFactory _blockchainInfoRepositoryFactory;
-        private readonly IAddressInfoService _addressInfoService;
-        private readonly IBlockInfoService _blockInfoService;
-        private readonly ITxInfoService _txInfoService;
 
         public BlockchainInfoService(
             IUnitOfWorkFactory unitOfWorkFactory,
             IRepositoryFactory repositoryFactory,
-            IBlockchainInfoRepositoryFactory blockchainInfoRepositoryFactory,
-            IAddressInfoService addressInfoService,
-            IBlockInfoService blockInfoService,
-            ITxInfoService txInfoService)
+            IBlockchainInfoRepositoryFactory blockchainInfoRepositoryFactory)
             : base(unitOfWorkFactory, repositoryFactory)
         {
             _blockchainInfoRepositoryFactory = blockchainInfoRepositoryFactory;
-            _addressInfoService = addressInfoService;
-            _blockInfoService = blockInfoService;
-            _txInfoService = txInfoService;
         }
 
         public Result<EquivocationInfoDto> GetEquivocationInfo(string equivocationProofHash)
@@ -190,27 +181,27 @@ namespace Own.BlockchainExplorer.Domain.Services
             }
         }
 
-        public Result<string> Search(string hash)
+        public Result<string> Search(string searchValue)
         {
             using (var uow = NewUnitOfWork())
             {
-                if (NewRepository<Address>(uow).Exists(a => a.BlockchainAddress == hash))
-                    return Result.Success(SearchType.Address.ToString());
-                else if (NewRepository<Account>(uow).Exists(a => a.Hash == hash))
-                    return Result.Success(SearchType.Account.ToString());
-                else if (NewRepository<Asset>(uow).Exists(a => a.Hash == hash))
-                    return Result.Success(SearchType.Asset.ToString());
-                else if (NewRepository<Transaction>(uow).Exists(t => t.Hash == hash))
-                    return Result.Success(SearchType.Transaction.ToString());
-                else if (NewRepository<Equivocation>(uow).Exists(e => e.EquivocationProofHash == hash))
-                    return Result.Success(SearchType.Equivocation.ToString());
+                if (long.TryParse(searchValue, out long blockNumber))
+                {
+                    if (NewRepository<Block>(uow).Exists(a => a.BlockNumber == blockNumber))
+                        return Result.Success(SearchType.Block.ToString());
+                }
                 else
                 {
-                    if (long.TryParse(hash, out long number))
-                    {
-                        if (NewRepository<Block>(uow).Exists(a => a.BlockNumber == number))
-                            return Result.Success(SearchType.Block.ToString());
-                    }
+                    if (NewRepository<Address>(uow).Exists(a => a.BlockchainAddress == searchValue))
+                        return Result.Success(SearchType.Address.ToString());
+                    if (NewRepository<Account>(uow).Exists(a => a.Hash == searchValue))
+                        return Result.Success(SearchType.Account.ToString());
+                    if (NewRepository<Asset>(uow).Exists(a => a.Hash == searchValue))
+                        return Result.Success(SearchType.Asset.ToString());
+                    if (NewRepository<Transaction>(uow).Exists(t => t.Hash == searchValue))
+                        return Result.Success(SearchType.Transaction.ToString());
+                    if (NewRepository<Equivocation>(uow).Exists(e => e.EquivocationProofHash == searchValue))
+                        return Result.Success(SearchType.Equivocation.ToString());
                 }
 
                 return Result.Failure<string>("Not found.");
