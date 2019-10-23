@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Own.BlockchainExplorer.Domain.Services
 {
-    public class BlockchainMockService
+    public class BlockchainInfoServiceMock : IBlockchainInfoService
     {
         public Result<AddressInfoDto> GetAddressInfo(string blockchainAddress)
         {
@@ -273,7 +273,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             }.AsEnumerable());
         }
 
-        public Result<object> Search(string hash)
+        public Result<string> Search(string hash)
         {
             throw new NotImplementedException();
         }

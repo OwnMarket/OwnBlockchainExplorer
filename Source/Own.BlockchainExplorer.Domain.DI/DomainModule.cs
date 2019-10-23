@@ -20,7 +20,8 @@ namespace Own.BlockchainExplorer.Domain.DI
                     implementationType.GetInterfaces().Each(interfaceType =>
                         serviceCollection.AddTransient(interfaceType, implementationType)));
 
-            serviceCollection.AddTransient<IBlockchainInfoService, BlockchainInfoService>();
+            // Uncomment below when needed in development, to override automatic registration from above.
+            //serviceCollection.AddTransient<IBlockchainInfoService, BlockchainInfoServiceMock>();
         }
     }
 }
