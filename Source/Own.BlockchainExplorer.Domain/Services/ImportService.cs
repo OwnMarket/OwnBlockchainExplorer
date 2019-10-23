@@ -16,17 +16,14 @@ namespace Own.BlockchainExplorer.Domain.Services
 {
     public class ImportService : DataService, IImportService
     {
-        private readonly IBlockchainClient _blockchainClient;
         private readonly IActionService _actionService;
 
         public ImportService(
             IUnitOfWorkFactory unitOfWorkFactory,
             IRepositoryFactory repositoryFactory,
-            IBlockchainClient blockchainClient,
             IActionService actionService)
             : base(unitOfWorkFactory, repositoryFactory)
         {
-            _blockchainClient = blockchainClient;
             _actionService = actionService;
         }
 
@@ -34,7 +31,6 @@ namespace Own.BlockchainExplorer.Domain.Services
         {
             var addressRepo = NewRepository<Address>(uow);
             var address = addressRepo.Get(a => a.BlockchainAddress == blockchainAddress).SingleOrDefault();
-            var newAddress = address == null;
 
             if (address == null)
             {
@@ -106,7 +102,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             var txRepo = NewRepository<Transaction>(uow);
 
             if (txRepo.Exists(t => t.Hash == txDto.TxHash))
-                return Result.Failure<Transaction>("Tx {0} already exists.".F(txDto.TxHash));
+                return Result.Failure<Transaction>("TX {0} already exists.".F(txDto.TxHash));
 
             var tx =
                 new Transaction
@@ -244,7 +240,8 @@ namespace Own.BlockchainExplorer.Domain.Services
                 .Get(a => a.BlockchainAddress == equivocationDto.ValidatorAddress)
                 .SingleOrDefault();
 
-            if (address is null) return Result.Failure<BlockchainEvent>(
+            if (address is null)
+                return Result.Failure<BlockchainEvent>(
                     "Address {0} does not exist.".F(equivocationDto.ValidatorAddress));
 
             depositTakenEvent.AddressId = address.AddressId;
@@ -348,7 +345,8 @@ namespace Own.BlockchainExplorer.Domain.Services
 
             if (tx.Status == TxStatus.Success.ToString())
             {
-                var result = Result.Success();
+                Result result;
+
                 switch (action.ActionType.ToEnum<ActionType>())
                 {
                     case ActionType.TransferChx:

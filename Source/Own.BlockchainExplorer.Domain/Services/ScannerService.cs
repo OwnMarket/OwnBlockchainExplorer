@@ -77,7 +77,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                         validators.Add(new Validator
                         {
                             BlockchainAddress = validatorValues[0],
-                            NetworkAddress = "http://" + validatorValues[1],
+                            NetworkAddress = validatorValues[1],
                             IsActive = true,
                             SharedRewardPercent = 0
                         });
@@ -121,7 +121,7 @@ namespace Own.BlockchainExplorer.Domain.Services
         {
             try
             {
-                long lastBlockNumber = 0;
+                long lastBlockNumber;
                 using (var uow = NewUnitOfWork())
                 {
                     var lastBlockNumbers = NewRepository<Block>(uow)
@@ -148,23 +148,21 @@ namespace Own.BlockchainExplorer.Domain.Services
 
                 foreach(var newBlock in newBlocks)
                 {
-                    if (newBlock is null)
-                        return Result.Success();
-
                     Log.Info($"Importing block {newBlock.Number} started.");
+
                     var blockResult = await ProcessBlock(newBlock);
                     if (blockResult.Failed)
                         return Result.Failure(blockResult.Alerts);
 
-                    lastBlockNumber = newBlock.Number;
                     Log.Info($"Importing block {newBlock.Number} finished.");
                 }
+
                 return Result.Success();
             }
             catch (Exception e)
             {
                 Log.Error(e);
-                return Result.Failure(e.Message);
+                return Result.Failure(e.LogFormat(true));
             }
         }
 
@@ -274,7 +272,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 catch (Exception ex)
                 {
                     Log.Error($"[{validatorAddress}]: {ex.LogFormat()}");
-                    alerts.Add(Alert.Error($"{validatorAddress}:{ex.Message}"));
+                    alerts.Add(Alert.Error($"{validatorAddress}:{ex.LogFormat(true)}"));
                 }
             }
             uow.Commit();
@@ -284,7 +282,6 @@ namespace Own.BlockchainExplorer.Domain.Services
 
         private Result ProcessConfiguration(ConfigurationDto configurationDto, IUnitOfWork uow)
         {
-            var newAddressHashes = new List<string>();
             var validatorRepo = NewRepository<Validator>(uow);
 
             var validatorAddresses = configurationDto.Validators.Select(v => v.ValidatorAddress);

@@ -14,7 +14,8 @@ namespace Own.BlockchainExplorer.Domain.Services
     {
         private readonly IBlockchainCryptoProvider _blockchainCryptoProvider;
 
-        public ActionService(IBlockchainCryptoProvider cryptoProvider,
+        public ActionService(
+            IBlockchainCryptoProvider cryptoProvider,
             IUnitOfWorkFactory unitOfWorkFactory,
             IRepositoryFactory repositoryFactory)
             : base(unitOfWorkFactory, repositoryFactory)

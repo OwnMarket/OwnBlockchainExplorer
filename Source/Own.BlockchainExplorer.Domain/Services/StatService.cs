@@ -59,7 +59,6 @@ namespace Own.BlockchainExplorer.Domain.Services
         {
             using (var uow = NewUnitOfWork())
             {
-                var eventRepo = NewRepository<BlockchainEvent>(uow);
                 var blockchainInfoRepo = _blockchainInfoRepositoryFactory.Create(uow);
 
                 long minDateTimestamp;
@@ -75,7 +74,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                     if (configBlockResult.Failed)
                         return Result.Success(Enumerable.Empty<ValidatorStatsDto>());
 
-                    minDateTimestamp = ((DateTimeOffset)configBlockResult.Data.Timestamp).ToUnixTimeMilliseconds();
+                    minDateTimestamp = new DateTimeOffset(configBlockResult.Data.Timestamp).ToUnixTimeMilliseconds();
                 }
 
                 var receivedStakes = blockchainInfoRepo.GetReceivedStakes();

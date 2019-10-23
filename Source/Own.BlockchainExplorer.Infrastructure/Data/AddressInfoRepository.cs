@@ -25,13 +25,12 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
             int limit,
             bool? isActive)
         {
-            return
-                _db.BlockchainEvents.AsQueryable()
-                .Where(
-                    e => e.EventType == EventType.Action.ToString()
+            return _db.BlockchainEvents.AsQueryable()
+                .Where(e =>
+                    e.EventType == EventType.Action.ToString()
                     && e.Address.BlockchainAddress == blockchainAddress
                     && (e.TxAction.ActionType == ActionType.CreateAccount.ToString()
-                    || e.TxAction.ActionType == ActionType.SetAccountController.ToString())
+                        || e.TxAction.ActionType == ActionType.SetAccountController.ToString())
                     && e.Transaction.Status == TxStatus.Success.ToString())
                 .Include(e => e.Account)
                 .Include(e => e.Address)
@@ -54,13 +53,12 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
             int limit,
             bool? isActive)
         {
-            return
-                _db.BlockchainEvents.AsQueryable()
-                .Where(
-                    e => e.EventType == EventType.Action.ToString()
+            return _db.BlockchainEvents.AsQueryable()
+                .Where(e =>
+                    e.EventType == EventType.Action.ToString()
                     && e.Address.BlockchainAddress == blockchainAddress
                     && (e.TxAction.ActionType == ActionType.CreateAsset.ToString()
-                    || e.TxAction.ActionType == ActionType.SetAssetController.ToString())
+                        || e.TxAction.ActionType == ActionType.SetAssetController.ToString())
                     && e.Transaction.Status == TxStatus.Success.ToString())
                 .Include(e => e.Asset)
                 .Include(e => e.Address)
@@ -80,10 +78,9 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
 
         public StakeSummaryDto GetDelegatedStakesInfo(string blockchainAddress, int page, int limit)
         {
-            var delegateStakeIds =
-                _db.BlockchainEvents.AsQueryable()
-                .Where(
-                    e => e.EventType == EventType.Action.ToString()
+            var delegateStakeIds = _db.BlockchainEvents.AsQueryable()
+                .Where(e =>
+                    e.EventType == EventType.Action.ToString()
                     && e.Address.BlockchainAddress == blockchainAddress
                     && e.TxAction.ActionType == ActionType.DelegateStake.ToString()
                     && e.Fee != null
@@ -98,8 +95,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                     TotalAmount = 0
                 };
 
-            var stakes =
-                _db.BlockchainEvents.AsQueryable()
+            var stakes = _db.BlockchainEvents.AsQueryable()
                 .Where(e => delegateStakeIds.Contains(e.TxActionId) && e.Fee == null)
                 .Include(e => e.Address)
                 .OrderByDescending(e => e.BlockchainEventId)
@@ -126,10 +122,9 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
 
         public StakeSummaryDto GetReceivedStakesInfo(string blockchainAddress, int page, int limit)
         {
-            var receivedStakeIds =
-                _db.BlockchainEvents.AsQueryable()
-                .Where(
-                    e => e.EventType == EventType.Action.ToString()
+            var receivedStakeIds = _db.BlockchainEvents.AsQueryable()
+                .Where(e =>
+                    e.EventType == EventType.Action.ToString()
                     && e.Address.BlockchainAddress == blockchainAddress
                     && e.TxAction.ActionType == ActionType.DelegateStake.ToString()
                     && e.Fee == null
@@ -144,8 +139,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                     TotalAmount = 0
                 };
 
-            var stakes =
-                _db.BlockchainEvents.AsQueryable()
+            var stakes = _db.BlockchainEvents.AsQueryable()
                 .Where(e => receivedStakeIds.Contains(e.TxActionId) && e.Fee != null)
                 .Include(e => e.Address)
                 .OrderByDescending(e => e.BlockchainEventId)
@@ -179,12 +173,14 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
             var validatorReward = EventType.ValidatorReward.ToString();
             var stakingReward = EventType.StakeReturned.ToString();
 
-            var query =
-                 _db.BlockchainEvents.AsQueryable()
-                 .Where(e => e.Address.BlockchainAddress == blockchainAddress
-                     && !((e.EventType == validatorReward
-                        || e.EventType == stakingReward)
-                        && e.Amount == 0));
+            var query = _db.BlockchainEvents.AsQueryable()
+                .Where(e =>
+                    e.Address.BlockchainAddress == blockchainAddress
+                    && !(
+                        (e.EventType == validatorReward || e.EventType == stakingReward)
+                        && e.Amount == 0
+                    )
+                );
 
             if (eventTypes.Any())
                 query = query.Where(e => eventTypes.Contains(e.EventType));
@@ -192,8 +188,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
             var eventsCount =
                 query.Select(e => e.BlockchainEventId).Count();
 
-            var events =
-                query
+            var events = query
                 .Include(e => e.TxAction)
                 .Include(e => e.Equivocation)
                 .Include(e => e.Transaction)
@@ -202,7 +197,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                 .Skip((page - 1) * limit)
                 .Take(limit)
                 .ToList()
-                .Select(e => EventDto.FromDomainModel(e))
+                .Select(EventDto.FromDomainModel)
                 .ToList();
 
             return new EventsSummaryDto

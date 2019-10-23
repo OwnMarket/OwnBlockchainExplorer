@@ -17,15 +17,11 @@ namespace Own.BlockchainExplorer.Domain.Services
 {
     public class ValidatorInfoService : DataService, IValidatorInfoService
     {
-        private readonly IGeoLocationService _geoLocationService;
-
         public ValidatorInfoService(
             IUnitOfWorkFactory unitOfWorkFactory,
-            IRepositoryFactory repositoryFactory,
-            IGeoLocationService geoLocationService)
+            IRepositoryFactory repositoryFactory)
             : base(unitOfWorkFactory, repositoryFactory)
         {
-            _geoLocationService = geoLocationService;
         }
 
         public Result<ValidatorInfoDto> GetValidatorInfo(string blockchainAddress)
@@ -62,7 +58,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 if (!receivedStakeIds.Any())
                     return Result.Success(Enumerable.Empty<StakeDto>());
 
-                return Result.Success(eventRepo
+                return eventRepo
                     .Get(e => receivedStakeIds.Contains(e.TxActionId) && e.Fee != null, e => e.Address)
                     .GroupBy(e => e.Address)
                     .Select(g => new StakeDto
@@ -73,7 +69,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                     })
                     .OrderByDescending(s => s.Amount)
                     .Skip((page - 1) * limit).Take(limit)
-                );
+                    .To(Result.Success);
             }
         }
 
@@ -123,7 +119,11 @@ namespace Own.BlockchainExplorer.Domain.Services
                     });
                 }
 
-                return Result.Success(validatorDtos.OrderByDescending(v => v.TotalStake).Skip((page - 1) * limit).Take(limit));
+                return validatorDtos
+                    .OrderByDescending(v => v.TotalStake)
+                    .Skip((page - 1) * limit)
+                    .Take(limit)
+                    .To(Result.Success);
             }
         }
 
@@ -151,6 +151,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                         alerts.Add(Alert.Error(ex.LogFormat()));
                     }
                 }
+
                 return Result.Success(validatorsGeoInfo.AsEnumerable(), alerts);
             }
         }

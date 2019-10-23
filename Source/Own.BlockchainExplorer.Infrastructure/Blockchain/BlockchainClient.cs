@@ -104,7 +104,5 @@ namespace Own.BlockchainExplorer.Infrastructure.Blockchain
             var result = await HttpClient.GetAsync(url);
             return await HandleBlockChainResponse<EquivocationDto>(result);
         }
-
-
     }
 }

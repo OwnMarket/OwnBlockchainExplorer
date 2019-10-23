@@ -32,8 +32,9 @@ namespace Own.BlockchainExplorer.Domain.Services
                     e => e.Equivocation.EquivocationProofHash == equivocationProofHash,
                     e => e.Equivocation,
                     e => e.Address);
-                if (!events.Any()) return Result.Failure<EquivocationInfoDto>(
-                    "Equivocation {0} does not exist.".F(equivocationProofHash));
+                if (!events.Any())
+                    return Result.Failure<EquivocationInfoDto>(
+                        "Equivocation {0} does not exist.".F(equivocationProofHash));
 
                 var equivocation = events.First().Equivocation;
                 var eqDto = EquivocationInfoDto.FromDomainModel(equivocation);
@@ -56,7 +57,8 @@ namespace Own.BlockchainExplorer.Domain.Services
                     {
                         BlockchainAddress = e.Address.BlockchainAddress,
                         Amount = e.Amount.Value
-                    }).ToList();
+                    })
+                    .ToList();
 
                 return Result.Success(eqDto);
             }
@@ -96,8 +98,10 @@ namespace Own.BlockchainExplorer.Domain.Services
                 accountDto.ControllerAddresses = events
                     .Where(e => e.TxAction.ActionType == ActionType.CreateAccount.ToString()
                         || e.TxAction.ActionType == ActionType.SetAccountController.ToString())
-                    .Select(e => e.Address.BlockchainAddress).Distinct()
-                    .Select(s => new ControllerAddressDto { BlockchainAddress = s }).ToList();
+                    .Select(e => e.Address.BlockchainAddress)
+                    .Distinct()
+                    .Select(s => new ControllerAddressDto { BlockchainAddress = s })
+                    .ToList();
 
                 return Result.Success(accountDto);
             }
@@ -139,8 +143,10 @@ namespace Own.BlockchainExplorer.Domain.Services
                 assetDto.ControllerAddresses = events
                     .Where(e => e.TxAction.ActionType == ActionType.CreateAsset.ToString()
                         || e.TxAction.ActionType == ActionType.SetAssetController.ToString())
-                    .Select(e => e.Address.BlockchainAddress).Distinct()
-                    .Select(s => new ControllerAddressDto { BlockchainAddress = s }).ToList();
+                    .Select(e => e.Address.BlockchainAddress)
+                    .Distinct()
+                    .Select(s => new ControllerAddressDto { BlockchainAddress = s })
+                    .ToList();
 
                 return Result.Success(assetDto);
             }
@@ -164,11 +170,15 @@ namespace Own.BlockchainExplorer.Domain.Services
                     Timestamp = DateTimeOffset.FromUnixTimeMilliseconds(tx.Timestamp).UtcDateTime,
                     Status = tx.Status,
                     NumberOfActions = events
-                        .Where(e => e.TransactionId == tx.TransactionId).GroupBy(e => e.TxActionId).Count(),
+                        .Where(e => e.TransactionId == tx.TransactionId)
+                        .GroupBy(e => e.TxActionId)
+                        .Count(),
                     SenderAddress = events
-                        .Where(e => e.TransactionId == tx.TransactionId && e.Fee.HasValue)
-                        .First().Address.BlockchainAddress,
-                    BlockNumber = events.Where(e => e.TransactionId == tx.TransactionId).First().Block.BlockNumber
+                        .First(e => e.TransactionId == tx.TransactionId && e.Fee.HasValue)
+                        .Address.BlockchainAddress,
+                    BlockNumber = events
+                        .First(e => e.TransactionId == tx.TransactionId)
+                        .Block.BlockNumber
                 }));
             }
         }

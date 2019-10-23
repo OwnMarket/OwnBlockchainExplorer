@@ -17,7 +17,6 @@ namespace Own.BlockchainExplorer.Domain.Services
             IRepositoryFactory repositoryFactory)
             : base(unitOfWorkFactory, repositoryFactory)
         {
-
         }
 
         public Result<TxInfoDto> GetTxInfo(string txHash)
