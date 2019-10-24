@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using Own.BlockchainExplorer.Common.Extensions;
 using Own.BlockchainExplorer.Core.Dtos.Api;
 using Own.BlockchainExplorer.Core.Enums;
 using Own.BlockchainExplorer.Core.Interfaces;
-using Own.BlockchainExplorer.Core.Models;
 using Own.BlockchainExplorer.Infrastructure.Data.EF;
 
 namespace Own.BlockchainExplorer.Infrastructure.Data
@@ -25,7 +23,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
             int limit,
             bool? isActive)
         {
-            return _db.BlockchainEvents.AsQueryable()
+            return _db.BlockchainEvents
                 .Where(e =>
                     e.EventType == EventType.Action.ToString()
                     && e.Address.BlockchainAddress == blockchainAddress
@@ -53,7 +51,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
             int limit,
             bool? isActive)
         {
-            return _db.BlockchainEvents.AsQueryable()
+            return _db.BlockchainEvents
                 .Where(e =>
                     e.EventType == EventType.Action.ToString()
                     && e.Address.BlockchainAddress == blockchainAddress
@@ -78,7 +76,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
 
         public StakeSummaryDto GetDelegatedStakesInfo(string blockchainAddress, int page, int limit)
         {
-            var delegateStakeIds = _db.BlockchainEvents.AsQueryable()
+            var delegateStakeIds = _db.BlockchainEvents
                 .Where(e =>
                     e.EventType == EventType.Action.ToString()
                     && e.Address.BlockchainAddress == blockchainAddress
@@ -95,7 +93,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                     TotalAmount = 0
                 };
 
-            var stakes = _db.BlockchainEvents.AsQueryable()
+            var stakes = _db.BlockchainEvents
                 .Where(e => delegateStakeIds.Contains(e.TxActionId) && e.Fee == null)
                 .Include(e => e.Address)
                 .OrderByDescending(e => e.BlockchainEventId)
@@ -122,7 +120,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
 
         public StakeSummaryDto GetReceivedStakesInfo(string blockchainAddress, int page, int limit)
         {
-            var receivedStakeIds = _db.BlockchainEvents.AsQueryable()
+            var receivedStakeIds = _db.BlockchainEvents
                 .Where(e =>
                     e.EventType == EventType.Action.ToString()
                     && e.Address.BlockchainAddress == blockchainAddress
@@ -139,7 +137,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                     TotalAmount = 0
                 };
 
-            var stakes = _db.BlockchainEvents.AsQueryable()
+            var stakes = _db.BlockchainEvents
                 .Where(e => receivedStakeIds.Contains(e.TxActionId) && e.Fee != null)
                 .Include(e => e.Address)
                 .OrderByDescending(e => e.BlockchainEventId)
