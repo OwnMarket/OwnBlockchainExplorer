@@ -93,12 +93,14 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                     TotalAmount = 0
                 };
 
-            var stakes = _db.BlockchainEvents
+            var stakesQuery = _db.BlockchainEvents
                 .Where(e => delegateStakeIds.Contains(e.TxActionId) && e.Fee == null)
                 .Include(e => e.Address)
                 .OrderByDescending(e => e.BlockchainEventId)
                 .GroupBy(e => e.Address)
-                .Where(g => g.Sum(e => e.Amount.Value) != 0)
+                .Where(g => g.Sum(e => e.Amount.Value) != 0);
+
+            var stakes = stakesQuery
                 .Select(g => new StakeDto
                 {
                     ValidatorAddress = g.Key.BlockchainAddress,
@@ -111,10 +113,14 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                 .Take(limit)
                 .ToList();
 
+            var totalStakeAmount = stakesQuery
+                .Select(g => g.Sum(e => e.Amount.Value))
+                .Sum();
+
             return new StakeSummaryDto
             {
                 Stakes = stakes,
-                TotalAmount = stakes.Sum(s => s.Amount)
+                TotalAmount = totalStakeAmount
             };
         }
 
@@ -137,12 +143,14 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                     TotalAmount = 0
                 };
 
-            var stakes = _db.BlockchainEvents
+            var stakesQuery = _db.BlockchainEvents
                 .Where(e => receivedStakeIds.Contains(e.TxActionId) && e.Fee != null)
                 .Include(e => e.Address)
                 .OrderByDescending(e => e.BlockchainEventId)
                 .GroupBy(e => e.Address)
-                .Where(g => g.Sum(e => e.Amount.Value) != 0)
+                .Where(g => g.Sum(e => e.Amount.Value) != 0);
+
+            var stakes = stakesQuery
                 .Select(g => new StakeDto
                 {
                     StakerAddress = g.Key.BlockchainAddress,
@@ -155,10 +163,14 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                 .Take(limit)
                 .ToList();
 
+            var totalStakeAmount = stakesQuery
+                .Select(g => g.Sum(e => e.Amount.Value))
+                .Sum();
+
             return new StakeSummaryDto
             {
                 Stakes = stakes,
-                TotalAmount = stakes.Sum(s => s.Amount)
+                TotalAmount = totalStakeAmount
             };
         }
 
