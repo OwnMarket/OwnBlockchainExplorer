@@ -328,138 +328,137 @@ namespace Own.BlockchainExplorer.Domain.Services
             JObject actionDataObj,
             IUnitOfWork uow)
         {
-            var events = new List<BlockchainEvent>
+            var senderEvent = new BlockchainEvent
             {
-                new BlockchainEvent
-                {
-                    AddressId = senderAddress.AddressId,
-                    TxActionId = action.TxActionId,
-                    BlockId = blockId,
-                    Fee = tx.ActionFee,
-                    Amount = 0,
-                    TransactionId = tx.TransactionId,
-                    EventType = EventType.Action.ToString()
-                }
+                AddressId = senderAddress.AddressId,
+                TxActionId = action.TxActionId,
+                BlockId = blockId,
+                Fee = tx.ActionFee,
+                Amount = 0,
+                TransactionId = tx.TransactionId,
+                EventType = EventType.Action.ToString()
             };
+            var events = new List<BlockchainEvent> { senderEvent };
             senderAddress.AvailableBalance -= tx.ActionFee;
 
             if (tx.Status == TxStatus.Success.ToString())
             {
-                Result result;
+                Result<List<BlockchainEvent>> result;
 
                 switch (action.ActionType.ToEnum<ActionType>())
                 {
                     case ActionType.TransferChx:
                         result = _actionService.TransferChx(
-                            ref events,
+                            senderEvent,
                             actionDataObj.ToObject<TransferChxData>(),
                             senderAddress,
                             uow);
                         break;
                     case ActionType.DelegateStake:
                         result = _actionService.DelegateStake(
-                            ref events,
+                            senderEvent,
                             actionDataObj.ToObject<DelegateStakeData>(),
                             senderAddress,
                             uow);
                         break;
                     case ActionType.ConfigureValidator:
                         result = _actionService.ConfigureValidator(
-                            events,
                             actionDataObj.ToObject<ConfigureValidatorData>(),
                             senderAddress,
                             uow);
                         break;
                     case ActionType.RemoveValidator:
-                        result = _actionService.RemoveValidator(ref events, senderAddress, uow);
+                        result = _actionService.RemoveValidator(senderEvent, senderAddress, uow);
                         break;
                     case ActionType.SetAssetCode:
                         result = _actionService.SetAssetCode(
-                            events,
+                            senderEvent,
                             actionDataObj.ToObject<SetAssetCodeData>(),
                             uow);
                         break;
                     case ActionType.SetAssetController:
                         result = _actionService.SetAssetController(
-                            ref events,
+                            senderEvent,
                             actionDataObj.ToObject<SetAssetControllerData>(),
                             senderAddress,
                             uow);
                         break;
                     case ActionType.SetAccountController:
                         result = _actionService.SetAccountController(
-                            ref events,
+                            senderEvent,
                             actionDataObj.ToObject<SetAccountControllerData>(),
                             senderAddress,
                             uow);
                         break;
                     case ActionType.TransferAsset:
                         result = _actionService.TransferAsset(
-                            ref events,
+                            senderEvent,
                             actionDataObj.ToObject<TransferAssetData>(),
                             uow);
                         break;
                     case ActionType.CreateAssetEmission:
                         result = _actionService.CreateAssetEmission(
-                            events,
+                            senderEvent,
                             actionDataObj.ToObject<CreateAssetEmissionData>(),
                             uow);
                         break;
                     case ActionType.CreateAsset:
-                        result = _actionService.CreateAsset(events, senderAddress, action, uow);
+                        result = _actionService.CreateAsset(senderEvent, senderAddress, action, uow);
                         break;
                     case ActionType.CreateAccount:
-                        result = _actionService.CreateAccount(events, senderAddress, action, uow);
+                        result = _actionService.CreateAccount(senderEvent, senderAddress, action, uow);
                         break;
                     case ActionType.SubmitVote:
-                        result = _actionService.SubmitVote(events, actionDataObj.ToObject<SubmitVoteData>(), uow);
+                        result = _actionService.SubmitVote(senderEvent, actionDataObj.ToObject<SubmitVoteData>(), uow);
                         break;
                     case ActionType.SubmitVoteWeight:
                         result = _actionService.SubmitVoteWeight(
-                            events,
+                            senderEvent,
                             actionDataObj.ToObject<SubmitVoteWeightData>(),
                             uow);
                         break;
                     case ActionType.SetAccountEligibility:
                         result = _actionService.SetAccountEligibility(
-                            events,
+                            senderEvent,
                             actionDataObj.ToObject<SetAccountEligibilityData>(),
                             uow);
                         break;
                     case ActionType.SetAssetEligibility:
                         result = _actionService.SetAssetEligibility(
-                            events,
+                            senderEvent,
                             actionDataObj.ToObject<SetAssetEligibilityData>(),
                             uow);
                         break;
                     case ActionType.ChangeKycControllerAddress:
                         result = _actionService.ChangeKycControllerAddress(
-                            events,
+                            senderEvent,
                             actionDataObj.ToObject<ChangeKycControllerAddressData>(),
                             senderAddress,
                             uow);
                         break;
                     case ActionType.AddKycProvider:
                         result = _actionService.AddKycProvider(
-                            events,
+                            senderEvent,
                             actionDataObj.ToObject<AddKycProviderData>(),
                             senderAddress,
                             uow);
                         break;
                     case ActionType.RemoveKycProvider:
                         result = _actionService.RemoveKycProvider(
-                            events,
+                            senderEvent,
                             actionDataObj.ToObject<RemoveKycProviderData>(),
                             senderAddress,
                             uow);
                         break;
                     default:
-                        result = Result.Failure("Unsupported action type.");
+                        result = Result.Failure<List<BlockchainEvent>>("Unsupported action type.");
                         break;
                 }
 
                 if (result.Failed)
                     return Result.Failure<IEnumerable<BlockchainEvent>>(result.Alerts);
+                else
+                    events.AddRange(result.Data);
             }
 
             NewRepository<BlockchainEvent>(uow).Insert(events);

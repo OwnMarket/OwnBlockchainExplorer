@@ -23,17 +23,15 @@ namespace Own.BlockchainExplorer.Domain.Services
             _blockchainCryptoProvider = cryptoProvider;
         }
 
-        public Result TransferChx(
-            ref List<BlockchainEvent> events,
+        public Result<List<BlockchainEvent>> TransferChx(
+            BlockchainEvent senderEvent,
             TransferChxData actionData,
             Address senderAddress,
             IUnitOfWork uow)
         {
-            var firstEvent = events.First();
-
             var addressRepo = NewRepository<Address>(uow);
 
-            firstEvent.Amount = actionData.Amount * -1;
+            senderEvent.Amount = actionData.Amount * -1;
             senderAddress.AvailableBalance -= actionData.Amount;
 
             var sameAddress = senderAddress.BlockchainAddress == actionData.RecipientAddress;
@@ -42,8 +40,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 ? senderAddress
                 : addressRepo.Get(a => a.BlockchainAddress == actionData.RecipientAddress).SingleOrDefault();
 
-            var newAddress = recipientAddress == null;
-
+            var newAddress = recipientAddress is null;
             if (newAddress)
             {
                 recipientAddress = new Address
@@ -57,15 +54,18 @@ namespace Own.BlockchainExplorer.Domain.Services
             }
             recipientAddress.AvailableBalance += actionData.Amount;
 
-            events.Add(new BlockchainEvent
+            var events = new List<BlockchainEvent>
             {
-                Address = recipientAddress,
-                TxActionId = firstEvent.TxActionId,
-                BlockId = firstEvent.BlockId,
-                Amount = actionData.Amount,
-                TransactionId = firstEvent.TransactionId,
-                EventType = EventType.Action.ToString()
-            });
+                new BlockchainEvent
+                {
+                    Address = recipientAddress,
+                    TxActionId = senderEvent.TxActionId,
+                    BlockId = senderEvent.BlockId,
+                    Amount = actionData.Amount,
+                    TransactionId = senderEvent.TransactionId,
+                    EventType = EventType.Action.ToString()
+                }
+            };
 
             if (!sameAddress)
             {
@@ -75,20 +75,18 @@ namespace Own.BlockchainExplorer.Domain.Services
                     addressRepo.Update(recipientAddress);
             }
 
-            return Result.Success();
+            return Result.Success(events);
         }
 
-        public Result DelegateStake(
-            ref List<BlockchainEvent> events,
+        public Result<List<BlockchainEvent>> DelegateStake(
+            BlockchainEvent senderEvent,
             DelegateStakeData actionData,
             Address senderAddress,
             IUnitOfWork uow)
         {
-            var firstEvent = events.First();
-
             var addressRepo = NewRepository<Address>(uow);
 
-            firstEvent.Amount = actionData.Amount * -1;
+            senderEvent.Amount = actionData.Amount * -1;
             senderAddress.StakedBalance += actionData.Amount;
             senderAddress.AvailableBalance -= actionData.Amount;
 
@@ -98,8 +96,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 ? senderAddress
                 : addressRepo.Get(a => a.BlockchainAddress == actionData.ValidatorAddress).SingleOrDefault();
 
-            var newAddress = validatorAddress == null;
-
+            var newAddress = validatorAddress is null;
             if (newAddress)
             {
                 validatorAddress = new Address
@@ -112,15 +109,18 @@ namespace Own.BlockchainExplorer.Domain.Services
                 };
             }
 
-            events.Add(new BlockchainEvent
+            var events = new List<BlockchainEvent>()
             {
-                Address = validatorAddress,
-                TxActionId = firstEvent.TxActionId,
-                BlockId = firstEvent.BlockId,
-                Amount = actionData.Amount,
-                TransactionId = firstEvent.TransactionId,
-                EventType = EventType.Action.ToString()
-            });
+                new BlockchainEvent
+                {
+                    Address = validatorAddress,
+                    TxActionId = senderEvent.TxActionId,
+                    BlockId = senderEvent.BlockId,
+                    Amount = actionData.Amount,
+                    TransactionId = senderEvent.TransactionId,
+                    EventType = EventType.Action.ToString()
+                }
+            };
 
             if (!sameAddress)
             {
@@ -130,11 +130,10 @@ namespace Own.BlockchainExplorer.Domain.Services
                     addressRepo.Update(validatorAddress);
             }
 
-            return Result.Success();
+            return Result.Success(events);
         }
 
-        public Result ConfigureValidator(
-            List<BlockchainEvent> events,
+        public Result<List<BlockchainEvent>> ConfigureValidator(
             ConfigureValidatorData actionData,
             Address senderAddress,
             IUnitOfWork uow)
@@ -165,10 +164,10 @@ namespace Own.BlockchainExplorer.Domain.Services
             senderAddress.DepositBalance += depositAmount;
             senderAddress.AvailableBalance -= depositAmount;
 
-            return Result.Success();
+            return Result.Success(new List<BlockchainEvent>());
         }
 
-        public Result RemoveValidator(ref List<BlockchainEvent> events, Address senderAddress, IUnitOfWork uow)
+        public Result<List<BlockchainEvent>> RemoveValidator(BlockchainEvent senderEvent, Address senderAddress, IUnitOfWork uow)
         {
             var validatorRepo = NewRepository<Validator>(uow);
             var eventRepo = NewRepository<BlockchainEvent>(uow);
@@ -177,8 +176,8 @@ namespace Own.BlockchainExplorer.Domain.Services
             var validator = validatorRepo
                 .Get(v => v.BlockchainAddress == senderAddress.BlockchainAddress)
                 .SingleOrDefault();
-            if (validator == null)
-                return Result.Failure("Address {0} is not a validator.".F(senderAddress.BlockchainAddress));
+            if (validator is null)
+                return Result.Failure<List<BlockchainEvent>>("Address {0} is not a validator.".F(senderAddress.BlockchainAddress));
 
             validator.IsDeleted = true;
             validatorRepo.Update(validator);
@@ -186,7 +185,6 @@ namespace Own.BlockchainExplorer.Domain.Services
             senderAddress.AvailableBalance += senderAddress.DepositBalance;
             senderAddress.DepositBalance = 0;
 
-            var firstEvent = events.First();
             var delegateStakeIds = eventRepo.GetAs(
                 e => e.EventType == EventType.Action.ToString()
                 && e.AddressId == senderAddress.AddressId
@@ -198,6 +196,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 e => delegateStakeIds.Contains(e.TxActionId) && e.Fee != null,
                 e => e.Address).GroupBy(e => e.Address);
 
+            var events = new List<BlockchainEvent>();
             foreach(var group in delegateStakeEvents)
             {
                 var sameAddress = senderAddress.AddressId == group.Key.AddressId;
@@ -208,9 +207,9 @@ namespace Own.BlockchainExplorer.Domain.Services
                 events.Add(new BlockchainEvent {
                     AddressId = address.AddressId,
                     Amount = stakedAmount,
-                    BlockId = firstEvent.BlockId,
-                    TransactionId = firstEvent.TransactionId,
-                    TxActionId = firstEvent.TxActionId,
+                    BlockId = senderEvent.BlockId,
+                    TransactionId = senderEvent.TransactionId,
+                    TxActionId = senderEvent.TxActionId,
                     EventType = EventType.StakeReturned.ToString()
                 });
 
@@ -221,26 +220,26 @@ namespace Own.BlockchainExplorer.Domain.Services
                     addressRepo.Update(address);
             }
 
-            return Result.Success();
+            return Result.Success(events);
         }
 
-        public Result SetAssetCode(List<BlockchainEvent> events, SetAssetCodeData actionData, IUnitOfWork uow)
+        public Result<List<BlockchainEvent>> SetAssetCode(BlockchainEvent senderEvent, SetAssetCodeData actionData, IUnitOfWork uow)
         {
             var assetRepo = NewRepository<Asset>(uow);
 
             var asset = assetRepo.Get(a => a.Hash == actionData.AssetHash).SingleOrDefault();
-            if (asset == null)
-                return Result.Failure("Asset {0} does not exist.".F(actionData.AssetHash));
+            if (asset is null)
+                return Result.Failure<List<BlockchainEvent>>("Asset {0} does not exist.".F(actionData.AssetHash));
             asset.AssetCode = actionData.AssetCode;
             assetRepo.Update(asset);
 
-            events.First().AssetId = asset.AssetId;
+            senderEvent.AssetId = asset.AssetId;
 
-            return Result.Success();
+            return Result.Success(new List<BlockchainEvent>());
         }
 
-        public Result SetAssetController(
-            ref List<BlockchainEvent> events,
+        public Result<List<BlockchainEvent>> SetAssetController(
+            BlockchainEvent senderEvent,
             SetAssetControllerData actionData,
             Address senderAddress,
             IUnitOfWork uow)
@@ -249,13 +248,12 @@ namespace Own.BlockchainExplorer.Domain.Services
             var assetRepo = NewRepository<Asset>(uow);
 
             var asset = assetRepo.Get(a => a.Hash == actionData.AssetHash).SingleOrDefault();
-            if (asset == null)
-                return Result.Failure<IEnumerable<BlockchainEvent>>(
+            if (asset is null)
+                return Result.Failure<List<BlockchainEvent>>(
                     "Asset {0} does not exist.".F(actionData.AssetHash));
             asset.ControllerAddress = actionData.ControllerAddress;
 
-            var firstEvent = events.First();
-            firstEvent.AssetId = asset.AssetId;
+            senderEvent.AssetId = asset.AssetId;
 
             var sameAddress = senderAddress.BlockchainAddress == actionData.ControllerAddress;
 
@@ -265,7 +263,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                     .Get(a => a.BlockchainAddress == actionData.ControllerAddress)
                     .SingleOrDefault();
 
-            if (controllerAddress == null)
+            if (controllerAddress is null)
             {
                 controllerAddress = new Address
                 {
@@ -279,25 +277,28 @@ namespace Own.BlockchainExplorer.Domain.Services
                 addressRepo.Insert(controllerAddress);
             }
 
-            events.Add(new BlockchainEvent
+            var events = new List<BlockchainEvent>()
             {
-                Address = controllerAddress,
-                TxActionId = firstEvent.TxActionId,
-                BlockId = firstEvent.BlockId,
-                Fee = 0,
-                Amount = 0,
-                TransactionId = firstEvent.TransactionId,
-                EventType = EventType.Action.ToString(),
-                AssetId = asset.AssetId
-            });
+                new BlockchainEvent
+                {
+                    Address = controllerAddress,
+                    TxActionId = senderEvent.TxActionId,
+                    BlockId = senderEvent.BlockId,
+                    Fee = 0,
+                    Amount = 0,
+                    TransactionId = senderEvent.TransactionId,
+                    EventType = EventType.Action.ToString(),
+                    AssetId = asset.AssetId
+                }
+            };
 
             assetRepo.Update(asset);
 
-            return Result.Success();
+            return Result.Success(events);
         }
 
-        public Result SetAccountController(
-            ref List<BlockchainEvent> events,
+        public Result<List<BlockchainEvent>> SetAccountController(
+            BlockchainEvent senderEvent,
             SetAccountControllerData actionData,
             Address senderAddress,
             IUnitOfWork uow)
@@ -306,13 +307,11 @@ namespace Own.BlockchainExplorer.Domain.Services
             var accountRepo = NewRepository<Account>(uow);
 
             var account = accountRepo.Get(a => a.Hash == actionData.AccountHash).SingleOrDefault();
-            if (account == null)
-                return Result.Failure("Account {0} does not exist.".F(actionData.AccountHash));
+            if (account is null)
+                return Result.Failure<List<BlockchainEvent>>("Account {0} does not exist.".F(actionData.AccountHash));
             account.ControllerAddress = actionData.ControllerAddress;
 
-            var firstEvent = events.First();
-            firstEvent.AccountId = account.AccountId;
-
+            senderEvent.AccountId = account.AccountId;
             var sameAddress = senderAddress.BlockchainAddress == actionData.ControllerAddress;
 
             var controllerAddress = sameAddress
@@ -320,7 +319,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 : addressRepo
                 .Get(a => a.BlockchainAddress == actionData.ControllerAddress)
                 .SingleOrDefault();
-            if (controllerAddress == null)
+            if (controllerAddress is null)
             {
                 controllerAddress = new Address
                 {
@@ -334,25 +333,28 @@ namespace Own.BlockchainExplorer.Domain.Services
                 addressRepo.Insert(controllerAddress);
             }
 
-            events.Add(new BlockchainEvent
+            var events = new List<BlockchainEvent>()
             {
-                Address = controllerAddress,
-                TxActionId = firstEvent.TxActionId,
-                BlockId = firstEvent.BlockId,
-                Fee = 0,
-                Amount = 0,
-                TransactionId = firstEvent.TransactionId,
-                EventType = EventType.Action.ToString(),
-                AccountId = account.AccountId
-            });
+                new BlockchainEvent
+                {
+                    Address = controllerAddress,
+                    TxActionId = senderEvent.TxActionId,
+                    BlockId = senderEvent.BlockId,
+                    Fee = 0,
+                    Amount = 0,
+                    TransactionId = senderEvent.TransactionId,
+                    EventType = EventType.Action.ToString(),
+                    AccountId = account.AccountId
+                }
+            };
 
             accountRepo.Update(account);
 
-            return Result.Success();
+            return Result.Success(events);
         }
 
-        public Result TransferAsset(
-            ref List<BlockchainEvent> events,
+        public Result<List<BlockchainEvent>> TransferAsset(
+            BlockchainEvent senderEvent,
             TransferAssetData actionData,
             IUnitOfWork uow)
         {
@@ -364,25 +366,25 @@ namespace Own.BlockchainExplorer.Domain.Services
             var sameAccount = actionData.FromAccountHash == actionData.ToAccountHash;
 
             var fromAccount = accountRepo.Get(a => a.Hash == actionData.FromAccountHash).SingleOrDefault();
-            if (fromAccount == null)
-                return Result.Failure("Account {0} does not exist.".F(actionData.FromAccountHash));
+            if (fromAccount is null)
+                return Result.Failure<List<BlockchainEvent>>("Account {0} does not exist.".F(actionData.FromAccountHash));
 
             var toAccount = sameAccount
                 ? fromAccount
                 : accountRepo.Get(a => a.Hash == actionData.ToAccountHash).SingleOrDefault();
 
-            if (toAccount == null)
-                return Result.Failure("Account {0} does not exist.".F(actionData.ToAccountHash));
+            if (toAccount is null)
+                return Result.Failure<List<BlockchainEvent>>("Account {0} does not exist.".F(actionData.ToAccountHash));
 
             var asset = assetRepo.Get(a => a.Hash == actionData.AssetHash).SingleOrDefault();
-            if (asset == null)
-                return Result.Failure("Asset {0} does not exist.".F(actionData.AssetHash));
+            if (asset is null)
+                return Result.Failure<List<BlockchainEvent>>("Asset {0} does not exist.".F(actionData.AssetHash));
 
             var fromHolding = holdingRepo
                 .Get(h => h.AssetId == asset.AssetId && h.AccountId == fromAccount.AccountId)
                 .SingleOrDefault();
-            if (fromHolding == null || fromHolding.Balance < actionData.Amount)
-                return Result.Failure("Account {0} does not sufficient holding.".F(actionData.FromAccountHash));
+            if (fromHolding is null || fromHolding.Balance < actionData.Amount)
+                return Result.Failure<List<BlockchainEvent>>("Account {0} does not sufficient holding.".F(actionData.FromAccountHash));
 
             var toHolding = sameAccount
                 ? fromHolding
@@ -393,7 +395,7 @@ namespace Own.BlockchainExplorer.Domain.Services
 
             if (isNewHolding)
             {
-                toHolding = new HoldingEligibility()
+                toHolding = new HoldingEligibility
                 {
                     AssetHash = asset.Hash,
                     AssetId = asset.AssetId,
@@ -406,10 +408,9 @@ namespace Own.BlockchainExplorer.Domain.Services
             fromHolding.Balance -= actionData.Amount;
             toHolding.Balance += actionData.Amount;
 
-            var firstEvent = events.First();
-            firstEvent.AccountId = fromAccount.AccountId;
-            firstEvent.AssetId = asset.AssetId;
-            firstEvent.Amount = actionData.Amount * -1;
+            senderEvent.AccountId = fromAccount.AccountId;
+            senderEvent.AssetId = asset.AssetId;
+            senderEvent.Amount = actionData.Amount * -1;
 
             var toControllerAddress = addressRepo
                 .Get(a => a.BlockchainAddress == toAccount.ControllerAddress)
@@ -427,18 +428,21 @@ namespace Own.BlockchainExplorer.Domain.Services
                 };
             }
 
-            events.Add(new BlockchainEvent
+            var events = new List<BlockchainEvent>()
             {
-                Address = toControllerAddress,
-                TxActionId = firstEvent.TxActionId,
-                BlockId = firstEvent.BlockId,
-                Fee = 0,
-                Amount = actionData.Amount,
-                TransactionId = firstEvent.TransactionId,
-                EventType = EventType.Action.ToString(),
-                AccountId = toAccount.AccountId,
-                AssetId = asset.AssetId
-            });
+                new BlockchainEvent
+                {
+                    Address = toControllerAddress,
+                    TxActionId = senderEvent.TxActionId,
+                    BlockId = senderEvent.BlockId,
+                    Fee = 0,
+                    Amount = actionData.Amount,
+                    TransactionId = senderEvent.TransactionId,
+                    EventType = EventType.Action.ToString(),
+                    AccountId = toAccount.AccountId,
+                    AssetId = asset.AssetId
+                }
+            };
 
             holdingRepo.Update(fromHolding);
             if (isNewHolding)
@@ -446,28 +450,27 @@ namespace Own.BlockchainExplorer.Domain.Services
             else
                 holdingRepo.Update(toHolding);
 
-            return Result.Success();
+            return Result.Success(events);
         }
 
-        public Result CreateAssetEmission(
-            List<BlockchainEvent> events,
+        public Result<List<BlockchainEvent>> CreateAssetEmission(
+            BlockchainEvent senderEvent,
             CreateAssetEmissionData actionData,
             IUnitOfWork uow)
         {
             var account = NewRepository<Account>(uow)
                 .Get(a => a.Hash == actionData.EmissionAccountHash)
                 .SingleOrDefault();
-            if (account == null)
-                return Result.Failure("Account {0} does not exist.".F(actionData.EmissionAccountHash));
+            if (account is null)
+                return Result.Failure<List<BlockchainEvent>>("Account {0} does not exist.".F(actionData.EmissionAccountHash));
 
             var asset = NewRepository<Asset>(uow).Get(a => a.Hash == actionData.AssetHash).SingleOrDefault();
-            if (asset == null)
-                return Result.Failure("Asset {0} does not exist.".F(actionData.AssetHash));
+            if (asset is null)
+                return Result.Failure<List<BlockchainEvent>>("Asset {0} does not exist.".F(actionData.AssetHash));
 
-            var firstEvent = events.First();
-            firstEvent.AccountId = account.AccountId;
-            firstEvent.AssetId = asset.AssetId;
-            firstEvent.Amount = actionData.Amount;
+            senderEvent.AccountId = account.AccountId;
+            senderEvent.AssetId = asset.AssetId;
+            senderEvent.Amount = actionData.Amount;
 
             var holdingRepo = NewRepository<HoldingEligibility>(uow);
             var holding = holdingRepo
@@ -477,7 +480,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             var isNewHolding = holding is null;
             if (isNewHolding)
             {
-                holding = new HoldingEligibility()
+                holding = new HoldingEligibility
                 {
                     AssetHash = asset.Hash,
                     AssetId = asset.AssetId,
@@ -492,18 +495,16 @@ namespace Own.BlockchainExplorer.Domain.Services
             else
                 holdingRepo.Update(holding);
 
-            return Result.Success();
+            return Result.Success(new List<BlockchainEvent>());
         }
 
-        public Result CreateAsset(
-            List<BlockchainEvent> events,
+        public Result<List<BlockchainEvent>> CreateAsset(
+            BlockchainEvent senderEvent,
             Address senderAddress,
             TxAction action,
             IUnitOfWork uow)
         {
-            var addressRepo = NewRepository<Address>(uow);
-
-            var asset = new Asset()
+            var asset = new Asset
             {
                 Hash = _blockchainCryptoProvider.DeriveHash(
                     senderAddress.BlockchainAddress,
@@ -513,20 +514,18 @@ namespace Own.BlockchainExplorer.Domain.Services
             };
 
             NewRepository<Asset>(uow).Insert(asset);
-            events.First().Asset = asset;
+            senderEvent.Asset = asset;
 
-            return Result.Success();
+            return Result.Success(new List<BlockchainEvent>());
         }
 
-        public Result CreateAccount(
-            List<BlockchainEvent> events,
+        public Result<List<BlockchainEvent>> CreateAccount(
+            BlockchainEvent senderEvent,
             Address senderAddress,
             TxAction action,
             IUnitOfWork uow)
         {
-            var addressRepo = NewRepository<Address>(uow);
-
-            var account = new Account()
+            var account = new Account
             {
                 Hash = _blockchainCryptoProvider.DeriveHash(
                     senderAddress.BlockchainAddress,
@@ -536,79 +535,77 @@ namespace Own.BlockchainExplorer.Domain.Services
             };
 
             NewRepository<Account>(uow).Insert(account);
-            events.First().Account = account;
+            senderEvent.Account = account;
 
-            return Result.Success();
+            return Result.Success(new List<BlockchainEvent>());
         }
 
-        public Result SubmitVote(
-            List<BlockchainEvent> events,
+        public Result<List<BlockchainEvent>> SubmitVote(
+            BlockchainEvent senderEvent,
             SubmitVoteData actionData,
             IUnitOfWork uow)
         {
             var account = NewRepository<Account>(uow)
                 .Get(a => a.Hash == actionData.AccountHash)
                 .SingleOrDefault();
-            if (account == null)
-                return Result.Failure("Account {0} does not exist.".F(actionData.AccountHash));
+            if (account is null)
+                return Result.Failure<List<BlockchainEvent>>("Account {0} does not exist.".F(actionData.AccountHash));
 
             var asset = NewRepository<Asset>(uow).Get(a => a.Hash == actionData.AssetHash).SingleOrDefault();
-            if (asset == null)
-                return Result.Failure("Asset {0} does not exist.".F(actionData.AssetHash));
+            if (asset is null)
+                return Result.Failure<List<BlockchainEvent>>("Asset {0} does not exist.".F(actionData.AssetHash));
 
-            var firstEvent = events.First();
-            firstEvent.AccountId = account.AccountId;
-            firstEvent.AssetId = asset.AssetId;
+            senderEvent.AccountId = account.AccountId;
+            senderEvent.AssetId = asset.AssetId;
 
-            return Result.Success();
+            return Result.Success(new List<BlockchainEvent>());
         }
 
-        public Result SubmitVoteWeight(
-            List<BlockchainEvent> events,
+        public Result<List<BlockchainEvent>> SubmitVoteWeight(
+            BlockchainEvent senderEvent,
             SubmitVoteWeightData actionData,
             IUnitOfWork uow)
         {
             var account = NewRepository<Account>(uow)
                 .Get(a => a.Hash == actionData.AccountHash)
                 .SingleOrDefault();
-            if (account == null)
-                return Result.Failure("Account {0} does not exist.".F(actionData.AccountHash));
+            if (account is null)
+                return Result.Failure<List<BlockchainEvent>>("Account {0} does not exist.".F(actionData.AccountHash));
 
             var asset = NewRepository<Asset>(uow).Get(a => a.Hash == actionData.AssetHash).SingleOrDefault();
-            if (asset == null)
-                return Result.Failure("Asset {0} does not exist.".F(actionData.AssetHash));
+            if (asset is null)
+                return Result.Failure<List<BlockchainEvent>>("Asset {0} does not exist.".F(actionData.AssetHash));
 
-            var firstEvent = events.First();
-            firstEvent.AccountId = account.AccountId;
-            firstEvent.AssetId = asset.AssetId;
+            senderEvent.AccountId = account.AccountId;
+            senderEvent.AssetId = asset.AssetId;
 
-            return Result.Success();
+            return Result.Success(new List<BlockchainEvent>());
         }
 
-        public Result SetAccountEligibility(
-            List<BlockchainEvent> events,
+        public Result<List<BlockchainEvent>> SetAccountEligibility(
+            BlockchainEvent senderEvent,
             SetAccountEligibilityData actionData,
             IUnitOfWork uow)
         {
             var account = NewRepository<Account>(uow)
                 .Get(a => a.Hash == actionData.AccountHash)
                 .SingleOrDefault();
-            if (account == null)
-                return Result.Failure("Account {0} does not exist.".F(actionData.AccountHash));
+            if (account is null)
+                return Result.Failure<List<BlockchainEvent>>("Account {0} does not exist.".F(actionData.AccountHash));
 
             var asset = NewRepository<Asset>(uow).Get(a => a.Hash == actionData.AssetHash).SingleOrDefault();
-            if (asset == null)
-                return Result.Failure("Asset {0} does not exist.".F(actionData.AssetHash));
+            if (asset is null)
+                return Result.Failure<List<BlockchainEvent>>("Asset {0} does not exist.".F(actionData.AssetHash));
 
             var holdingRepo = NewRepository<HoldingEligibility>(uow);
             var holding = holdingRepo
                 .Get(h => h.AssetId == asset.AssetId && h.AccountId == account.AccountId)
                 .SingleOrDefault();
-                var isNewHolding = holding is null;
 
+            var isNewHolding = holding is null;
             if (isNewHolding)
             {
-                holding = new HoldingEligibility()
+                holding = new HoldingEligibility
                 {
                     AssetHash = asset.Hash,
                     AssetId = asset.AssetId,
@@ -620,39 +617,37 @@ namespace Own.BlockchainExplorer.Domain.Services
             holding.IsPrimaryEligible = actionData.IsPrimaryEligible;
             holding.IsSecondaryEligible = actionData.IsSecondaryEligible;
 
-            var firstEvent = events.First();
-            firstEvent.AccountId = account.AccountId;
-            firstEvent.AssetId = asset.AssetId;
+            senderEvent.AccountId = account.AccountId;
+            senderEvent.AssetId = asset.AssetId;
 
             if (isNewHolding)
                 holdingRepo.Insert(holding);
             else
                 holdingRepo.Update(holding);
 
-            return Result.Success();
+            return Result.Success(new List<BlockchainEvent>());
         }
 
-        public Result SetAssetEligibility(
-            List<BlockchainEvent> events,
+        public Result<List<BlockchainEvent>> SetAssetEligibility(
+            BlockchainEvent senderEvent,
             SetAssetEligibilityData actionData,
             IUnitOfWork uow)
         {
             var assetRepo = NewRepository<Asset>(uow);
             var asset = assetRepo.Get(a => a.Hash == actionData.AssetHash).SingleOrDefault();
-            if (asset == null)
-                return Result.Failure("Asset {0} does not exist.".F(actionData.AssetHash));
+            if (asset is null)
+                return Result.Failure<List<BlockchainEvent>>("Asset {0} does not exist.".F(actionData.AssetHash));
 
             asset.IsEligibilityRequired = actionData.IsEligibilityRequired;
             assetRepo.Update(asset);
 
-            var firstEvent = events.First();
-            firstEvent.AssetId = asset.AssetId;
+            senderEvent.AssetId = asset.AssetId;
 
-            return Result.Success();
+            return Result.Success(new List<BlockchainEvent>());
         }
 
-        public Result ChangeKycControllerAddress(
-            List<BlockchainEvent> events,
+        public Result<List<BlockchainEvent>> ChangeKycControllerAddress(
+            BlockchainEvent senderEvent,
             ChangeKycControllerAddressData actionData,
             Address senderAddress,
             IUnitOfWork uow)
@@ -660,12 +655,12 @@ namespace Own.BlockchainExplorer.Domain.Services
             var account = NewRepository<Account>(uow)
                 .Get(a => a.Hash == actionData.AccountHash)
                 .SingleOrDefault();
-            if (account == null)
-                return Result.Failure("Account {0} does not exist.".F(actionData.AccountHash));
+            if (account is null)
+                return Result.Failure<List<BlockchainEvent>>("Account {0} does not exist.".F(actionData.AccountHash));
 
             var asset = NewRepository<Asset>(uow).Get(a => a.Hash == actionData.AssetHash).SingleOrDefault();
-            if (asset == null)
-                return Result.Failure("Asset {0} does not exist.".F(actionData.AssetHash));
+            if (asset is null)
+                return Result.Failure<List<BlockchainEvent>>("Asset {0} does not exist.".F(actionData.AssetHash));
 
             var holdingRepo = NewRepository<HoldingEligibility>(uow);
             var holding = holdingRepo
@@ -686,9 +681,8 @@ namespace Own.BlockchainExplorer.Domain.Services
 
             holding.KycControllerAddress = actionData.KycControllerAddress;
 
-            var firstEvent = events.First();
-            firstEvent.AccountId = account.AccountId;
-            firstEvent.AssetId = asset.AssetId;
+            senderEvent.AccountId = account.AccountId;
+            senderEvent.AssetId = asset.AssetId;
 
             var sameAddress = senderAddress.BlockchainAddress == actionData.KycControllerAddress;
 
@@ -719,24 +713,22 @@ namespace Own.BlockchainExplorer.Domain.Services
             else
                 holdingRepo.Update(holding);
 
-            return Result.Success();
+            return Result.Success(new List<BlockchainEvent>());
         }
 
-        public Result AddKycProvider(
-            List<BlockchainEvent> events,
+        public Result<List<BlockchainEvent>> AddKycProvider(
+            BlockchainEvent senderEvent,
             AddKycProviderData actionData,
             Address senderAddress,
             IUnitOfWork uow)
         {
             var asset = NewRepository<Asset>(uow).Get(a => a.Hash == actionData.AssetHash).SingleOrDefault();
-            if (asset == null)
-                return Result.Failure("Asset {0} does not exist.".F(actionData.AssetHash));
+            if (asset is null)
+                return Result.Failure<List<BlockchainEvent>>("Asset {0} does not exist.".F(actionData.AssetHash));
 
-            var firstEvent = events.First();
-            firstEvent.AssetId = asset.AssetId;
+            senderEvent.AssetId = asset.AssetId;
 
             var sameAddress = senderAddress.BlockchainAddress == actionData.ProviderAddress;
-
             var providerAddress = sameAddress
                 ? senderAddress
                 : NewRepository<Address>(uow)
@@ -757,24 +749,22 @@ namespace Own.BlockchainExplorer.Domain.Services
                 NewRepository<Address>(uow).Insert(providerAddress);
             }
 
-            return Result.Success();
+            return Result.Success(new List<BlockchainEvent>());
         }
 
-        public Result RemoveKycProvider(
-            List<BlockchainEvent> events,
+        public Result<List<BlockchainEvent>> RemoveKycProvider(
+            BlockchainEvent senderEvent,
             RemoveKycProviderData actionData,
             Address senderAddress,
             IUnitOfWork uow)
         {
             var asset = NewRepository<Asset>(uow).Get(a => a.Hash == actionData.AssetHash).SingleOrDefault();
-            if (asset == null)
-                return Result.Failure("Asset {0} does not exist.".F(actionData.AssetHash));
+            if (asset is null)
+                return Result.Failure<List<BlockchainEvent>>("Asset {0} does not exist.".F(actionData.AssetHash));
 
-            var firstEvent = events.First();
-            firstEvent.AssetId = asset.AssetId;
+            senderEvent.AssetId = asset.AssetId;
 
             var sameAddress = senderAddress.BlockchainAddress == actionData.ProviderAddress;
-
             var providerAddress = sameAddress
                 ? senderAddress
                 : NewRepository<Address>(uow)
@@ -795,7 +785,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 NewRepository<Address>(uow).Insert(providerAddress);
             }
 
-            return Result.Success();
+            return Result.Success(new List<BlockchainEvent>());
         }
     }
 }
