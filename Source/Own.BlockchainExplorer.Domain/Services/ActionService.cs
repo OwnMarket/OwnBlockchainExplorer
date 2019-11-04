@@ -197,12 +197,13 @@ namespace Own.BlockchainExplorer.Domain.Services
                 e => e.Address).GroupBy(e => e.Address);
 
             var events = new List<BlockchainEvent>();
-            foreach(var group in delegateStakeEvents)
+            // Stakers StakeReturned events
+            foreach (var group in delegateStakeEvents)
             {
                 var sameAddress = senderAddress.AddressId == group.Key.AddressId;
 
                 var address = sameAddress ? senderAddress : group.Key;
-                var stakedAmount = group.Sum(g => g.Amount ?? 0) * -1;
+                var stakedAmount = group.Sum(e => e.Amount ?? 0) * -1;
 
                 events.Add(new BlockchainEvent {
                     AddressId = address.AddressId,
@@ -219,6 +220,17 @@ namespace Own.BlockchainExplorer.Domain.Services
                 if (!sameAddress)
                     addressRepo.Update(address);
             }
+
+            // Validator StakeReturned event
+            events.Add(new BlockchainEvent
+            {
+                AddressId = senderAddress.AddressId,
+                Amount = delegateStakeEvents.Select(g => g.Sum(e => e.Amount) ?? 0).Sum(),
+                BlockId = senderEvent.BlockId,
+                TransactionId = senderEvent.TransactionId,
+                TxActionId = senderEvent.TxActionId,
+                EventType = EventType.StakeReturned.ToString()
+            });
 
             return Result.Success(events);
         }

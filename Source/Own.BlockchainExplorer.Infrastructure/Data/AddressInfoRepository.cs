@@ -78,10 +78,11 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
         {
             var delegateStakeIds = _db.BlockchainEvents
                 .Where(e =>
-                    e.EventType == EventType.Action.ToString()
+                    (e.EventType == EventType.Action.ToString()
+                        && e.TxAction.ActionType == ActionType.DelegateStake.ToString()
+                        && e.Fee != null
+                    || e.EventType == EventType.StakeReturned.ToString())
                     && e.Address.BlockchainAddress == blockchainAddress
-                    && e.TxAction.ActionType == ActionType.DelegateStake.ToString()
-                    && e.Fee != null
                     && e.Transaction.Status == TxStatus.Success.ToString())
                 .Select(e => e.TxActionId)
                 .ToList();
@@ -94,7 +95,10 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                 };
 
             var stakesQuery = _db.BlockchainEvents
-                .Where(e => delegateStakeIds.Contains(e.TxActionId) && e.Fee == null)
+                .Where(e =>
+                    delegateStakeIds.Contains(e.TxActionId)
+                    && e.Fee == null
+                    && e.Address.BlockchainAddress != blockchainAddress)
                 .Include(e => e.Address)
                 .OrderByDescending(e => e.BlockchainEventId)
                 .GroupBy(e => e.Address)
@@ -128,9 +132,10 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
         {
             var receivedStakeIds = _db.BlockchainEvents
                 .Where(e =>
-                    e.EventType == EventType.Action.ToString()
+                    (e.EventType == EventType.Action.ToString()
+                        && e.TxAction.ActionType == ActionType.DelegateStake.ToString()
+                    || e.EventType == EventType.StakeReturned.ToString())
                     && e.Address.BlockchainAddress == blockchainAddress
-                    && e.TxAction.ActionType == ActionType.DelegateStake.ToString()
                     && e.Fee == null
                     && e.Transaction.Status == TxStatus.Success.ToString())
                 .Select(e => e.TxActionId)
@@ -144,7 +149,11 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                 };
 
             var stakesQuery = _db.BlockchainEvents
-                .Where(e => receivedStakeIds.Contains(e.TxActionId) && e.Fee != null)
+                .Where(e =>
+                    receivedStakeIds.Contains(e.TxActionId)
+                    && (e.Fee != null
+                        || e.EventType == EventType.StakeReturned.ToString() && e.Fee == null)
+                    && e.Address.BlockchainAddress != blockchainAddress)
                 .Include(e => e.Address)
                 .OrderByDescending(e => e.BlockchainEventId)
                 .GroupBy(e => e.Address)
@@ -164,7 +173,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                 .ToList();
 
             var totalStakeAmount = stakesQuery
-                .Select(g => g.Sum(e => e.Amount.Value))
+                .Select(g => -g.Sum(e => e.Amount.Value))
                 .Sum();
 
             return new StakeSummaryDto
