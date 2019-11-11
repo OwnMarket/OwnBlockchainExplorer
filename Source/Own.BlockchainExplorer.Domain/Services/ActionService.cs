@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using Own.BlockchainExplorer.Common.Extensions;
 using Own.BlockchainExplorer.Common.Framework;
 using Own.BlockchainExplorer.Core.Dtos.ActionData;
+using Own.BlockchainExplorer.Core.Dtos.Api;
 using Own.BlockchainExplorer.Core.Enums;
 using Own.BlockchainExplorer.Core.Interfaces;
 using Own.BlockchainExplorer.Core.Models;
@@ -155,6 +157,13 @@ namespace Own.BlockchainExplorer.Domain.Services
             else
             {
                 validator.NetworkAddress = actionData.NetworkAddress;
+                if (!validator.GeoLocation.IsNullOrEmpty())
+                {
+                    var geoLocation = JsonConvert.DeserializeObject<ValidatorGeoInfoDto>(validator.GeoLocation);
+                    geoLocation.NetworkAddress = actionData.NetworkAddress;
+                    validator.GeoLocation = JsonConvert.SerializeObject(geoLocation);
+                }
+
                 validator.SharedRewardPercent = actionData.SharedRewardPercent;
                 validator.IsDeleted = false;
                 validatorRepo.Update(validator);
