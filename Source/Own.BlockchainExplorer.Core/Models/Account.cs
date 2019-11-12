@@ -13,12 +13,12 @@ namespace Own.BlockchainExplorer.Core.Models
         public string ControllerAddress { get; set; }
         
         public virtual ICollection<BlockchainEvent> BlockchainEventsByAccountId { get; set; }
-        public virtual ICollection<HoldingEligibility> HoldingEligibilitiesByAccountId { get; set; }
+        public virtual ICollection<Holding> HoldingsByAccountId { get; set; }
 
         public Account()
         {
             this.BlockchainEventsByAccountId = new HashSet<BlockchainEvent>();
-            this.HoldingEligibilitiesByAccountId = new HashSet<HoldingEligibility>();
+            this.HoldingsByAccountId = new HashSet<Holding>();
         }
     }
 }

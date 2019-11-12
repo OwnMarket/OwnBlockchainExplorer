@@ -24,7 +24,7 @@ namespace Own.BlockchainExplorer.Core.Models
         public string StakingRewardsRoot { get; set; }
         public string ConfigurationRoot { get; set; }
         public string Configuration { get; set; }
-        public int? ConsensusRound { get; set; }
+        public int ConsensusRound { get; set; }
         public string Signatures { get; set; }
         
         public virtual Block PreviousBlock { get; set; }

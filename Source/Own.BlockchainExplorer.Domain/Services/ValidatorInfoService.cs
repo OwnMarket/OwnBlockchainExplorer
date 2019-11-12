@@ -52,7 +52,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                         && e.Address.BlockchainAddress == blockchainAddress
                         && e.TxAction.ActionType == ActionType.DelegateStake.ToString()
                         && e.Fee == null
-                        && e.Transaction.Status == TxStatus.Success.ToString(),
+                        && e.Tx.Status == TxStatus.Success.ToString(),
                         e => e.TxActionId);
 
                 if (!receivedStakeIds.Any())
@@ -85,14 +85,14 @@ namespace Own.BlockchainExplorer.Domain.Services
                        e => e.EventType == EventType.Action.ToString()
                        && e.TxAction.ActionType == ActionType.DelegateStake.ToString()
                        && e.Fee != null
-                       && e.Transaction.Status == TxStatus.Success.ToString());
+                       && e.Tx.Status == TxStatus.Success.ToString());
 
                 var receivedStakes = eventRepo
                    .Get(
                        e => e.EventType == EventType.Action.ToString()
                        && e.TxAction.ActionType == ActionType.DelegateStake.ToString()
                        && e.Fee == null
-                       && e.Transaction.Status == TxStatus.Success.ToString(),
+                       && e.Tx.Status == TxStatus.Success.ToString(),
                        e => e.Address);
 
                 var validators = NewRepository<Validator>(uow).Get(v => !v.IsDeleted);

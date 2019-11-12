@@ -97,15 +97,15 @@ namespace Own.BlockchainExplorer.Domain.Services
             return Result.Success(block);
         }
 
-        public Result<Transaction> ImportTx(TxDto txDto, long timestamp, IUnitOfWork uow)
+        public Result<Tx> ImportTx(TxDto txDto, long timestamp, IUnitOfWork uow)
         {
-            var txRepo = NewRepository<Transaction>(uow);
+            var txRepo = NewRepository<Tx>(uow);
 
             if (txRepo.Exists(t => t.Hash == txDto.TxHash))
-                return Result.Failure<Transaction>("TX {0} already exists.".F(txDto.TxHash));
+                return Result.Failure<Tx>("TX {0} already exists.".F(txDto.TxHash));
 
             var tx =
-                new Transaction
+                new Tx
                 {
                     Hash = txDto.TxHash,
                     Nonce = txDto.Nonce,
@@ -324,7 +324,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             TxAction action,
             Address senderAddress,
             long blockId,
-            Transaction tx,
+            Tx tx,
             JObject actionDataObj,
             IUnitOfWork uow)
         {
@@ -335,7 +335,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 BlockId = blockId,
                 Fee = tx.ActionFee,
                 Amount = 0,
-                TransactionId = tx.TransactionId,
+                TxId = tx.TxId,
                 EventType = EventType.Action.ToString()
             };
             var events = new List<BlockchainEvent> { senderEvent };

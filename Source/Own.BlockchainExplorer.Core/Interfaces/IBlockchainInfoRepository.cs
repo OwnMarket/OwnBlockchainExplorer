@@ -7,7 +7,7 @@ namespace Own.BlockchainExplorer.Core.Interfaces
 {
     public interface IBlockchainInfoRepository
     {
-        IEnumerable<Transaction> GetTxs(int limit, int page);
+        IEnumerable<Tx> GetTxs(int limit, int page);
         IEnumerable<BlockInfoShortDto> GetBlocks(int limit, int page);
         List<KeyValuePair<DateTime, int>> GetTxPerDay(int numberOfDays);
         Dictionary<long, int> GetValidatorProposedBlockCount(long minTimestamp);

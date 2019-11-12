@@ -72,7 +72,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                     e => e.Account.Hash == accountHash,
                     e => e.TxAction,
                     e => e.Address,
-                    e => e.Account.HoldingEligibilitiesByAccountId);
+                    e => e.Account.HoldingsByAccountId);
 
                 if (!events.Any())
                     return Result.Failure<AccountInfoDto>("Account {0} does not exist.".F(accountHash));
@@ -81,12 +81,12 @@ namespace Own.BlockchainExplorer.Domain.Services
 
                 var accountDto = AccountInfoDto.FromDomainModel(account);
 
-                accountDto.Holdings = account.HoldingEligibilitiesByAccountId
+                accountDto.Holdings = account.HoldingsByAccountId
                     .Where(h => h.Balance.HasValue)
                     .Select(h => new HoldingDto { AssetHash = h.AssetHash, Balance = h.Balance.Value })
                     .ToList();
 
-                accountDto.Eligibilities = account.HoldingEligibilitiesByAccountId
+                accountDto.Eligibilities = account.HoldingsByAccountId
                     .Where(h => h.IsPrimaryEligible.HasValue || h.KycControllerAddress != null)
                     .Select(h => new EligibilityDto {
                         AssetHash = h.AssetHash,
@@ -115,7 +115,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                     e => e.Asset.Hash == assetHash,
                     e => e.TxAction,
                     e => e.Address,
-                    e => e.Asset.HoldingEligibilitiesByAssetId);
+                    e => e.Asset.HoldingsByAssetId);
 
                 if (!events.Any())
                     return Result.Failure<AssetInfoDto>("Asset {0} does not exist.".F(assetHash));
@@ -124,12 +124,12 @@ namespace Own.BlockchainExplorer.Domain.Services
 
                 var assetDto = AssetInfoDto.FromDomainModel(asset);
 
-                assetDto.Holdings = asset.HoldingEligibilitiesByAssetId
+                assetDto.Holdings = asset.HoldingsByAssetId
                     .Where(h => h.Balance.HasValue)
                     .Select(h => new HoldingDto { AccountHash = h.AccountHash, Balance = h.Balance.Value })
                     .ToList();
 
-                assetDto.Eligibilities = asset.HoldingEligibilitiesByAssetId
+                assetDto.Eligibilities = asset.HoldingsByAssetId
                     .Where(h => h.IsPrimaryEligible.HasValue || h.KycControllerAddress != null)
                     .Select(h => new EligibilityDto
                     {
@@ -157,10 +157,10 @@ namespace Own.BlockchainExplorer.Domain.Services
             using (var uow = NewUnitOfWork())
             {
                 var txs = _blockchainInfoRepositoryFactory.Create(uow).GetTxs(limit, page);
-                var txIds = txs.Select(t => t.TransactionId);
+                var txIds = txs.Select(t => t.TxId);
 
                 var events = NewRepository<BlockchainEvent>(uow).Get(
-                    e => e.TransactionId.HasValue && txIds.Contains(e.TransactionId.Value),
+                    e => e.TxId.HasValue && txIds.Contains(e.TxId.Value),
                     e => e.Block,
                     e => e.Address);
 
@@ -170,14 +170,14 @@ namespace Own.BlockchainExplorer.Domain.Services
                     Timestamp = DateTimeOffset.FromUnixTimeMilliseconds(tx.Timestamp).UtcDateTime,
                     Status = tx.Status,
                     NumberOfActions = events
-                        .Where(e => e.TransactionId == tx.TransactionId)
+                        .Where(e => e.TxId == tx.TxId)
                         .GroupBy(e => e.TxActionId)
                         .Count(),
                     SenderAddress = events
-                        .First(e => e.TransactionId == tx.TransactionId && e.Fee.HasValue)
+                        .First(e => e.TxId == tx.TxId && e.Fee.HasValue)
                         .Address.BlockchainAddress,
                     BlockNumber = events
-                        .First(e => e.TransactionId == tx.TransactionId)
+                        .First(e => e.TxId == tx.TxId)
                         .Block.BlockNumber
                 }));
             }
@@ -208,7 +208,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                         return Result.Success(SearchType.Account.ToString());
                     if (NewRepository<Asset>(uow).Exists(a => a.Hash == searchValue))
                         return Result.Success(SearchType.Asset.ToString());
-                    if (NewRepository<Transaction>(uow).Exists(t => t.Hash == searchValue))
+                    if (NewRepository<Tx>(uow).Exists(t => t.Hash == searchValue))
                         return Result.Success(SearchType.Transaction.ToString());
                     if (NewRepository<Equivocation>(uow).Exists(e => e.EquivocationProofHash == searchValue))
                         return Result.Success(SearchType.Equivocation.ToString());

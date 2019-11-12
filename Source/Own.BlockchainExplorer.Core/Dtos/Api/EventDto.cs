@@ -24,7 +24,7 @@ namespace Own.BlockchainExplorer.Core.Dtos.Api
                 BlockTime = blockTimestamp.HasValue
                     ? (DateTime?)DateTimeOffset.FromUnixTimeMilliseconds(blockTimestamp.Value).UtcDateTime
                     : null,
-                TransactionHash = model.Transaction?.Hash,
+                TransactionHash = model.Tx?.Hash,
                 EquivocationHash = model.Equivocation?.EquivocationProofHash,
                 EventDetails = model.EventType +
                     (model.EventType == EventType.Action.ToString()

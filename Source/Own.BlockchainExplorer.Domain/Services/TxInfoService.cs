@@ -24,14 +24,14 @@ namespace Own.BlockchainExplorer.Domain.Services
             using (var uow = NewUnitOfWork())
             {
                 var events = NewRepository<BlockchainEvent>(uow).Get(
-                    e => e.Transaction.Hash == txHash,
-                    e => e.Transaction,
+                    e => e.Tx.Hash == txHash,
+                    e => e.Tx,
                     e => e.Block,
                     e => e.Address);
                 if (!events.Any())
                     return Result.Failure<TxInfoDto>("Transaction {0} does not exist.".F(txHash));
 
-                var txDto = TxInfoDto.FromDomainModel(events.FirstOrDefault().Transaction);
+                var txDto = TxInfoDto.FromDomainModel(events.FirstOrDefault().Tx);
                 txDto.BlockNumber = events.FirstOrDefault().Block.BlockNumber;
                 txDto.SenderAddress = events.FirstOrDefault(e => e.Fee != null).Address.BlockchainAddress;
                 txDto.NumberOfActions = events
@@ -50,7 +50,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 return Result.Success(
                     NewRepository<BlockchainEvent>(uow)
                         .Get(
-                            e => e.Transaction.Hash == txHash && e.EventType == EventType.Action.ToString(),
+                            e => e.Tx.Hash == txHash && e.EventType == EventType.Action.ToString(),
                             e => e.TxAction)
                         .OrderBy(e => e.TxAction.ActionNumber)
                         .GroupBy(e => e.TxActionId)

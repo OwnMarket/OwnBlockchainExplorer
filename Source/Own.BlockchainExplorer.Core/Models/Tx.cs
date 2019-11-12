@@ -6,9 +6,9 @@ using System.Collections.Generic;
 
 namespace Own.BlockchainExplorer.Core.Models
 {
-    public partial class Transaction
+    public partial class Tx
     {
-        public long TransactionId { get; set; }
+        public long TxId { get; set; }
         public string Hash { get; set; }
         public long Nonce { get; set; }
         public long Timestamp { get; set; }
@@ -19,11 +19,11 @@ namespace Own.BlockchainExplorer.Core.Models
         public string ErrorMessage { get; set; }
         public short? FailedActionNumber { get; set; }
         
-        public virtual ICollection<BlockchainEvent> BlockchainEventsByTransactionId { get; set; }
+        public virtual ICollection<BlockchainEvent> BlockchainEventsByTxId { get; set; }
 
-        public Transaction()
+        public Tx()
         {
-            this.BlockchainEventsByTransactionId = new HashSet<BlockchainEvent>();
+            this.BlockchainEventsByTxId = new HashSet<BlockchainEvent>();
         }
     }
 }

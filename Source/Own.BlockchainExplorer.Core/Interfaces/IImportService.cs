@@ -10,7 +10,7 @@ namespace Own.BlockchainExplorer.Core.Interfaces
     {
         Result<Address> ImportAddress(string blockchainAddress, long nonce, IUnitOfWork uow);
         Result<Block> ImportBlock(BlockDto blockDto, IUnitOfWork uow);
-        Result<Transaction> ImportTx(TxDto txDto, long timestamp, IUnitOfWork uow);
+        Result<Tx> ImportTx(TxDto txDto, long timestamp, IUnitOfWork uow);
         Result<Equivocation> ImportEquivocation(EquivocationDto equivocationDto, long blockId, IUnitOfWork uow);
 
         Result<BlockchainEvent> ImportStakingRewardEvent(
@@ -38,7 +38,7 @@ namespace Own.BlockchainExplorer.Core.Interfaces
             TxAction action,
             Address senderAddress,
             long blockId,
-            Transaction tx,
+            Tx tx,
             JObject actionDataObj,
             IUnitOfWork uow);
     }

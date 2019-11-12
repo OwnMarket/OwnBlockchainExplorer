@@ -29,7 +29,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                     && e.Address.BlockchainAddress == blockchainAddress
                     && (e.TxAction.ActionType == ActionType.CreateAccount.ToString()
                         || e.TxAction.ActionType == ActionType.SetAccountController.ToString())
-                    && e.Transaction.Status == TxStatus.Success.ToString())
+                    && e.Tx.Status == TxStatus.Success.ToString())
                 .Include(e => e.Account)
                 .Include(e => e.Address)
                 .Select(e => new ControlledAccountDto
@@ -57,7 +57,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                     && e.Address.BlockchainAddress == blockchainAddress
                     && (e.TxAction.ActionType == ActionType.CreateAsset.ToString()
                         || e.TxAction.ActionType == ActionType.SetAssetController.ToString())
-                    && e.Transaction.Status == TxStatus.Success.ToString())
+                    && e.Tx.Status == TxStatus.Success.ToString())
                 .Include(e => e.Asset)
                 .Include(e => e.Address)
                 .Select(e => new ControlledAssetDto
@@ -83,7 +83,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                         && e.Fee != null
                     || e.EventType == EventType.StakeReturned.ToString())
                     && e.Address.BlockchainAddress == blockchainAddress
-                    && e.Transaction.Status == TxStatus.Success.ToString())
+                    && e.Tx.Status == TxStatus.Success.ToString())
                 .Select(e => e.TxActionId)
                 .ToList();
 
@@ -137,7 +137,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                     || e.EventType == EventType.StakeReturned.ToString())
                     && e.Address.BlockchainAddress == blockchainAddress
                     && e.Fee == null
-                    && e.Transaction.Status == TxStatus.Success.ToString())
+                    && e.Tx.Status == TxStatus.Success.ToString())
                 .Select(e => e.TxActionId)
                 .ToList();
 
@@ -210,7 +210,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
             var events = query
                 .Include(e => e.TxAction)
                 .Include(e => e.Equivocation)
-                .Include(e => e.Transaction)
+                .Include(e => e.Tx)
                 .Include(e => e.Block)
                 .OrderByDescending(e => e.BlockchainEventId)
                 .Skip((page - 1) * limit)

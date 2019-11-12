@@ -18,7 +18,7 @@ namespace Own.BlockchainExplorer.Core.Dtos.Scanning
         public string StakingRewardsRoot { get; set; }
         public string ConfigurationRoot { get; set; }
         public ConfigurationDto Configuration { get; set; }
-        public int? ConsensusRound { get; set; }
+        public int ConsensusRound { get; set; }
 
         public List<string> TxSet { get; set; }
         public List<string> EquivocationProofs { get; set; }

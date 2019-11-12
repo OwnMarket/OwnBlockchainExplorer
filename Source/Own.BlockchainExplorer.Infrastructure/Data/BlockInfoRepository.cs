@@ -43,10 +43,10 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
             return
                 _db.BlockchainEvents
                 .Where(e => e.Block.BlockNumber == blockNumber && e.EventType == EventType.Action.ToString())
-                .Include(e => e.Transaction)
+                .Include(e => e.Tx)
                 .Include(e => e.Address)
-                .GroupBy(e => e.Transaction)
-                .OrderBy(g => g.Key.TransactionId)
+                .GroupBy(e => e.Tx)
+                .OrderBy(g => g.Key.TxId)
                 .Select(g => new TxInfoShortDto
                 {
                     Hash = g.Key.Hash,

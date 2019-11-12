@@ -64,7 +64,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                     TxActionId = senderEvent.TxActionId,
                     BlockId = senderEvent.BlockId,
                     Amount = actionData.Amount,
-                    TransactionId = senderEvent.TransactionId,
+                    TxId = senderEvent.TxId,
                     EventType = EventType.Action.ToString()
                 }
             };
@@ -119,7 +119,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                     TxActionId = senderEvent.TxActionId,
                     BlockId = senderEvent.BlockId,
                     Amount = actionData.Amount,
-                    TransactionId = senderEvent.TransactionId,
+                    TxId = senderEvent.TxId,
                     EventType = EventType.Action.ToString()
                 }
             };
@@ -218,7 +218,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                     AddressId = address.AddressId,
                     Amount = stakedAmount,
                     BlockId = senderEvent.BlockId,
-                    TransactionId = senderEvent.TransactionId,
+                    TxId = senderEvent.TxId,
                     TxActionId = senderEvent.TxActionId,
                     EventType = EventType.StakeReturned.ToString()
                 });
@@ -236,7 +236,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 AddressId = senderAddress.AddressId,
                 Amount = delegateStakeEvents.Select(g => g.Sum(e => e.Amount) ?? 0).Sum(),
                 BlockId = senderEvent.BlockId,
-                TransactionId = senderEvent.TransactionId,
+                TxId = senderEvent.TxId,
                 TxActionId = senderEvent.TxActionId,
                 EventType = EventType.StakeReturned.ToString()
             });
@@ -307,7 +307,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                     BlockId = senderEvent.BlockId,
                     Fee = 0,
                     Amount = 0,
-                    TransactionId = senderEvent.TransactionId,
+                    TxId = senderEvent.TxId,
                     EventType = EventType.Action.ToString(),
                     AssetId = asset.AssetId
                 }
@@ -363,7 +363,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                     BlockId = senderEvent.BlockId,
                     Fee = 0,
                     Amount = 0,
-                    TransactionId = senderEvent.TransactionId,
+                    TxId = senderEvent.TxId,
                     EventType = EventType.Action.ToString(),
                     AccountId = account.AccountId
                 }
@@ -382,7 +382,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             var addressRepo = NewRepository<Address>(uow);
             var accountRepo = NewRepository<Account>(uow);
             var assetRepo = NewRepository<Asset>(uow);
-            var holdingRepo = NewRepository<HoldingEligibility>(uow);
+            var holdingRepo = NewRepository<Holding>(uow);
 
             var sameAccount = actionData.FromAccountHash == actionData.ToAccountHash;
 
@@ -416,7 +416,7 @@ namespace Own.BlockchainExplorer.Domain.Services
 
             if (isNewHolding)
             {
-                toHolding = new HoldingEligibility
+                toHolding = new Holding
                 {
                     AssetHash = asset.Hash,
                     AssetId = asset.AssetId,
@@ -458,7 +458,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                     BlockId = senderEvent.BlockId,
                     Fee = 0,
                     Amount = actionData.Amount,
-                    TransactionId = senderEvent.TransactionId,
+                    TxId = senderEvent.TxId,
                     EventType = EventType.Action.ToString(),
                     AccountId = toAccount.AccountId,
                     AssetId = asset.AssetId
@@ -493,7 +493,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             senderEvent.AssetId = asset.AssetId;
             senderEvent.Amount = actionData.Amount;
 
-            var holdingRepo = NewRepository<HoldingEligibility>(uow);
+            var holdingRepo = NewRepository<Holding>(uow);
             var holding = holdingRepo
                 .Get(h => h.AssetId == asset.AssetId && h.AccountId == account.AccountId)
                 .SingleOrDefault();
@@ -501,7 +501,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             var isNewHolding = holding is null;
             if (isNewHolding)
             {
-                holding = new HoldingEligibility
+                holding = new Holding
                 {
                     AssetHash = asset.Hash,
                     AssetId = asset.AssetId,
@@ -531,7 +531,8 @@ namespace Own.BlockchainExplorer.Domain.Services
                     senderAddress.BlockchainAddress,
                     senderAddress.Nonce,
                     (short)action.ActionNumber),
-                ControllerAddress = senderAddress.BlockchainAddress
+                ControllerAddress = senderAddress.BlockchainAddress,
+                IsEligibilityRequired = false
             };
 
             NewRepository<Asset>(uow).Insert(asset);
@@ -618,7 +619,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             if (asset is null)
                 return Result.Failure<List<BlockchainEvent>>("Asset {0} does not exist.".F(actionData.AssetHash));
 
-            var holdingRepo = NewRepository<HoldingEligibility>(uow);
+            var holdingRepo = NewRepository<Holding>(uow);
             var holding = holdingRepo
                 .Get(h => h.AssetId == asset.AssetId && h.AccountId == account.AccountId)
                 .SingleOrDefault();
@@ -626,7 +627,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             var isNewHolding = holding is null;
             if (isNewHolding)
             {
-                holding = new HoldingEligibility
+                holding = new Holding
                 {
                     AssetHash = asset.Hash,
                     AssetId = asset.AssetId,
@@ -683,7 +684,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             if (asset is null)
                 return Result.Failure<List<BlockchainEvent>>("Asset {0} does not exist.".F(actionData.AssetHash));
 
-            var holdingRepo = NewRepository<HoldingEligibility>(uow);
+            var holdingRepo = NewRepository<Holding>(uow);
             var holding = holdingRepo
                 .Get(h => h.AssetId == asset.AssetId && h.AccountId == account.AccountId)
                 .SingleOrDefault();
@@ -691,7 +692,7 @@ namespace Own.BlockchainExplorer.Domain.Services
 
             if (isNewHolding)
             {
-                holding = new HoldingEligibility()
+                holding = new Holding()
                 {
                     AssetHash = asset.Hash,
                     AssetId = asset.AssetId,

@@ -11,16 +11,16 @@ namespace Own.BlockchainExplorer.Core.Models
         public long AssetId { get; set; }
         public string Hash { get; set; }
         public string AssetCode { get; set; }
-        public bool? IsEligibilityRequired { get; set; }
+        public bool IsEligibilityRequired { get; set; }
         public string ControllerAddress { get; set; }
         
         public virtual ICollection<BlockchainEvent> BlockchainEventsByAssetId { get; set; }
-        public virtual ICollection<HoldingEligibility> HoldingEligibilitiesByAssetId { get; set; }
+        public virtual ICollection<Holding> HoldingsByAssetId { get; set; }
 
         public Asset()
         {
             this.BlockchainEventsByAssetId = new HashSet<BlockchainEvent>();
-            this.HoldingEligibilitiesByAssetId = new HashSet<HoldingEligibility>();
+            this.HoldingsByAssetId = new HashSet<Holding>();
         }
     }
 }

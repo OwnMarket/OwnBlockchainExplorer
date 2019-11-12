@@ -17,7 +17,7 @@ namespace Own.BlockchainExplorer.Core.Dtos.Api
         public string ErrorMessage { get; set; }
         public short? FailedActionNumber { get; set; }
 
-        public static TxInfoDto FromDomainModel(Transaction tx)
+        public static TxInfoDto FromDomainModel(Tx tx)
         {
             return new TxInfoDto
             {

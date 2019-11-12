@@ -16,8 +16,8 @@ namespace Own.BlockchainExplorer.Infrastructure.Data.EF
         public virtual DbSet<Block> Blocks { get; set; }
         public virtual DbSet<BlockchainEvent> BlockchainEvents { get; set; }
         public virtual DbSet<Equivocation> Equivocations { get; set; }
-        public virtual DbSet<HoldingEligibility> HoldingEligibilities { get; set; }
-        public virtual DbSet<Transaction> Transactions { get; set; }
+        public virtual DbSet<Holding> Holdings { get; set; }
+        public virtual DbSet<Tx> Txs { get; set; }
         public virtual DbSet<TxAction> TxActions { get; set; }
         public virtual DbSet<Validator> Validators { get; set; }
 
@@ -73,7 +73,8 @@ namespace Own.BlockchainExplorer.Infrastructure.Data.EF
             asset.Property(e => e.AssetCode)
                 .HasColumnName("asset_code");
             asset.Property(e => e.IsEligibilityRequired)
-                .HasColumnName("is_eligibility_required");
+                .HasColumnName("is_eligibility_required")
+                .IsRequired();
             asset.Property(e => e.ControllerAddress)
                 .HasColumnName("controller_address")
                 .IsRequired();
@@ -94,7 +95,8 @@ namespace Own.BlockchainExplorer.Infrastructure.Data.EF
             block.Property(e => e.PreviousBlockId)
                 .HasColumnName("previous_block_id");
             block.Property(e => e.PreviousBlockHash)
-                .HasColumnName("previous_block_hash");
+                .HasColumnName("previous_block_hash")
+                .IsRequired();
             block.Property(e => e.ConfigurationBlockNumber)
                 .HasColumnName("configuration_block_number")
                 .IsRequired();
@@ -122,7 +124,8 @@ namespace Own.BlockchainExplorer.Infrastructure.Data.EF
                 .HasColumnName("configuration")
                 .HasColumnType("json");
             block.Property(e => e.ConsensusRound)
-                .HasColumnName("consensus_round");
+                .HasColumnName("consensus_round")
+                .IsRequired();
             block.Property(e => e.Signatures)
                 .HasColumnName("signatures")
                 .IsRequired();
@@ -151,8 +154,8 @@ namespace Own.BlockchainExplorer.Infrastructure.Data.EF
             blockchainEvent.Property(e => e.BlockId)
                 .HasColumnName("block_id")
                 .IsRequired();
-            blockchainEvent.Property(e => e.TransactionId)
-                .HasColumnName("transaction_id");
+            blockchainEvent.Property(e => e.TxId)
+                .HasColumnName("tx_id");
             blockchainEvent.Property(e => e.EquivocationId)
                 .HasColumnName("equivocation_id");
             blockchainEvent.Property(e => e.AddressId)
@@ -167,9 +170,9 @@ namespace Own.BlockchainExplorer.Infrastructure.Data.EF
                 .WithMany(e => e.BlockchainEventsByBlockId)
                 .IsRequired()
                 .HasForeignKey(e => e.BlockId);
-            blockchainEvent.HasOne(e => e.Transaction)
-                .WithMany(e => e.BlockchainEventsByTransactionId)
-                .HasForeignKey(e => e.TransactionId);
+            blockchainEvent.HasOne(e => e.Tx)
+                .WithMany(e => e.BlockchainEventsByTxId)
+                .HasForeignKey(e => e.TxId);
             blockchainEvent.HasOne(e => e.Equivocation)
                 .WithMany(e => e.BlockchainEventsByEquivocationId)
                 .HasForeignKey(e => e.EquivocationId);
@@ -213,80 +216,83 @@ namespace Own.BlockchainExplorer.Infrastructure.Data.EF
             equivocation.Property(e => e.EquivocationValue2)
                 .HasColumnName("equivocation_value_2");
             equivocation.Property(e => e.Signature1)
-                .HasColumnName("signature_1");
+                .HasColumnName("signature_1")
+                .IsRequired();
             equivocation.Property(e => e.Signature2)
-                .HasColumnName("signature_2");
+                .HasColumnName("signature_2")
+                .IsRequired();
             equivocation.HasOne(e => e.Block)
                 .WithMany(e => e.EquivocationsByBlockId)
                 .IsRequired()
                 .HasForeignKey(e => e.BlockId);
             
-            // HoldingEligibility
-            var holdingEligibility = modelBuilder.Entity<HoldingEligibility>()
-                .ToTable("holding_eligibility", "own");
-            holdingEligibility.HasKey(c => c.HoldingEligibilityId);
-            holdingEligibility.Property(e => e.HoldingEligibilityId)
-                .HasColumnName("holding_eligibility_id")
-                .IsRequired();
-            holdingEligibility.Property(e => e.AssetId)
-                .HasColumnName("asset_id")
-                .IsRequired();
-            holdingEligibility.Property(e => e.AssetHash)
-                .HasColumnName("asset_hash")
-                .IsRequired();
-            holdingEligibility.Property(e => e.AccountId)
+            // Holding
+            var holding = modelBuilder.Entity<Holding>()
+                .ToTable("holding", "own");
+            holding.HasKey(c => c.HoldingId);
+            holding.Property(e => e.HoldingId)
+                .HasColumnName("holding_id")
+                .IsRequired()
+                .ValueGeneratedOnAdd();
+            holding.Property(e => e.AccountId)
                 .HasColumnName("account_id")
                 .IsRequired();
-            holdingEligibility.Property(e => e.AccountHash)
+            holding.Property(e => e.AccountHash)
                 .HasColumnName("account_hash")
                 .IsRequired();
-            holdingEligibility.Property(e => e.Balance)
+            holding.Property(e => e.AssetId)
+                .HasColumnName("asset_id")
+                .IsRequired();
+            holding.Property(e => e.AssetHash)
+                .HasColumnName("asset_hash")
+                .IsRequired();
+            holding.Property(e => e.Balance)
                 .HasColumnName("balance");
-            holdingEligibility.Property(e => e.IsPrimaryEligible)
+            holding.Property(e => e.IsPrimaryEligible)
                 .HasColumnName("is_primary_eligible");
-            holdingEligibility.Property(e => e.IsSecondaryEligible)
+            holding.Property(e => e.IsSecondaryEligible)
                 .HasColumnName("is_secondary_eligible");
-            holdingEligibility.Property(e => e.KycControllerAddress)
+            holding.Property(e => e.KycControllerAddress)
                 .HasColumnName("kyc_controller_address");
-            holdingEligibility.HasOne(e => e.Asset)
-                .WithMany(e => e.HoldingEligibilitiesByAssetId)
-                .IsRequired()
-                .HasForeignKey(e => e.AssetId);
-            holdingEligibility.HasOne(e => e.Account)
-                .WithMany(e => e.HoldingEligibilitiesByAccountId)
+            holding.HasOne(e => e.Account)
+                .WithMany(e => e.HoldingsByAccountId)
                 .IsRequired()
                 .HasForeignKey(e => e.AccountId);
+            holding.HasOne(e => e.Asset)
+                .WithMany(e => e.HoldingsByAssetId)
+                .IsRequired()
+                .HasForeignKey(e => e.AssetId);
             
-            // Transaction
-            var transaction = modelBuilder.Entity<Transaction>()
-                .ToTable("transaction", "own");
-            transaction.HasKey(c => c.TransactionId);
-            transaction.Property(e => e.TransactionId)
-                .HasColumnName("transaction_id")
+            // Tx
+            var tx = modelBuilder.Entity<Tx>()
+                .ToTable("tx", "own");
+            tx.HasKey(c => c.TxId);
+            tx.Property(e => e.TxId)
+                .HasColumnName("tx_id")
                 .IsRequired();
-            transaction.Property(e => e.Hash)
+            tx.Property(e => e.Hash)
                 .HasColumnName("hash")
                 .IsRequired();
-            transaction.Property(e => e.Nonce)
+            tx.Property(e => e.Nonce)
                 .HasColumnName("nonce")
                 .IsRequired();
-            transaction.Property(e => e.Timestamp)
+            tx.Property(e => e.Timestamp)
                 .HasColumnName("timestamp")
                 .IsRequired();
-            transaction.Property(e => e.DateTime)
+            tx.Property(e => e.DateTime)
                 .HasColumnName("date_time")
                 .IsRequired();
-            transaction.Property(e => e.ExpirationTime)
+            tx.Property(e => e.ExpirationTime)
                 .HasColumnName("expiration_time");
-            transaction.Property(e => e.ActionFee)
+            tx.Property(e => e.ActionFee)
                 .HasColumnName("action_fee")
                 .IsRequired();
-            transaction.Property(e => e.Status)
+            tx.Property(e => e.Status)
                 .HasColumnName("status")
                 .IsRequired();
-            transaction.Property(e => e.ErrorMessage)
+            tx.Property(e => e.ErrorMessage)
                 .HasColumnName("error_message");
-            transaction.Property(e => e.FailedActionNumber)
+            tx.Property(e => e.FailedActionNumber)
                 .HasColumnName("failed_action_number");
             
             // TxAction
@@ -303,7 +309,9 @@ namespace Own.BlockchainExplorer.Infrastructure.Data.EF
                 .HasColumnName("action_type")
                 .IsRequired();
             txAction.Property(e => e.ActionData)
-                .HasColumnName("action_data");
+                .HasColumnName("action_data")
+                .HasColumnType("json")
+                .IsRequired();
             
             // Validator
             var validator = modelBuilder.Entity<Validator>()

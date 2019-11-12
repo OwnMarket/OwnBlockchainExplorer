@@ -18,10 +18,10 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
             _db = db ?? throw new ArgumentNullException(nameof(db));
         }
 
-        public IEnumerable<Transaction> GetTxs(int limit, int page)
+        public IEnumerable<Tx> GetTxs(int limit, int page)
         {
             return
-                _db.Transactions
+                _db.Txs
                 .OrderByDescending(t => t.Timestamp)
                 .Skip((page - 1) * limit)
                 .Take(limit)
@@ -50,7 +50,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
             var currentDate = DateTime.UtcNow.Date;
             var minDate = currentDate.AddDays(numberOfDays * -1);
 
-            return _db.Transactions
+            return _db.Txs
                 .Where(t => t.DateTime.Date > minDate)
                 .GroupBy(t => t.DateTime.Date)
                 .Select(g => new KeyValuePair<DateTime, int>(g.Key, g.Count()))
@@ -77,12 +77,12 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                     b => b.ValidatorId,
                     (v, b) => new {v.ValidatorId, b.BlockId})
                 .Join(
-                    _db.BlockchainEvents.Where(ev => ev.TransactionId.HasValue),
+                    _db.BlockchainEvents.Where(ev => ev.TxId.HasValue),
                     vb => vb.BlockId,
                     e => e.BlockId,
-                    (vb, e) => new { vb.ValidatorId, vb.BlockId, e.TransactionId})
+                    (vb, e) => new { vb.ValidatorId, vb.BlockId, e.TxId})
                 .GroupBy(s => s.ValidatorId)
-                .Select(g => new KeyValuePair<long, int>(g.Key, g.Select(s => s.TransactionId).Distinct().Count()))
+                .Select(g => new KeyValuePair<long, int>(g.Key, g.Select(s => s.TxId).Distinct().Count()))
                 .ToDictionary(g => g.Key, g => g.Value);
         }
 
@@ -93,7 +93,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                     e.EventType == EventType.Action.ToString()
                     && e.TxAction.ActionType == ActionType.DelegateStake.ToString()
                     && e.Fee == null
-                    && e.Transaction.Status == TxStatus.Success.ToString()
+                    && e.Tx.Status == TxStatus.Success.ToString()
                     && e.Amount.HasValue
                     && e.Amount.Value != 0)
                 .Select(e => new { e.Address.BlockchainAddress, e.Amount.Value })
