@@ -210,7 +210,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             if (address is null)
                 return Result.Failure<BlockchainEvent>("Address {0} does not exist.".F(blockchainAddress));
 
-            UpdateValidatorBalance(address, reward, uow);
+            UpdateValidatorBalance(address, reward);
 
             blockchainEvent.AddressId = address.AddressId;
 
