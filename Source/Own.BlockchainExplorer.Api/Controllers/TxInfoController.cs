@@ -22,9 +22,9 @@ namespace Own.BlockchainExplorer.Api.Controllers
 
         [HttpGet]
         [Route("tx/{txHash}/actions")]
-        public IActionResult GetActionsInfo(string txHash, [FromQuery] int page = 1, [FromQuery] int limit = 50)
+        public IActionResult GetActionsInfo(string txHash)
         {
-            return ApiResult(_txInfoService.GetActionsInfo(txHash, page, limit), r => NotFound(r));
+            return ApiResult(_txInfoService.GetActionsInfo(txHash), r => NotFound(r));
         }
     }
 }

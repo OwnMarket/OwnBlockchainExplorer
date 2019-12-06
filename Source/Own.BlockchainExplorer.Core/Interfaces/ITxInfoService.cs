@@ -7,6 +7,6 @@ namespace Own.BlockchainExplorer.Core.Interfaces
     public interface ITxInfoService
     {
         Result<TxInfoDto> GetTxInfo(string txHash);
-        Result<IEnumerable<ActionDto>> GetActionsInfo(string txHash, int page, int limit);
+        Result<IEnumerable<ActionDto>> GetActionsInfo(string txHash);
     }
 }
