@@ -3,6 +3,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using Own.BlockchainExplorer.Common.Extensions;
 using Own.BlockchainExplorer.Common.Framework;
+using Own.BlockchainExplorer.Core;
 using Own.BlockchainExplorer.Core.Dtos.ActionData;
 using Own.BlockchainExplorer.Core.Dtos.Api;
 using Own.BlockchainExplorer.Core.Enums;
@@ -169,7 +170,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 validatorRepo.Update(validator);
             }
 
-            var depositAmount = 10000 - senderAddress.DepositBalance;
+            var depositAmount = Config.ValidatorDeposit - senderAddress.DepositBalance;
             senderAddress.DepositBalance += depositAmount;
             senderAddress.AvailableBalance -= depositAmount;
 

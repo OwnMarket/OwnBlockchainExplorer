@@ -23,12 +23,13 @@ namespace Own.BlockchainExplorer.Core
         public static string[] GenesisValidators => _provider.GetString("genesisValidators").Split(',', ';');
         public static string FakeValidator => _provider.GetString("fakeValidator");
         public static string[] GenesisAddresses => _provider.GetString("genesisAddresses").Split(',', ';');
+        public static decimal ValidatorDeposit = 10000;
 
         // GeoLocation
         public static string IpGeoApi => _provider.GetString("geo:apiUrl");
         public static string GeoApiKey => _provider.GetString("geo:apiKey");
         public static int GeoCacheTime => _provider.GetInteger("geoCacheTime").Value; // Minutes
-       
+
         public static int ScanBatchSize => _provider.GetInteger("scanBatchSize").Value;
 
         // API

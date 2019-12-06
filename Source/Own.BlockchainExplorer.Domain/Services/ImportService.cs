@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Own.BlockchainExplorer.Common.Extensions;
 using Own.BlockchainExplorer.Common.Framework;
+using Own.BlockchainExplorer.Core;
 using Own.BlockchainExplorer.Core.Dtos.ActionData;
 using Own.BlockchainExplorer.Core.Dtos.Scanning;
 using Own.BlockchainExplorer.Core.Enums;
@@ -247,7 +248,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             depositTakenEvent.AddressId = address.AddressId;
 
             address.DepositBalance -= equivocationDto.DepositTaken;
-            var newDepositAmount = 10000 - address.DepositBalance;
+            var newDepositAmount = Config.ValidatorDeposit - address.DepositBalance;
 
             var amountToDeduce = address.AvailableBalance > newDepositAmount
                 ? newDepositAmount
