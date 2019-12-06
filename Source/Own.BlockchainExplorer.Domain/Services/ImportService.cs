@@ -178,7 +178,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 return Result.Failure<BlockchainEvent>("Address {0} does not exist.".F(stakingRewardDto.StakerAddress));
 
             blockchainEvent.AddressId = address.AddressId;
-            address.AvailableBalance += stakingRewardDto.Amount;
+            UpdateValidatorBalance(address, stakingRewardDto.Amount, uow);
 
             addressRepo.Update(address);
             NewRepository<BlockchainEvent>(uow).Insert(blockchainEvent);
@@ -210,7 +210,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             if (address is null)
                 return Result.Failure<BlockchainEvent>("Address {0} does not exist.".F(blockchainAddress));
 
-            address.AvailableBalance += reward;
+            UpdateValidatorBalance(address, reward, uow);
 
             blockchainEvent.AddressId = address.AddressId;
 
@@ -467,6 +467,25 @@ namespace Own.BlockchainExplorer.Domain.Services
 
             uow.Commit();
             return Result.Success(events.AsEnumerable());
+        }
+
+        private void UpdateValidatorBalance(Address validatorAddress, decimal amount, IUnitOfWork uow)
+        {
+            if (validatorAddress.DepositBalance < Config.ValidatorDeposit)
+            {
+                var missingDepositBalance = Config.ValidatorDeposit - validatorAddress.DepositBalance;
+                if (amount <= missingDepositBalance)
+                    validatorAddress.DepositBalance += amount;
+                else
+                {
+                    validatorAddress.DepositBalance += missingDepositBalance;
+                    validatorAddress.AvailableBalance += amount - missingDepositBalance;
+                }
+            }
+            else
+            {
+                validatorAddress.AvailableBalance += amount;
+            }
         }
     }
 }

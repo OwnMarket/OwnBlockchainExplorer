@@ -55,7 +55,8 @@ namespace Own.BlockchainExplorer.Domain.Services
                     DepositBalance = 0
                 };
             }
-            recipientAddress.AvailableBalance += actionData.Amount;
+
+            UpdateBalance(recipientAddress, actionData.Amount, uow);
 
             var events = new List<BlockchainEvent>
             {
@@ -809,6 +810,30 @@ namespace Own.BlockchainExplorer.Domain.Services
             }
 
             return Result.Success(new List<BlockchainEvent>());
+        }
+
+        private void UpdateBalance(Address recipientAddress, decimal amount, IUnitOfWork uow)
+        {
+            var recipientIsValidator = NewRepository<Validator>(uow)
+                .Exists(
+                    v => v.BlockchainAddress == recipientAddress.BlockchainAddress
+                    && v.IsActive);
+
+            if (recipientIsValidator && recipientAddress.DepositBalance < Config.ValidatorDeposit)
+            {
+                var missingDepositBalance = Config.ValidatorDeposit - recipientAddress.DepositBalance;
+                if (amount <= missingDepositBalance)
+                    recipientAddress.DepositBalance += amount;
+                else
+                {
+                    recipientAddress.DepositBalance += missingDepositBalance;
+                    recipientAddress.AvailableBalance += amount - missingDepositBalance;
+                }
+            }
+            else
+            {
+                recipientAddress.AvailableBalance += amount;
+            }
         }
     }
 }
