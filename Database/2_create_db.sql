@@ -26,10 +26,17 @@ ALTER DEFAULT PRIVILEGES
 GRANT SELECT, USAGE ON SEQUENCES TO own_blockchain_explorer_scanner;
 
 -- Set permissions on schemas
-GRANT ALL ON SCHEMA public TO postgres;
 GRANT USAGE ON SCHEMA public TO own_blockchain_explorer_api;
 GRANT USAGE ON SCHEMA public TO own_blockchain_explorer_scanner;
 
-GRANT ALL ON SCHEMA own TO postgres;
 GRANT USAGE ON SCHEMA own TO own_blockchain_explorer_api;
 GRANT USAGE ON SCHEMA own TO own_blockchain_explorer_scanner;
+
+DO $$
+BEGIN
+    IF EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'postgres') THEN
+        GRANT ALL ON SCHEMA public TO postgres;
+        GRANT ALL ON SCHEMA own TO postgres;
+    END IF;
+END
+$$;
