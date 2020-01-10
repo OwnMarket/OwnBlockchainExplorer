@@ -815,9 +815,9 @@ namespace Own.BlockchainExplorer.Domain.Services
         private void UpdateBalance(Address recipientAddress, decimal amount, IUnitOfWork uow)
         {
             var recipientIsValidator = NewRepository<Validator>(uow)
-                .Exists(
-                    v => v.BlockchainAddress == recipientAddress.BlockchainAddress
-                    && v.IsActive);
+                .Exists(v =>
+                    v.BlockchainAddress == recipientAddress.BlockchainAddress
+                    && !v.IsDeleted);
 
             if (recipientIsValidator && recipientAddress.DepositBalance < Config.ValidatorDeposit)
             {
