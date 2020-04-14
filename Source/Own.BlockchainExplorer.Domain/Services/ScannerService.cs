@@ -207,7 +207,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                         return Result.Failure(equivocationResult.Alerts);
                 }
 
-                if (blockDto.Configuration != null)
+                if (blockDto.Configuration != null && !blockDto.Configuration.DormantValidators.IsNullOrEmpty())
                 {
                     foreach (var validatorAddress in blockDto.Configuration.DormantValidators)
                     {

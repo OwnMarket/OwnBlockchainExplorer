@@ -7,6 +7,7 @@ namespace Own.BlockchainExplorer.Core.Dtos.Api
         public int ConfigurationBlockDelta { get; set; }
         public List<ValidatorSnapshotDto> Validators { get; set; }
         public List<string> ValidatorsBlacklist { get; set; }
+        public List<string> DormantValidators { get; set; }
         public int ValidatorDepositLockTime { get; set; }
         public int ValidatorBlacklistTime { get; set; }
         public int MaxTxCountPerBlock { get; set; }
