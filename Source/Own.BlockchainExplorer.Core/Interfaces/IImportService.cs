@@ -41,5 +41,9 @@ namespace Own.BlockchainExplorer.Core.Interfaces
             Tx tx,
             JObject actionDataObj,
             IUnitOfWork uow);
+        Result<IEnumerable<BlockchainEvent>> ImportDormantValidatorEvents(
+            string validatorAddress,
+            long blockId,
+            IUnitOfWork uow);
     }
 }

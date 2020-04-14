@@ -15,7 +15,8 @@
             StakingReward,
             DepositTaken,
             DepositGiven,
-            StakeReturned
+            StakeReturned,
+            DormantValidatorDetected
         }
 
         public enum TxStatus

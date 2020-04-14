@@ -469,6 +469,43 @@ namespace Own.BlockchainExplorer.Domain.Services
             return Result.Success(events.AsEnumerable());
         }
 
+        public Result<IEnumerable<BlockchainEvent>> ImportDormantValidatorEvents(
+            string validatorAddress,
+            long blockId,
+            IUnitOfWork uow)
+        {
+            var eventRepo = NewRepository<BlockchainEvent>(uow);
+            var addressRepo = NewRepository<Address>(uow);
+
+            var address = addressRepo.Get(a => a.BlockchainAddress == validatorAddress).SingleOrDefault();
+            if (address is null)
+                return Result.Failure<IEnumerable<BlockchainEvent>>(
+                    "Address {0} does not exist.".F(validatorAddress));
+
+            var senderEvent = new BlockchainEvent
+            {
+                AddressId = address.AddressId,
+                Amount = 0,
+                BlockId = blockId,
+                TxActionId = null,
+                TxId = null,
+                EventType = EventType.DormantValidatorDetected.ToString()
+            };
+
+            var eventResult = _actionService.RemoveValidator(senderEvent, address, uow);
+            if (eventResult.Failed)
+                return Result.Failure<IEnumerable<BlockchainEvent>>(eventResult.Alerts);
+
+            var events = new List<BlockchainEvent> { senderEvent };
+            events.AddRange(eventResult.Data);
+
+            NewRepository<BlockchainEvent>(uow).Insert(events);
+            NewRepository<Address>(uow).Update(address);
+
+            uow.Commit();
+            return Result.Success(events.AsEnumerable());
+        }
+
         private void UpdateBalance(Address validatorAddress, decimal amount, IUnitOfWork uow)
         {
             var recipientIsValidator = NewRepository<Validator>(uow)

@@ -207,6 +207,17 @@ namespace Own.BlockchainExplorer.Domain.Services
                         return Result.Failure(equivocationResult.Alerts);
                 }
 
+                if (blockDto.Configuration != null)
+                {
+                    foreach (var validatorAddress in blockDto.Configuration.DormantValidators)
+                    {
+                        var importResult = _importService
+                            .ImportDormantValidatorEvents(validatorAddress, blockImportResult.Data.BlockId, uow);
+                        if (importResult.Failed)
+                            return Result.Failure(importResult.Alerts);
+                    }
+                }
+
                 foreach (var stakingReward in blockDto.StakingRewards)
                 {
                     var importResult = _importService
