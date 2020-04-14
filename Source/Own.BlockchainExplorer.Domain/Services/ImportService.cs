@@ -489,10 +489,10 @@ namespace Own.BlockchainExplorer.Domain.Services
                 BlockId = blockId,
                 TxActionId = null,
                 TxId = null,
-                EventType = EventType.DormantValidatorDetected.ToString()
+                EventType = EventType.DormantValidatorDeactivated.ToString()
             };
 
-            var eventResult = _actionService.RemoveValidator(senderEvent, address, uow);
+            var eventResult = _actionService.RemoveValidator(senderEvent, address, uow, false);
             if (eventResult.Failed)
                 return Result.Failure<IEnumerable<BlockchainEvent>>(eventResult.Alerts);
 

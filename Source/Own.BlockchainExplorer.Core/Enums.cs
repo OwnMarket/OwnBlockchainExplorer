@@ -16,7 +16,7 @@
             DepositTaken,
             DepositGiven,
             StakeReturned,
-            DormantValidatorDetected
+            DormantValidatorDeactivated
         }
 
         public enum TxStatus

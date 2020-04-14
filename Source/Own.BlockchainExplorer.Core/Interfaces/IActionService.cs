@@ -24,7 +24,11 @@ namespace Own.BlockchainExplorer.Core.Interfaces
             Address senderAddress,
             IUnitOfWork uow);
 
-        Result<List<BlockchainEvent>> RemoveValidator(BlockchainEvent senderEvent, Address senderAddress, IUnitOfWork uow);
+        Result<List<BlockchainEvent>> RemoveValidator(
+            BlockchainEvent senderEvent, 
+            Address senderAddress, 
+            IUnitOfWork uow, 
+            bool deleteValidator = true);
 
         Result<List<BlockchainEvent>> SetAssetCode(BlockchainEvent senderEvent, SetAssetCodeData actionData, IUnitOfWork uow);
 

@@ -178,7 +178,11 @@ namespace Own.BlockchainExplorer.Domain.Services
             return Result.Success(new List<BlockchainEvent>());
         }
 
-        public Result<List<BlockchainEvent>> RemoveValidator(BlockchainEvent senderEvent, Address senderAddress, IUnitOfWork uow)
+        public Result<List<BlockchainEvent>> RemoveValidator(
+            BlockchainEvent senderEvent, 
+            Address senderAddress, 
+            IUnitOfWork uow, 
+            bool deleteValidator = true)
         {
             var validatorRepo = NewRepository<Validator>(uow);
             var eventRepo = NewRepository<BlockchainEvent>(uow);
@@ -190,8 +194,11 @@ namespace Own.BlockchainExplorer.Domain.Services
             if (validator is null)
                 return Result.Failure<List<BlockchainEvent>>("Address {0} is not a validator.".F(senderAddress.BlockchainAddress));
 
-            validator.IsDeleted = true;
-            validatorRepo.Update(validator);
+            if (deleteValidator)
+            {
+                validator.IsDeleted = true;
+                validatorRepo.Update(validator);
+            }
 
             senderAddress.AvailableBalance += senderAddress.DepositBalance;
             senderAddress.DepositBalance = 0;
