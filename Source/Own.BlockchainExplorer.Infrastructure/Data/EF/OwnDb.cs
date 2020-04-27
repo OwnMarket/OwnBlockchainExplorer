@@ -166,6 +166,8 @@ namespace Own.BlockchainExplorer.Infrastructure.Data.EF
                 .HasColumnName("account_id");
             blockchainEvent.Property(e => e.TxActionId)
                 .HasColumnName("tx_action_id");
+            blockchainEvent.Property(e => e.GroupingId)
+                .HasColumnName("grouping_id");
             blockchainEvent.HasOne(e => e.Block)
                 .WithMany(e => e.BlockchainEventsByBlockId)
                 .IsRequired()

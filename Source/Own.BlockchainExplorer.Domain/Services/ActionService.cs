@@ -198,10 +198,10 @@ namespace Own.BlockchainExplorer.Domain.Services
             {
                 validator.IsDeleted = true;
                 validatorRepo.Update(validator);
-            }
 
-            senderAddress.AvailableBalance += senderAddress.DepositBalance;
-            senderAddress.DepositBalance = 0;
+                senderAddress.AvailableBalance += senderAddress.DepositBalance;
+                senderAddress.DepositBalance = 0;
+            }
 
             var delegateStakeIds = eventRepo.GetAs(
                 e => e.EventType == EventType.Action.ToString()
@@ -229,7 +229,8 @@ namespace Own.BlockchainExplorer.Domain.Services
                     BlockId = senderEvent.BlockId,
                     TxId = senderEvent.TxId,
                     TxActionId = senderEvent.TxActionId,
-                    EventType = EventType.StakeReturned.ToString()
+                    EventType = EventType.StakeReturned.ToString(),
+                    GroupingId = senderEvent.GroupingId
                 });
 
                 address.StakedBalance -= stakedAmount;
@@ -247,7 +248,8 @@ namespace Own.BlockchainExplorer.Domain.Services
                 BlockId = senderEvent.BlockId,
                 TxId = senderEvent.TxId,
                 TxActionId = senderEvent.TxActionId,
-                EventType = EventType.StakeReturned.ToString()
+                EventType = EventType.StakeReturned.ToString(),
+                GroupingId = senderEvent.GroupingId
             });
 
             return Result.Success(events);

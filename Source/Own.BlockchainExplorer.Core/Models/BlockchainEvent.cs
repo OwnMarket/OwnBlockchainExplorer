@@ -19,6 +19,7 @@ namespace Own.BlockchainExplorer.Core.Models
         public long? AssetId { get; set; }
         public long? AccountId { get; set; }
         public long? TxActionId { get; set; }
+        public Guid? GroupingId { get; set; }
         
         public virtual Block Block { get; set; }
         public virtual Tx Tx { get; set; }

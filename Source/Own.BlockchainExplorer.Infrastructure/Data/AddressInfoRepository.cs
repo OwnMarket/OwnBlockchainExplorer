@@ -94,10 +94,20 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                     TotalAmount = 0
                 };
 
+            var stakeReturnedGroupingIds = _db.BlockchainEvents
+                .Where(e =>
+                    e.EventType == EventType.StakeReturned.ToString()
+                    && e.TxActionId == null
+                    && e.Address.BlockchainAddress == blockchainAddress
+                    && e.Amount > 0
+                    && e.GroupingId != null)
+                .Select(e => e.GroupingId)
+                .ToList();
+
             var stakesQuery = _db.BlockchainEvents
                 .Where(e =>
-                    delegateStakeIds.Contains(e.TxActionId)
-                    && e.Fee == null
+                    ((delegateStakeIds.Contains(e.TxActionId) && e.Fee == null)
+                    || (stakeReturnedGroupingIds.Contains(e.GroupingId) && e.Amount < 0))
                     && e.Address.BlockchainAddress != blockchainAddress)
                 .Include(e => e.Address)
                 .OrderByDescending(e => e.BlockchainEventId)
@@ -148,11 +158,21 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
                     TotalAmount = 0
                 };
 
+            var stakeReturnedGroupingIds = _db.BlockchainEvents
+                .Where(e =>
+                    e.EventType == EventType.StakeReturned.ToString()
+                    && e.TxActionId == null
+                    && e.Address.BlockchainAddress == blockchainAddress
+                    && e.Amount < 0
+                    && e.GroupingId != null)
+                .Select(e => e.GroupingId)
+                .ToList();
+
             var stakesQuery = _db.BlockchainEvents
                 .Where(e =>
-                    receivedStakeIds.Contains(e.TxActionId)
-                    && (e.Fee != null
-                        || e.EventType == EventType.StakeReturned.ToString() && e.Fee == null)
+                    ((receivedStakeIds.Contains(e.TxActionId)
+                    && (e.Fee != null || e.EventType == EventType.StakeReturned.ToString() && e.Fee == null)) 
+                    || stakeReturnedGroupingIds.Contains(e.GroupingId))
                     && e.Address.BlockchainAddress != blockchainAddress)
                 .Include(e => e.Address)
                 .OrderByDescending(e => e.BlockchainEventId)

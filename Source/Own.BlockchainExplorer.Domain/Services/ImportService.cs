@@ -489,7 +489,8 @@ namespace Own.BlockchainExplorer.Domain.Services
                 BlockId = blockId,
                 TxActionId = null,
                 TxId = null,
-                EventType = EventType.DormantValidatorDeactivated.ToString()
+                EventType = EventType.DormantValidatorDeactivated.ToString(),
+                GroupingId = Guid.NewGuid()
             };
 
             var eventResult = _actionService.RemoveValidator(senderEvent, address, uow, false);
