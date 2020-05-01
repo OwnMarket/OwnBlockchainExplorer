@@ -9,6 +9,7 @@ using Own.BlockchainExplorer.Infrastructure.DI;
 using System;
 using System.Linq;
 using Own.BlockchainExplorer.Common;
+using Own.BlockchainExplorer.Common.Extensions;
 
 namespace Own.BlockchainExplorer.Scanner
 {
@@ -39,7 +40,7 @@ namespace Own.BlockchainExplorer.Scanner
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
             Config.SetConfigurationProvider(DependencyResolver.GetConfigurationProvider());
-            Log.Initialize($"scanner_{DateTime.UtcNow.ToShortDateString()}.log");
+            Log.Initialize($"scanner_{DateTime.UtcNow.IsoDateString()}.log");
         }
 
         private static ServiceProvider ConfigureServices()

@@ -1,6 +1,9 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Threading;
 using Microsoft.AspNetCore.Hosting;
+using Own.BlockchainExplorer.Common;
+using Own.BlockchainExplorer.Common.Extensions;
 using Own.BlockchainExplorer.Core;
 using Own.BlockchainExplorer.Infrastructure.DI;
 
@@ -19,6 +22,7 @@ namespace Own.BlockchainExplorer.Api
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
             Config.SetConfigurationProvider(DependencyResolver.GetConfigurationProvider());
+            Log.Initialize($"scanner_{DateTime.UtcNow.IsoDateString()}.log");
         }
 
         private static void StartApi()
