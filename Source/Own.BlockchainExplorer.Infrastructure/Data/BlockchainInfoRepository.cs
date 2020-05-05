@@ -90,10 +90,18 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
         {
             return _db.BlockchainEvents
                 .Where(e =>
-                    e.EventType == EventType.Action.ToString()
-                    && e.TxAction.ActionType == ActionType.DelegateStake.ToString()
-                    && e.Fee == null
-                    && e.Tx.Status == TxStatus.Success.ToString()
+                    (
+                        (
+                            e.EventType == EventType.Action.ToString() && 
+                            e.TxAction.ActionType == ActionType.DelegateStake.ToString() && 
+                            e.Fee == null
+                        ) || 
+                        (
+                            e.EventType == EventType.StakeReturned.ToString() && 
+                            e.Amount < 0
+                        )
+                    )
+                    && (e.TxId == null || e.Tx.Status == TxStatus.Success.ToString())
                     && e.Amount.HasValue
                     && e.Amount.Value != 0)
                 .Select(e => new { e.Address.BlockchainAddress, e.Amount.Value })
