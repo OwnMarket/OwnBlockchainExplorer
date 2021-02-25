@@ -34,6 +34,11 @@ namespace Own.BlockchainExplorer.Core.Dtos.Api
                 Fee = model.Fee
             };
         }
+
+        public string GetCsvRow()
+        {
+            return string.Join(",", BlockNumber, BlockTime, TransactionHash, EventDetails, Amount, Fee);
+        }
     }
 
     public class EventsSummaryDto

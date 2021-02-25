@@ -92,5 +92,16 @@ namespace Own.BlockchainExplorer.Api.Controllers
         {
             return ApiResult(_addressInfoService.GetEventsInfo(blockchainAddress, filter, page, limit), r => NotFound(r));
         }
+
+        [HttpGet]
+        [Route("address/{blockchainAddress}/events/download")]
+        public IActionResult GetEventsCSV(string blockchainAddress)
+        {
+            var fileResult = _addressInfoService.GetEventsCSV(blockchainAddress);
+            if (fileResult.Failed)
+                return ApiResult(fileResult, r => NotFound(r));
+
+            return File(fileResult.Data.Content, fileResult.Data.Type, fileResult.Data.Name);
+        }
     }
 }

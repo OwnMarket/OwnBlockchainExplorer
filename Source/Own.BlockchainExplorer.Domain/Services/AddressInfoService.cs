@@ -6,6 +6,8 @@ using Own.BlockchainExplorer.Core.Dtos.Api;
 using Own.BlockchainExplorer.Core.Interfaces;
 using Own.BlockchainExplorer.Core.Models;
 using Own.BlockchainExplorer.Domain.Common;
+using System;
+using System.Text;
 
 namespace Own.BlockchainExplorer.Domain.Services
 {
@@ -93,6 +95,33 @@ namespace Own.BlockchainExplorer.Domain.Services
                         filter,
                         page,
                         limit));
+            }
+        }
+
+        public Result<FileDto> GetEventsCSV(string blockchainAddress)
+        {
+            using (var uow = NewUnitOfWork())
+            {
+                var eventDtos = _addressInfoRepositoryFactory
+                    .Create(uow)
+                    .GetEventsInfo(blockchainAddress, string.Empty, 1, int.MaxValue)
+                    .Events;
+
+                var rows = eventDtos
+                    .Select(e => e.GetCsvRow())
+                    .ToList();
+                rows.Insert(0, "Block number,Date/Time,TX,Event info,Amount,Fee");
+
+                var fileContent = string.Join(Environment.NewLine, rows);
+
+                var file = new FileDto
+                {
+                    Name = $"Events-{blockchainAddress}-{DateTime.UtcNow.ToString("yyyyMMddHHmmss")}.csv",
+                    Type = "text/csv",
+                    Content = Encoding.UTF8.GetBytes(fileContent)
+                };
+
+                return Result.Success(file);
             }
         }
 
