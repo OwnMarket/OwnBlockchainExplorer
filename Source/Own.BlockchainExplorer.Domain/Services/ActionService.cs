@@ -214,6 +214,18 @@ namespace Own.BlockchainExplorer.Domain.Services
                 e => delegateStakeIds.Contains(e.TxActionId) && e.Fee != null,
                 e => e.Address).GroupBy(e => e.Address);
 
+            var stakeReturnedGroupingIds = eventRepo.GetAs(
+                e => e.EventType == EventType.StakeReturned.ToString()
+                && e.AddressId == senderAddress.AddressId
+                && e.Amount < 0,
+                e => e.GroupingId);
+
+            var stakeReturnedEvents = eventRepo.Get(
+                e => stakeReturnedGroupingIds.Contains(e.GroupingId) && e.Amount > 0,
+                e => e.Address).GroupBy(e => e.Address);
+
+            var totalAmountToReturn = 0M;
+
             var events = new List<BlockchainEvent>();
             // Stakers StakeReturned events
             foreach (var group in delegateStakeEvents)
@@ -223,28 +235,39 @@ namespace Own.BlockchainExplorer.Domain.Services
                 var address = sameAddress ? senderAddress : group.Key;
                 var stakedAmount = group.Sum(e => e.Amount ?? 0) * -1;
 
-                events.Add(new BlockchainEvent {
-                    AddressId = address.AddressId,
-                    Amount = stakedAmount,
-                    BlockId = senderEvent.BlockId,
-                    TxId = senderEvent.TxId,
-                    TxActionId = senderEvent.TxActionId,
-                    EventType = EventType.StakeReturned.ToString(),
-                    GroupingId = senderEvent.GroupingId
-                });
+                var returnedAmount = (stakeReturnedEvents
+                    .SingleOrDefault(g => g.Key.AddressId == group.Key.AddressId)?
+                    .Sum(g => g.Amount ?? 0) ?? 0);
 
-                address.StakedBalance -= stakedAmount;
-                address.AvailableBalance += stakedAmount;
+                var amountToReturn = stakedAmount - returnedAmount;
 
-                if (!sameAddress)
-                    addressRepo.Update(address);
+                if (amountToReturn > 0)
+                {
+                    events.Add(new BlockchainEvent
+                    {
+                        AddressId = address.AddressId,
+                        Amount = amountToReturn,
+                        BlockId = senderEvent.BlockId,
+                        TxId = senderEvent.TxId,
+                        TxActionId = senderEvent.TxActionId,
+                        EventType = EventType.StakeReturned.ToString(),
+                        GroupingId = senderEvent.GroupingId
+                    });
+
+                    address.StakedBalance -= amountToReturn;
+                    address.AvailableBalance += amountToReturn;
+                    totalAmountToReturn += amountToReturn;
+
+                    if (!sameAddress)
+                        addressRepo.Update(address);
+                }
             }
 
             // Validator StakeReturned event
             events.Add(new BlockchainEvent
             {
                 AddressId = senderAddress.AddressId,
-                Amount = delegateStakeEvents.Select(g => g.Sum(e => e.Amount) ?? 0).Sum(),
+                Amount = -1 * totalAmountToReturn,
                 BlockId = senderEvent.BlockId,
                 TxId = senderEvent.TxId,
                 TxActionId = senderEvent.TxActionId,
