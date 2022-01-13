@@ -13,6 +13,7 @@ namespace Own.BlockchainExplorer.Core.Dtos.Api
         public string PreviousBlockHash { get; set; }
         public long ConfigurationBlockNumber { get; set; }
         public DateTime Timestamp { get; set; }
+        public long UnixTimestamp { get; set; }
         public string ValidatorAddress { get; set; }
         public string TxSetRoot { get; set; }
         public string TxResultSetRoot { get; set; }
@@ -35,6 +36,7 @@ namespace Own.BlockchainExplorer.Core.Dtos.Api
                 PreviousBlockNumber = block.PreviousBlock?.BlockNumber,
                 ConfigurationBlockNumber = block.ConfigurationBlockNumber,
                 Timestamp = DateTimeOffset.FromUnixTimeMilliseconds(block.Timestamp).UtcDateTime,
+                UnixTimestamp = block.Timestamp,
                 ValidatorAddress = block.Validator.BlockchainAddress,
                 TxSetRoot = block.TxSetRoot,
                 TxResultSetRoot = block.TxResultSetRoot,

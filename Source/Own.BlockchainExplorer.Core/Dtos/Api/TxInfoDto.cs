@@ -10,6 +10,7 @@ namespace Own.BlockchainExplorer.Core.Dtos.Api
         public string SenderAddress { get; set; }
         public long Nonce { get; set; }
         public DateTime Timestamp { get; set; }
+        public long UnixTimestamp { get; set; }
         public DateTime? ExpirationTime { get; set; }
         public int NumberOfActions { get; set; }
         public decimal ActionFee { get; set; }
@@ -24,6 +25,7 @@ namespace Own.BlockchainExplorer.Core.Dtos.Api
                 Hash = tx.Hash,
                 Nonce = tx.Nonce,
                 Timestamp = DateTimeOffset.FromUnixTimeMilliseconds(tx.Timestamp).UtcDateTime,
+                UnixTimestamp = tx.Timestamp,
                 ExpirationTime = tx.ExpirationTime,
                 ActionFee = tx.ActionFee,
                 Status = tx.Status,
