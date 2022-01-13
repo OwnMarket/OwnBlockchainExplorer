@@ -76,29 +76,27 @@ namespace Own.BlockchainExplorer.Domain.Services
             using (var uow = NewUnitOfWork())
             {
                 var validatorDtos = new List<ValidatorInfoShortDto>();
+                
+                var validators = NewRepository<Validator>(uow).Get(v => !v.IsDeleted).ToList();
+                var validatorAddresses = validators.Select(v => v.BlockchainAddress);
 
                 var eventRepo = NewRepository<BlockchainEvent>(uow);
-                var delegatedStakes = eventRepo
-                   .Get(
-                       e => e.EventType == EventType.Action.ToString()
-                       && e.TxAction.ActionType == ActionType.DelegateStake.ToString()
-                       && e.Fee != null
-                       && e.Tx.Status == TxStatus.Success.ToString());
-
-                var receivedStakes = eventRepo
-                   .Get(
-                       e => e.EventType == EventType.Action.ToString()
-                       && e.TxAction.ActionType == ActionType.DelegateStake.ToString()
-                       && e.Fee == null
-                       && e.Tx.Status == TxStatus.Success.ToString(),
-                       e => e.Address);
-
-                var validators = NewRepository<Validator>(uow).Get(v => !v.IsDeleted);
+                var stakes = eventRepo.Get(
+                    e => validatorAddresses.Contains(e.Address.BlockchainAddress)
+                    && e.EventType == EventType.Action.ToString()
+                    && e.TxAction.ActionType == ActionType.DelegateStake.ToString()
+                    && e.Tx.Status == TxStatus.Success.ToString(),
+                    e => e.Address
+                ).ToList();
+                
+                var delegatedStakes = stakes.Where(e => e.Fee != null).ToList();
+                var receivedStakes = stakes.Where(e => e.Fee == null).ToList();
 
                 foreach (var validator in validators)
                 {
-                    var localStakeEvents = receivedStakes
-                        .Where(e => e.Address.BlockchainAddress == validator.BlockchainAddress);
+                    var localStakeEvents = receivedStakes.Where(e =>
+                        e.Address.BlockchainAddress == validator.BlockchainAddress
+                    ).ToList();
                     var localStakeActionIds = localStakeEvents.Select(e => e.TxActionId);
                     var numberOfStakers = delegatedStakes
                         .Where(e => localStakeActionIds.Contains(e.TxActionId))
