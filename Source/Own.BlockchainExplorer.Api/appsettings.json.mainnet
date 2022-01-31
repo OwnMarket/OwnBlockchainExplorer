@@ -1,6 +1,7 @@
 {
   "appSettings": {
-    "DB": "server=<<DB_SERVER>>;database=own_blockchain_explorer;user id=own_blockchain_explorer_api;password=<<DB_PASSWORD>>;searchpath=own"
+    "DB": "server=<<DB_SERVER>>;database=own_blockchain_explorer;user id=own_blockchain_explorer_api;password=<<DB_PASSWORD>>;searchpath=own",
+    "bridgeDB": "server=<<BRIDGE_DB_SERVER>>;database=own_ibc_sync_engine;user id=own_ibc_sync_engine_user;password=<<BRIDGE_DB_PASSWORD>>;searchpath=own"
   },
   "server.urls": "http://*:14705",
   "cors": {
@@ -9,6 +10,15 @@
     "allowHeaders": "*",
     "exposeHeaders": "Access-Control-Allow-Origin"
   },
+  "ethereum": {
+    "nodeUrl": "https://mainnet.infura.io/v3/<<INFURA_API_KEY>>",
+    "bridgeAccountAddress": "0x937a47d84f088f6c4917b5981efc1b13d042e96b"
+  },
+  "binanceSmartChain": {
+    "nodeUrl": "https://bsc-dataseed2.binance.org",
+    "bridgeAccountAddress": "0xB07C10Cd419629A2f3Bc4396160eAa4Ea5bc95c6"
+  },
+  "assetBridgeApiUrl": "https://bridge-api.weown.com",
   "swagger": {
     "xmlDocPath": "ADD ONLY IF XML DOC IS OUTSIDE THE RUNNING ASSEMBLY LOCATION"
   },

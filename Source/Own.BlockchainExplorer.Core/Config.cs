@@ -1,5 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Reflection;
+using Own.BlockchainExplorer.Core.Enums;
 using Own.BlockchainExplorer.Core.Interfaces;
 
 namespace Own.BlockchainExplorer.Core
@@ -15,6 +17,7 @@ namespace Own.BlockchainExplorer.Core
         public static string AppDir => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         public static string ContentDir => Directory.GetCurrentDirectory();
         public static string DB => _provider.GetString("appSettings:DB");
+        public static string BridgeDB => _provider.GetString("appSettings:bridgeDB");
 
         // Blockchain
         public static string NodeApi => _provider.GetString("nodeApiUrl");
@@ -31,6 +34,16 @@ namespace Own.BlockchainExplorer.Core
         public static int GeoCacheTime => _provider.GetInteger("geoCacheTime").Value; // Minutes
 
         public static int ScanBatchSize => _provider.GetInteger("scanBatchSize").Value;
+        
+        public static string AssetBridgeApiUrl => _provider.GetString("assetBridgeApiUrl");
+        
+        public static string EthereumNodeUrl => _provider.GetString("ethereum:nodeUrl");
+        public static string BscNodeUrl => _provider.GetString("binanceSmartChain:nodeUrl");
+        public static Func<BlockchainCode, string> NodeUrl => c => c == BlockchainCode.Eth ? EthereumNodeUrl : BscNodeUrl;
+        
+        public static string EthereumBridgeAccountAddress => _provider.GetString("ethereum:bridgeAccountAddress");
+        public static string BscBridgeAccountAddress => _provider.GetString("binanceSmartChain:bridgeAccountAddress");
+        public static Func<BlockchainCode, string> BridgeAccountAddress => c => c == BlockchainCode.Eth ? EthereumBridgeAccountAddress : BscBridgeAccountAddress;
 
         // API
         public static string[] ApiUrls => _provider.GetString("server.urls")?.Split(',', ';');

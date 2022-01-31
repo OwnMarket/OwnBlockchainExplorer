@@ -26,6 +26,18 @@
             Failure
         }
 
+        public enum TransferType
+        {
+            FromNative,
+            ToNative
+        }
+
+        public enum BlockchainCode
+        {
+            Eth,
+            Bsc
+        }
+
         public enum ActionType
         {
             TransferChx,

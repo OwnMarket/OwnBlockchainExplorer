@@ -25,6 +25,8 @@ namespace Own.BlockchainExplorer.Infrastructure.DI
             serviceCollection.AddTransient<IBlockchainClient>(p => new BlockchainClient(Config.NodeApi));
             serviceCollection.AddTransient<IGeoLocationService, GeoLocationService>();
             serviceCollection.AddTransient<IBlockchainCryptoProvider, BlockchainCryptoProvider>();
+            serviceCollection.AddTransient<IWeb3Provider, NethereumProvider>();
+            serviceCollection.AddTransient<IAssetBridgeRepository, AssetBridgeRepository>();
         }
     }
 }
