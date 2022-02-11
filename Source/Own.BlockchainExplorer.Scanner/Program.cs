@@ -24,12 +24,13 @@ namespace Own.BlockchainExplorer.Scanner
             var serviceProvider = ConfigureServices();
             _scannerService = serviceProvider.GetService<IScannerService>();
             _assetService = serviceProvider.GetService<IAssetService>();
+            
+            _assetService.FixIncorrectAssetHoldings();
 
             Task.Run(async () =>
             {
                 while (true)
                 {
-                    _assetService.FixIncorrectAssetHoldings();
                     RunCycle();
                     await Task.Delay(1000);
                 }
