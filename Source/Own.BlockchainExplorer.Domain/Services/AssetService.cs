@@ -133,5 +133,47 @@ namespace Own.BlockchainExplorer.Domain.Services
                 }).ToList());
             }
         }
+
+        public void FixIncorrectAssetHoldings()
+        {
+            using (var uow = NewUnitOfWork(UnitOfWorkMode.Writable))
+            {
+                var repo = NewRepository<Holding>(uow);
+                
+                var eventData = NewRepository<BlockchainEvent>(uow).Get(
+                    e => e.TxAction.ActionType == ActionType.CreateAssetEmission.ToString(),
+                    e => e.TxAction
+                ).Where(e => e.AssetId.HasValue).Select(e =>
+                    JsonConvert.DeserializeObject<CreateAssetEmissionData>(e.TxAction.ActionData)
+                ).GroupBy(g => g.AssetHash).Select(g => new
+                {
+                    AssetHash = g.Key,
+                    AccountHash = g.First().EmissionAccountHash,
+                    Amount = g.Sum(d => d.Amount)
+                }).ToList();
+                
+                var assetHashes = eventData.Select(e => e.AssetHash).ToList();
+                var holdings = repo.Get(h => assetHashes.Contains(h.AssetHash)).ToList();
+
+                var reservedHoldings = holdings.GroupBy(h => h.AssetHash).Select(g => new
+                {
+                    AssetHash = g.Key,
+                    Amount = g.Where(h => h.Balance.HasValue).Sum(h => h.Balance)
+                }).ToList();
+                
+                foreach (var data in eventData)
+                {
+                    var holding = holdings.FirstOrDefault(h => h.AccountHash == data.AccountHash && h.AssetHash == data.AssetHash);
+                    var reservedHolding = reservedHoldings.FirstOrDefault(h => h.AssetHash == data.AssetHash)?.Amount ?? 0;
+                    if (holding != null && !holding.Balance.HasValue)
+                    {
+                        holding.Balance = data.Amount - reservedHolding;
+                        repo.Update(holding);
+                    }
+                }
+                
+                uow.Commit();
+            }
+        }
     }
 }

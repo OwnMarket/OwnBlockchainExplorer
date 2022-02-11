@@ -16,17 +16,20 @@ namespace Own.BlockchainExplorer.Scanner
     class Program
     {
         private static IScannerService _scannerService;
+        private static IAssetService _assetService;
 
         static void Main(string[] args)
         {
             ConfigureApp();
             var serviceProvider = ConfigureServices();
             _scannerService = serviceProvider.GetService<IScannerService>();
+            _assetService = serviceProvider.GetService<IAssetService>();
 
             Task.Run(async () =>
             {
                 while (true)
                 {
+                    _assetService.FixIncorrectAssetHoldings();
                     RunCycle();
                     await Task.Delay(1000);
                 }
