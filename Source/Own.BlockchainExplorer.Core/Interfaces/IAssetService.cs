@@ -10,6 +10,5 @@ namespace Own.BlockchainExplorer.Core.Interfaces
         Result<AssetShortInfoDto> GetAssetInfo(string assetHash);
         Result<List<AssetTransferInfoDto>> GetAssetTransfers(string assetHash, int page, int limit);
         Result<List<AssetHolderInfoDto>> GetAssetHolders(string assetHash, int page, int limit);
-        void FixIncorrectAssetHoldings();
     }
 }
