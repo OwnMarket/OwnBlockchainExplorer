@@ -105,7 +105,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 if (account is null) return Result.Failure<List<AccountHoldingInfoDto>>("Account not found.");
 
                 var holdings = NewRepository<Holding>(uow).Get(
-                    h => h.AssetId == account.AccountId,
+                    h => h.AccountId == account.AccountId,
                     h => h.Asset
                 ).Skip((page - 1) * limit).Take(limit).ToList();
 

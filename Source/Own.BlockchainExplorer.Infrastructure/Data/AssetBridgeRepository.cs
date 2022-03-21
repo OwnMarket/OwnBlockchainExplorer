@@ -13,9 +13,9 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
 {
     public class AssetBridgeRepository : IAssetBridgeRepository
     {
-        public Task<List<BridgeTransferInfoDto>> GetBridgeTransfers(string assetHash) =>
+        public Task<List<BridgeTransferInfoDto>> GetBridgeTransfers(string assetHash, int page, int limit) =>
             ReaderAction(
-                $"select transfer_type_code, target_blockchain, amount from own.transfer where asset_hash = '{assetHash}' and transfer_status_code = 'Complete';",
+                $"select transfer_type_code, target_blockchain, amount from transfer where asset_hash = '{assetHash}' and transfer_status_code = 'Complete' order by block_time desc offset {(page-1) * limit} limit {limit};",
                 r => new BridgeTransferInfoDto
                 {
                     TransferTypeCode = r[0].ToString().ToEnum<TransferType>(),
@@ -26,7 +26,7 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
         
         public Task<List<string>> GetContractAddresses(string assetHash, BlockchainCode blockchainCode) =>
             ReaderAction(
-                $"select token_address from own.asset where target_blockchain = '{blockchainCode.ToString()}' and asset_hash = '{assetHash}' and bridge_status_code = 'Bridged';",
+                $"select token_address from asset where target_blockchain = '{blockchainCode.ToString()}' and asset_hash = '{assetHash}' and bridge_status_code = 'Bridged';",
                 r => r[0].ToString()
             );
         

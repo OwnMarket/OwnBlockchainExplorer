@@ -20,9 +20,9 @@ namespace Own.BlockchainExplorer.Domain.Services
             _ethereumService = ethereumService;
         }
         
-        public async Task<Result<List<BridgeTransferStatsInfoDto>>> GetBridgeTransferStats(string assetHash)
+        public async Task<Result<List<BridgeTransferStatsInfoDto>>> GetBridgeTransferStats(string assetHash, int page, int limit)
         {
-            var transfers = await _assetBridgeRepository.GetBridgeTransfers(assetHash);
+            var transfers = await _assetBridgeRepository.GetBridgeTransfers(assetHash, page, limit);
             var groupedTransfers = transfers.GroupBy(t => t.BlockchainCode);
             var transferStats = new List<BridgeTransferStatsInfoDto>();
             foreach (var group in groupedTransfers)
