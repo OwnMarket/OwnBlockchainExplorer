@@ -7,6 +7,7 @@ namespace Own.BlockchainExplorer.Core.Interfaces
 {
     public interface IAssetBridgeService
     {
-        Task<Result<List<BridgeTransferStatsInfoDto>>> GetBridgeTransferStats(string assetHash, int page, int limit);
+        Task<Result<List<BridgeTransferStatsInfoDto>>> GetBridgeTransferStats(string assetHash);
+        Task<Result<List<BridgeTransferInfoDto>>> GetBridgeTransfers(string assetHash, int page, int limit);
     }
 }

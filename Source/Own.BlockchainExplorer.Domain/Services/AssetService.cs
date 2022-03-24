@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Own.BlockchainExplorer.Common.Extensions;
 using Own.BlockchainExplorer.Common.Framework;
@@ -14,9 +15,12 @@ namespace Own.BlockchainExplorer.Domain.Services
 {
     public class AssetService : DataService, IAssetService
     {
-        public AssetService(IUnitOfWorkFactory unitOfWorkFactory, IRepositoryFactory repositoryFactory) :
+        private readonly IAssetBridgeService _assetBridgeService;
+
+        public AssetService(IUnitOfWorkFactory unitOfWorkFactory, IRepositoryFactory repositoryFactory, IAssetBridgeService assetBridgeService) :
             base(unitOfWorkFactory, repositoryFactory)
         {
+            _assetBridgeService = assetBridgeService;
         }
 
         public Result<List<AssetShortInfoDto>> GetAssets(string accountHash, int page, int limit)
@@ -54,7 +58,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             }
         }
 
-        public Result<AssetShortInfoDto> GetAssetInfo(string assetHash)
+        public async Task<Result<AssetShortInfoDto>> GetAssetInfo(string assetHash)
         {
             using (var uow = NewUnitOfWork())
             {
@@ -70,6 +74,8 @@ namespace Own.BlockchainExplorer.Domain.Services
                     e => e.TxAction
                 ).ToList();
 
+                var bridgeTransfers = await _assetBridgeService.GetBridgeTransferStats(asset.Hash);
+
                 return Result.Success(new AssetShortInfoDto
                 {
                     Hash = asset.Hash,
@@ -77,7 +83,8 @@ namespace Own.BlockchainExplorer.Domain.Services
                     TotalSupply = asset.HoldingsByAssetId.Sum(h => h.Balance ?? 0),
                     HoldersCount = asset.HoldingsByAssetId.Count(h => h.Balance > 0),
                     TransfersCount = events.Count,
-                    ControllerAddress = asset.ControllerAddress
+                    ControllerAddress = asset.ControllerAddress,
+                    BridgeTransferStats = bridgeTransfers.Successful ? bridgeTransfers.Data : null
                 });
             }
         }

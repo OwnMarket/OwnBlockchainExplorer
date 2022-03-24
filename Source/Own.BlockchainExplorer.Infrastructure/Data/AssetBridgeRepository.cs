@@ -13,14 +13,28 @@ namespace Own.BlockchainExplorer.Infrastructure.Data
 {
     public class AssetBridgeRepository : IAssetBridgeRepository
     {
-        public Task<List<BridgeTransferInfoDto>> GetBridgeTransfers(string assetHash, int page, int limit) =>
+        public Task<List<BridgeTransferInfoDto>> GetAllBridgeTransfers(string assetHash) =>
             ReaderAction(
-                $"select transfer_type_code, target_blockchain, amount from transfer where asset_hash = '{assetHash}' and transfer_status_code = 'Complete' order by block_time desc offset {(page-1) * limit} limit {limit};",
+                $"select transfer_type_code, target_blockchain, amount from transfer where asset_hash = '{assetHash}' and transfer_status_code = 'Complete';",
                 r => new BridgeTransferInfoDto
                 {
                     TransferTypeCode = r[0].ToString().ToEnum<TransferType>(),
                     BlockchainCode = r[1].ToString().ToEnum<BlockchainCode>(),
                     Amount = decimal.Parse(r[2].ToString())
+                }
+            );
+        
+        public Task<List<BridgeTransferInfoDto>> GetBridgeTransfers(string assetHash, int page, int limit) =>
+            ReaderAction(
+                $"select transfer_type_code, target_blockchain, amount, block_time, original_tx_hash, swap_tx_hash from transfer where asset_hash = '{assetHash}' and transfer_status_code = 'Complete' order by block_time desc offset {(page-1) * limit} limit {limit};",
+                r => new BridgeTransferInfoDto
+                {
+                    TransferTypeCode = r[0].ToString().ToEnum<TransferType>(),
+                    BlockchainCode = r[1].ToString().ToEnum<BlockchainCode>(),
+                    Amount = decimal.Parse(r[2].ToString()),
+                    BlockTime = DateTime.Parse(r[3].ToString()),
+                    OriginalTxHash = r[4].ToString(),
+                    SwapTxHash = r[5].ToString()
                 }
             );
         

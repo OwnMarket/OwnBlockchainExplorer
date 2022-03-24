@@ -23,8 +23,8 @@ namespace Own.BlockchainExplorer.Api.Controllers
         
         [HttpGet]
         [Route("{assetHash}")]
-        public IActionResult GetAssetInfo([FromRoute] string assetHash) =>
-            ApiResult(_assetService.GetAssetInfo(assetHash));
+        public Task<IActionResult> GetAssetInfo([FromRoute] string assetHash) =>
+            ApiResultAsync(_assetService.GetAssetInfo(assetHash));
         
         [HttpGet]
         [Route("{assetHash}/transfers")]
@@ -34,7 +34,7 @@ namespace Own.BlockchainExplorer.Api.Controllers
         [HttpGet]
         [Route("{assetHash}/transfers/bridge")]
         public Task<IActionResult> GetBridgeAssetTransfers([FromRoute] string assetHash, [FromQuery] int page = 1, [FromQuery] int limit = 50) =>
-            ApiResultAsync(_assetBridgeService.GetBridgeTransferStats(assetHash, page, limit));
+            ApiResultAsync(_assetBridgeService.GetBridgeTransfers(assetHash, page, limit));
         
         [HttpGet]
         [Route("{assetHash}/holders")]

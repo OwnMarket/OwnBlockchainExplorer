@@ -1,4 +1,6 @@
-﻿namespace Own.BlockchainExplorer.Core.Dtos.Api
+﻿using System.Collections.Generic;
+
+namespace Own.BlockchainExplorer.Core.Dtos.Api
 {
     public class AssetShortInfoDto
     {
@@ -8,5 +10,6 @@
         public long? HoldersCount { get; set; }
         public long? TransfersCount { get; set; }
         public string ControllerAddress { get; set; }
+        public List<BridgeTransferStatsInfoDto> BridgeTransferStats { get; set; }
     }
 }

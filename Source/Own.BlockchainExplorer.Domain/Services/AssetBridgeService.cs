@@ -20,9 +20,9 @@ namespace Own.BlockchainExplorer.Domain.Services
             _ethereumService = ethereumService;
         }
         
-        public async Task<Result<List<BridgeTransferStatsInfoDto>>> GetBridgeTransferStats(string assetHash, int page, int limit)
+        public async Task<Result<List<BridgeTransferStatsInfoDto>>> GetBridgeTransferStats(string assetHash)
         {
-            var transfers = await _assetBridgeRepository.GetBridgeTransfers(assetHash, page, limit);
+            var transfers = await _assetBridgeRepository.GetAllBridgeTransfers(assetHash);
             var groupedTransfers = transfers.GroupBy(t => t.BlockchainCode);
             var transferStats = new List<BridgeTransferStatsInfoDto>();
             foreach (var group in groupedTransfers)
@@ -40,6 +40,19 @@ namespace Own.BlockchainExplorer.Domain.Services
                 transferStats.Add(transferStat);
             }
             return Result.Success(transferStats);
+        }
+        
+        public async Task<Result<List<BridgeTransferInfoDto>>> GetBridgeTransfers(string assetHash, int page, int limit)
+        {
+            try
+            {
+                return Result.Success(await _assetBridgeRepository.GetBridgeTransfers(assetHash, page, limit));
+            }
+            catch (Exception)
+            {
+                return Result.Failure<List<BridgeTransferInfoDto>>("Oops. Something went wrong.");
+            }
+            
         }
 
         private async Task<Result<decimal>> GetCirculatingSupply(string contractAddress, BlockchainCode blockchainCode)
