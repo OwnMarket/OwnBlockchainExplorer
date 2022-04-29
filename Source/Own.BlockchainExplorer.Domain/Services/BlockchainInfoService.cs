@@ -191,30 +191,60 @@ namespace Own.BlockchainExplorer.Domain.Services
             }
         }
 
-        public Result<string> Search(string searchValue)
+        public Result<SearchInfoDto> Search(string searchValue)
         {
             using (var uow = NewUnitOfWork())
             {
-                if (long.TryParse(searchValue, out long blockNumber))
+                if (long.TryParse(searchValue, out var blockNumber))
                 {
                     if (NewRepository<Block>(uow).Exists(a => a.BlockNumber == blockNumber))
-                        return Result.Success(SearchType.Block.ToString());
+                        return Result.Success(new SearchInfoDto 
+                        {
+                            Type = SearchType.Block.ToString(),
+                            Value = searchValue
+                        });
                 }
                 else
                 {
                     if (NewRepository<Address>(uow).Exists(a => a.BlockchainAddress == searchValue))
-                        return Result.Success(SearchType.Address.ToString());
+                        return Result.Success(new SearchInfoDto
+                        {
+                            Type = SearchType.Address.ToString(),
+                            Value = searchValue
+                        });
                     if (NewRepository<Account>(uow).Exists(a => a.Hash == searchValue))
-                        return Result.Success(SearchType.Account.ToString());
+                        return Result.Success(new SearchInfoDto
+                        {
+                            Type = SearchType.Account.ToString(),
+                            Value = searchValue
+                        });
                     if (NewRepository<Asset>(uow).Exists(a => a.Hash == searchValue))
-                        return Result.Success(SearchType.Asset.ToString());
+                        return Result.Success(new SearchInfoDto
+                        {
+                            Type = SearchType.Asset.ToString(),
+                            Value = searchValue
+                        });
+                    if (NewRepository<Asset>(uow).Exists(a => a.AssetCode == searchValue))
+                        return Result.Success(new SearchInfoDto
+                        {
+                            Type = SearchType.Asset.ToString(),
+                            Value = NewRepository<Asset>(uow).Get(a => a.AssetCode == searchValue).FirstOrDefault()?.Hash
+                        });
                     if (NewRepository<Tx>(uow).Exists(t => t.Hash == searchValue))
-                        return Result.Success(SearchType.Transaction.ToString());
+                        return Result.Success(new SearchInfoDto
+                        {
+                            Type = SearchType.Transaction.ToString(),
+                            Value = searchValue
+                        });
                     if (NewRepository<Equivocation>(uow).Exists(e => e.EquivocationProofHash == searchValue))
-                        return Result.Success(SearchType.Equivocation.ToString());
+                        return Result.Success(new SearchInfoDto
+                        {
+                            Type = SearchType.Equivocation.ToString(),
+                            Value = searchValue
+                        });
                 }
 
-                return Result.Failure<string>("Not found.");
+                return Result.Failure<SearchInfoDto>("Not found.");
             }
         }
     }

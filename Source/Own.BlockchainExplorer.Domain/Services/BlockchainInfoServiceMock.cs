@@ -273,7 +273,7 @@ namespace Own.BlockchainExplorer.Domain.Services
             }.AsEnumerable());
         }
 
-        public Result<string> Search(string searchValue)
+        public Result<SearchInfoDto> Search(string searchValue)
         {
             throw new NotImplementedException();
         }

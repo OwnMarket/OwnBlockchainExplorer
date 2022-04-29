@@ -13,6 +13,6 @@ namespace Own.BlockchainExplorer.Core.Interfaces
         Result<IEnumerable<TxInfoShortDto>> GetTxs(int limit, int page);
         Result<IEnumerable<BlockInfoShortDto>> GetBlocks(int limit, int page);
 
-        Result<string> Search(string searchValue);
+        Result<SearchInfoDto> Search(string searchValue);
     }
 }
