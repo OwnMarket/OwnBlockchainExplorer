@@ -33,7 +33,7 @@ namespace Own.BlockchainExplorer.Domain.Services
 
                 var txDto = TxInfoDto.FromDomainModel(events.FirstOrDefault().Tx);
                 txDto.BlockNumber = events.FirstOrDefault().Block.BlockNumber;
-                txDto.SenderAddress = events.FirstOrDefault(e => e.Fee != null).Address.BlockchainAddress;
+                txDto.SenderAddress = events.OrderByDescending(e => e.Fee).FirstOrDefault(e => e.Fee != null).Address.BlockchainAddress;
                 txDto.NumberOfActions = events
                     .Where(e => e.EventType == EventType.Action.ToString())
                     .GroupBy(e => e.TxActionId)

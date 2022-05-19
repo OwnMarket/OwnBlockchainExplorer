@@ -173,8 +173,8 @@ namespace Own.BlockchainExplorer.Domain.Services
                         .Where(e => e.TxId == tx.TxId)
                         .GroupBy(e => e.TxActionId)
                         .Count(),
-                    SenderAddress = events
-                        .First(e => e.TxId == tx.TxId && e.Fee.HasValue)
+                    SenderAddress = events.OrderByDescending(e => e.Fee)
+                        .FirstOrDefault(e => e.Fee != null)
                         .Address.BlockchainAddress,
                     BlockNumber = events
                         .First(e => e.TxId == tx.TxId)
