@@ -474,7 +474,6 @@ namespace Own.BlockchainExplorer.Domain.Services
             long blockId,
             IUnitOfWork uow)
         {
-            var eventRepo = NewRepository<BlockchainEvent>(uow);
             var addressRepo = NewRepository<Address>(uow);
 
             var address = addressRepo.Get(a => a.BlockchainAddress == validatorAddress).SingleOrDefault();

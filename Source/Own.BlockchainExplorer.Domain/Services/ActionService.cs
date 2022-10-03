@@ -212,7 +212,7 @@ namespace Own.BlockchainExplorer.Domain.Services
 
             var delegateStakeEvents = eventRepo.Get(
                 e => delegateStakeIds.Contains(e.TxActionId) && e.Fee != null,
-                e => e.Address).GroupBy(e => e.Address);
+                e => e.Address).GroupBy(e => e.AddressId).ToList();
 
             var stakeReturnedGroupingIds = eventRepo.GetAs(
                 e => e.EventType == EventType.StakeReturned.ToString()
@@ -220,26 +220,22 @@ namespace Own.BlockchainExplorer.Domain.Services
                 && e.Amount < 0,
                 e => e.GroupingId);
 
-            var stakeReturnedEvents = eventRepo.Get(
-                e => stakeReturnedGroupingIds.Contains(e.GroupingId) && e.Amount > 0,
-                e => e.Address).GroupBy(e => e.Address);
-
             var totalAmountToReturn = 0M;
 
             var events = new List<BlockchainEvent>();
             // Stakers StakeReturned events
             foreach (var group in delegateStakeEvents)
             {
-                var sameAddress = senderAddress.AddressId == group.Key.AddressId;
+                var sameAddress = senderAddress.AddressId == group.Key;
 
-                var address = sameAddress ? senderAddress : group.Key;
+                var address = sameAddress ? senderAddress : group.First().Address;
                 var stakedAmount = group.Sum(e => e.Amount ?? 0) * -1;
 
-                var returnedAmount = (stakeReturnedEvents
-                    .SingleOrDefault(g => g.Key.AddressId == group.Key.AddressId)?
-                    .Sum(g => g.Amount ?? 0) ?? 0);
+                var stakeReturnedEvents = eventRepo.Get(
+                    e => stakeReturnedGroupingIds.Contains(e.GroupingId) && e.Amount > 0 && e.AddressId == group.Key
+                ).ToList();
 
-                var amountToReturn = stakedAmount - returnedAmount;
+                var amountToReturn = stakedAmount - stakeReturnedEvents.Sum(g => g.Amount ?? 0);
 
                 if (amountToReturn > 0)
                 {
