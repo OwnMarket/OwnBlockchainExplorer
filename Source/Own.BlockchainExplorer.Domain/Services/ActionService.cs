@@ -216,9 +216,25 @@ namespace Own.BlockchainExplorer.Domain.Services
 
             var stakeReturnedGroupingIds = eventRepo.GetAs(
                 e => e.EventType == EventType.StakeReturned.ToString()
-                && e.AddressId == senderAddress.AddressId
-                && e.Amount < 0,
-                e => e.GroupingId);
+                    && e.AddressId == senderAddress.AddressId
+                    && e.Amount < 0
+                    && e.GroupingId != null,
+                e => e.GroupingId
+            );
+            
+            var stakeReturnedTxActionIds = eventRepo.GetAs(
+                e => e.EventType == EventType.StakeReturned.ToString()
+                    && e.AddressId == senderAddress.AddressId
+                    && e.Amount < 0
+                    && e.TxActionId != null,
+                e => e.TxActionId
+            );
+            
+            var stakeReturnedEvents = eventRepo.Get(
+                e => 
+                    (stakeReturnedGroupingIds.Contains(e.GroupingId) || stakeReturnedTxActionIds.Contains(e.TxActionId))
+                    && e.Amount > 0
+            ).GroupBy(e => e.AddressId).ToList();
 
             var totalAmountToReturn = 0M;
 
@@ -229,13 +245,11 @@ namespace Own.BlockchainExplorer.Domain.Services
                 var sameAddress = senderAddress.AddressId == group.Key;
 
                 var address = sameAddress ? senderAddress : group.First().Address;
+                
                 var stakedAmount = group.Sum(e => e.Amount ?? 0) * -1;
-
-                var stakeReturnedEvents = eventRepo.Get(
-                    e => stakeReturnedGroupingIds.Contains(e.GroupingId) && e.Amount > 0 && e.AddressId == group.Key
-                ).ToList();
-
-                var amountToReturn = stakedAmount - stakeReturnedEvents.Sum(g => g.Amount ?? 0);
+                var amountToReturn = stakedAmount - stakeReturnedEvents
+                    .SingleOrDefault(g => g.Key == group.Key)?
+                    .Sum(g => g.Amount ?? 0) ?? 0;
 
                 if (amountToReturn > 0)
                 {
