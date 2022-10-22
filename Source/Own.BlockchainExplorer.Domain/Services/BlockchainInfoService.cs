@@ -162,6 +162,7 @@ namespace Own.BlockchainExplorer.Domain.Services
                 var events = NewRepository<BlockchainEvent>(uow).Get(
                     e => e.TxId.HasValue && txIds.Contains(e.TxId.Value),
                     e => e.Block,
+                    e => e.Tx,
                     e => e.Address);
 
                 return Result.Success(txs.Select(tx => new TxInfoShortDto
@@ -173,8 +174,9 @@ namespace Own.BlockchainExplorer.Domain.Services
                         .Where(e => e.TxId == tx.TxId)
                         .GroupBy(e => e.TxActionId)
                         .Count(),
-                    SenderAddress = events.OrderByDescending(e => e.Fee)
-                        .FirstOrDefault(e => e.Fee != null)
+                    SenderAddress = events.Where(e => e.Fee != null)
+                        .OrderByDescending(e => e.Fee)
+                        .FirstOrDefault(e => e.Tx.Hash == tx.Hash)
                         .Address.BlockchainAddress,
                     BlockNumber = events
                         .First(e => e.TxId == tx.TxId)
