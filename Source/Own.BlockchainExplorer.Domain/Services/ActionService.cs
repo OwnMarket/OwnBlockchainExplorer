@@ -247,9 +247,9 @@ namespace Own.BlockchainExplorer.Domain.Services
                 var address = sameAddress ? senderAddress : group.First().Address;
                 
                 var stakedAmount = group.Sum(e => e.Amount ?? 0) * -1;
-                var amountToReturn = stakedAmount - stakeReturnedEvents
+                var amountToReturn = stakedAmount - (stakeReturnedEvents
                     .SingleOrDefault(g => g.Key == group.Key)?
-                    .Sum(g => g.Amount ?? 0) ?? 0;
+                    .Sum(g => g.Amount ?? 0) ?? 0);
 
                 if (amountToReturn > 0)
                 {
